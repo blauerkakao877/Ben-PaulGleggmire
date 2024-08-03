@@ -248,13 +248,25 @@ def led_ende():
         leds_aus()
 
 #++++++++++++++++++++++++++++++++++++++++++++++++++++ 
-
+def  led_test():
+    Skit.servo[15].angle = None
+    time.sleep(1.0)
+    Skit.servo[15].angle = 60
+    time.sleep(1.0)
+    Skit.servo[15].angle = None
+    time.sleep(1.0)
+    Skit.servo[15].angle = 60
+    time.sleep(1.0)
+    Skit.servo[15].angle = None
+    print("Test beendet")
+    
 #Reihenfolge der Led's: RGBOWY
 
 
 if __name__ == '__main__':
         try:
             leds_aus()
+            led_test()
             
                         
                  

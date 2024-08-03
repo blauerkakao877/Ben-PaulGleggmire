@@ -17,7 +17,7 @@ Mkit = MotorKit(i2c=board.I2C())
 Skit = ServoKit(channels=16)
 
 # Constants and Variables
-speed = 0.5
+speed = 0.7
 steerangle = 93
 k = 0.6   #Adjust as needed standard faktor fuer gerade
 kh = 0.9  #Adjust as needed faktor fuer hindernisse
@@ -58,7 +58,7 @@ linie_imbild = False
 NowUturn = False
 Uturn = False
 Uturndetected = False
-endcounter = 12
+Uturndone = False
 #==TEST==
 test = False
 
@@ -87,29 +87,32 @@ def geradeaus_lenken():
     global geradeaus
     global gesamt
     winkel, gesamt = G.Winkelmessen()
-    #lenkwinkel = 93 + k * (geradeaus - gesamt)
     lenkwinkel = 93 + k * (gesamt - geradeaus)
     F.steuern(lenkwinkel)
 
 def DoUturn():
-    global endcounter
+    global speed
+    global geradeaus
+    global current_direction
     global NowUturn
+    global Uturndone
     
     F.stop()
-    time.sleep(1.0)
     F.ruck(0.5)
-    time.sleep(0.5)
+    F.nach_rechts()
+    time.sleep(1.0)
     F.stop()
-    endcounter = 12
     geradeaus = geradeaus - 180
     if current_direction == "l":
         current_direction = "r"
     elif current_direction == "r":
         current_direction = "l"
-    F.nach_links()
     F.vor(speed)
+    F.nach_links()
+    time.sleep(0.5)
     geradeaus_lenken()
     NowUturn = False
+    Uturndone = True
     
 def linien_suchen(hsv_img):
     global current_direction
@@ -123,9 +126,14 @@ def linien_suchen(hsv_img):
     global Rennen_laeuft
     global hindernis_sperre
     global linie_imbild
-    global endcounter
+    global NowUturn
+    global Uturn
+    global Uturndone
     
-    if linien_counter < endcounter:
+    if  (linien_counter == 12) or ((linien_counter == 8) and (Uturn == True) and (Uturndone == False)):
+        hsv_crop = hsv_img[50:round(hoehe/2), 90:230]
+        
+    else:
         if current_direction == "l":
 #nach links verschieben, damit linie orange nicht 2 mal gezählt wird und crash auf innenecke kommt
             hsv_crop = hsv_img[hoehe - 30:hoehe, 60:200]
@@ -134,10 +142,8 @@ def linien_suchen(hsv_img):
             hsv_crop = hsv_img[hoehe - 30:hoehe, 120:260]
         else:
             hsv_crop = hsv_img[hoehe - 30:hoehe, 90:230]
-    else:
-        hsv_crop = hsv_img[50:round(hoehe/2), 90:230]
-    
-    
+   
+
     if current_direction == "l":
         if (time.time() - linien_zeit) > linien_warten:
             linie = K.finde_blau(hsv_crop)
@@ -148,6 +154,9 @@ def linien_suchen(hsv_img):
                 L.led_B1()
                 if linien_counter == 12:
                     Rennen_laeuft = False #Rennen Ende erkannt, setze Stopsignal
+                elif (linien_counter == 8) and (Uturn == True) and (Uturndone == False):
+                    NowUturn = True  #Uturn position detected
+                    
         else:
             if blaue_linie and time.time() - linien_zeit > linien_zaehlen:
                 linien_counter = linien_counter + 1
@@ -168,8 +177,9 @@ def linien_suchen(hsv_img):
                 L.led_O1()
                 if linien_counter == 12:
                     Rennen_laeuft = False #Rennen Ende erkannt, setze Stopsignal
-                    
-            
+                elif (linien_counter == 8) and (Uturn == True) and (Uturndone == False):
+                    NowUturn = True  #Uturn position detected
+
         else:
             if orange_linie and time.time() - linien_zeit > linien_zaehlen:
                 linien_counter = linien_counter + 1
@@ -213,7 +223,6 @@ try:
     if farbe == "R":
         Uturn = True
         Uturndetected = True
-        endcounter = 4
         L.led_R1()
     elif farbe == "G":
         Uturndetected = True
