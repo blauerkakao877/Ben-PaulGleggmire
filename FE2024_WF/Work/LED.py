@@ -62,6 +62,24 @@ def led_O1():
         
 #=====================================================
 
+def led_G20():
+        Skit.servo[13].angle = None
+        
+        
+def led_G21():
+        Skit.servo[13].angle = 50
+        
+#=====================================================
+
+def led_R20():
+        Skit.servo[12].angle = None
+        
+        
+def led_R21():
+        Skit.servo[12].angle = 50
+        
+#=====================================================
+
 def leds_an():
         led_W1()
         led_R1()
@@ -69,6 +87,8 @@ def leds_an():
         led_G1()
         led_Y1()
         led_O1()
+        led_G21()
+        led_R21()
         
 #++++++++++++++++++++++++++++++++++++++++++++++++++++
         
@@ -79,6 +99,8 @@ def leds_aus():
         led_G0()
         led_Y0()
         led_O0()
+        led_G20()
+        led_R20()
         
 #++++++++++++++++++++++++++++++++++++++++++++++++++++
         
@@ -89,6 +111,9 @@ def led_start():
         led_G0()
         led_Y0()
         led_O0()
+        led_G20()
+        led_R20()
+        
         
         led_R1()
         time.sleep(0.1)
@@ -249,15 +274,15 @@ def led_ende():
 
 #++++++++++++++++++++++++++++++++++++++++++++++++++++ 
 def  led_test():
-    Skit.servo[15].angle = None
+    Skit.servo[13].angle = None
     time.sleep(1.0)
-    Skit.servo[15].angle = 60
+    Skit.servo[13].angle = 50
     time.sleep(1.0)
-    Skit.servo[15].angle = None
+    Skit.servo[13].angle = None
     time.sleep(1.0)
-    Skit.servo[15].angle = 60
+    Skit.servo[13].angle = 50
     time.sleep(1.0)
-    Skit.servo[15].angle = None
+    Skit.servo[13].angle = None
     print("Test beendet")
     
 #Reihenfolge der Led's: RGBOWY

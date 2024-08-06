@@ -18,6 +18,7 @@ Skit = ServoKit(channels=16)
 
 # Constants and Variables
 speed = 0.7
+startspeed = 0.5
 steerangle = 93
 k = 0.6   #Adjust as needed standard faktor fuer gerade
 kh = 0.9  #Adjust as needed faktor fuer hindernisse
@@ -129,6 +130,7 @@ def linien_suchen(hsv_img):
     global NowUturn
     global Uturn
     global Uturndone
+    global Uturndetected
     
     if  (linien_counter == 12) or ((linien_counter == 8) and (Uturn == True) and (Uturndone == False)):
         hsv_crop = hsv_img[50:round(hoehe/2), 90:230]
@@ -154,9 +156,12 @@ def linien_suchen(hsv_img):
                 L.led_B1()
                 if linien_counter == 12:
                     Rennen_laeuft = False #Rennen Ende erkannt, setze Stopsignal
-                elif (linien_counter == 8) and (Uturn == True) and (Uturndone == False):
+                if (linien_counter == 8) and (Uturn == True) and (Uturndone == False) and (Uturndetected == True):
                     NowUturn = True  #Uturn position detected
-                    
+                    L.led_W1()
+                else:
+                    NowUturn = False
+
         else:
             if blaue_linie and time.time() - linien_zeit > linien_zaehlen:
                 linien_counter = linien_counter + 1
@@ -165,7 +170,16 @@ def linien_suchen(hsv_img):
                 blaue_linie = False
                 linie_imbild = False
                 L.led_B0()
-                    
+                if (linien_counter == 4) and (Uturndetected  == False):
+                    if linien_zaehlen_LR:
+                        Uturndetected = True
+                        Uturn = True
+                        L.led_R21()
+                    elif linien_zaehlen_LG:
+                        Uturndetected = True
+                        Uturn = False
+                        L.led_G21()
+                        
                     
     elif current_direction == "r":
         if (time.time() - linien_zeit) > linien_warten:
@@ -177,8 +191,11 @@ def linien_suchen(hsv_img):
                 L.led_O1()
                 if linien_counter == 12:
                     Rennen_laeuft = False #Rennen Ende erkannt, setze Stopsignal
-                elif (linien_counter == 8) and (Uturn == True) and (Uturndone == False):
+                if (linien_counter == 8) and (Uturn == True) and (Uturndone == False) and (Uturndetected == True):
                     NowUturn = True  #Uturn position detected
+                    L.led_W1()
+                else:
+                    NowUturn = False
 
         else:
             if orange_linie and time.time() - linien_zeit > linien_zaehlen:
@@ -188,14 +205,21 @@ def linien_suchen(hsv_img):
                 orange_linie = False
                 linie_imbild = False
                 L.led_O0()
+                if (linien_counter == 4) and (Uturndetected  == False):
+                    if linien_zaehlen_RR:
+                        Uturndetected = True
+                        Uturn = True
+                        L.led_R21()
+                    elif linien_zaehlen_RG:
+                        Uturndetected = True
+                        Uturn = False
+                        L.led_G21()
         
     else:
         linie = K.finde_blau(hsv_crop)
         if linie == True:
             current_direction = "l"
             linien_zeit = time.time()
-            #linien_counter = linien_counter + 1
-            #geradeaus = linien_counter*(-90)
             blaue_linie = True
             print("Blau")
             
@@ -204,8 +228,6 @@ def linien_suchen(hsv_img):
             if linie == True:
                 current_direction = "r"
                 linien_zeit = time.time()
-                #linien_counter = linien_counter + 1
-                #geradeaus = linien_counter*(90)
                 orange_linie = True
                 print("Orange")
 #=============================Hauptprogram===============================================
@@ -223,13 +245,13 @@ try:
     if farbe == "R":
         Uturn = True
         Uturndetected = True
-        L.led_R1()
+        L.led_R21()
     elif farbe == "G":
         Uturndetected = True
         Uturn = False
-        L.led_G1()
+        L.led_G21()
     
-    F.vor(speed)
+    F.vor(startspeed)
     
 #====================Beginn der Hauptschleife=========================
     
@@ -238,9 +260,11 @@ try:
         #abstand_L = Ultrasonic.distanz_L()
         winkel, gesamt = G.Winkelmessen()
         hsv_frame, bgr_frame = K.get_image()
-        hoehe = hsv_frame.shape[0] 
+        hoehe = hsv_frame.shape[0]
         
-        
+# setting speed higher after first corner 
+        if linien_counter > 0:
+            F.vor(speed)
 #--Wände finden + auswerten--
         links, rechts, hellL, hellR = K.waende(bgr_frame)
 #--Magenta Wände finden + auswerten--
@@ -273,7 +297,7 @@ try:
             F.stop()
             break
         
-        elif NowUturn:
+        elif NowUturn == True:
             L.led_W1()
             DoUturn()
             L.led_W0()
