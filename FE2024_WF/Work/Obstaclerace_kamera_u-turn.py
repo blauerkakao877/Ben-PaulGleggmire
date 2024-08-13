@@ -10,6 +10,7 @@ import cv2
 import numpy as np
 import Kameramoduls as K
 import Ultrasonic as U
+import Write_Logfile as W
 
 
 # Initialize MotorKit and ServoKit
@@ -170,16 +171,6 @@ def linien_suchen(hsv_img):
                 blaue_linie = False
                 linie_imbild = False
                 L.led_B0()
-                if (linien_counter == 4) and (Uturndetected  == False):
-                    if linien_zaehlen_LR:
-                        Uturndetected = True
-                        Uturn = True
-                        L.led_R21()
-                    elif linien_zaehlen_LG:
-                        Uturndetected = True
-                        Uturn = False
-                        L.led_G21()
-                        
                     
     elif current_direction == "r":
         if (time.time() - linien_zeit) > linien_warten:
@@ -205,15 +196,6 @@ def linien_suchen(hsv_img):
                 orange_linie = False
                 linie_imbild = False
                 L.led_O0()
-                if (linien_counter == 4) and (Uturndetected  == False):
-                    if linien_zaehlen_RR:
-                        Uturndetected = True
-                        Uturn = True
-                        L.led_R21()
-                    elif linien_zaehlen_RG:
-                        Uturndetected = True
-                        Uturn = False
-                        L.led_G21()
         
     else:
         linie = K.finde_blau(hsv_crop)
@@ -371,6 +353,11 @@ try:
                         F.steuern(lenkwinkel)
                     hindernis = True
                     h_zeit = time.time()
+                    if (Uturndetected == False) and (linien_counter == 3):
+                        Uturn = True
+                        Uturndetected = True
+                        L.led_R21()
+                        L.led_G20()
                     if current_direction == "r":
                         linien_zaehlen = linien_zaehlen_RR
                     elif current_direction == "l":
@@ -390,6 +377,12 @@ try:
                         F.steuern(lenkwinkel)
                     hindernis = True
                     h_zeit = time.time()
+                    if (Uturndetected == False) and (linien_counter == 3):
+                        Uturn = False
+                        Uturndetected = True
+                        L.led_G21()
+                        L.led_R20()
+                        
                     if current_direction == "l":
                         linien_zaehlen = linien_zaehlen_LG
                     elif current_direction == "r":
