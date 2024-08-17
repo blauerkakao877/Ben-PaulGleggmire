@@ -578,16 +578,16 @@ def finde_hindernisse(hsv_img):
 if __name__ == '__main__':
         try:
 #=======change challenge mode here=========
-            mode = "open"
-            #mode = "obstacle"
+            #mode = "open"
+            mode = "obstacle"
             init(mode)
-            print("running in mode: ",mode)
+            print("running in mode:",mode)
             
             linien_zeit = time.time()
             while True:
                 
-                hsv_bild, bgr_bild = get_image() #test front camera
-                #hsv_bild, bgr_bild = get_image_back() #test back camera
+                #hsv_bild, bgr_bild = get_image() #test front camera
+                hsv_bild, bgr_bild = get_image_back() #test back camera
                 
                 b_linie = finde_blau(hsv_bild)
                 o_linie = finde_orange(hsv_bild)

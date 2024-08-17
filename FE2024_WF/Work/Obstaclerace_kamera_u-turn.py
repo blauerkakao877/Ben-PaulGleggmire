@@ -41,15 +41,15 @@ rechts = False
 hellL = 0
 hellR = 0
 abstand = 0
-linien_zaehlen = 0.21 #wartezeit/Sperrzeit bis linie ausgewertet wird
-linien_zaehlen_LG = 0.18  #Links+Grun
-linien_zaehlen_RG = 0.27  #Rechts+Grun
-linien_zaehlen_LR = 0.18  #Links+Rot
-linien_zaehlen_RR = 0.27  #Rechts+Rot
+linien_zaehlen = 0.16 #wartezeit/Sperrzeit bis linie ausgewertet wird
+linien_zaehlen_LG = 0.13  #Links+Grun
+linien_zaehlen_RG = 0.22  #Rechts+Grun
+linien_zaehlen_LR = 0.13  #Links+Rot
+linien_zaehlen_RR = 0.22  #Rechts+Rot
 blaue_linie = False
 orange_linie = False
 hindernis = False
-h_warten = 1.5
+h_warten = 1.4
 h_zeit = 0.0
 gesamt = 0.0
 Rennen_laeuft = True
@@ -76,6 +76,8 @@ def start_program():
     K.init("obstacle")
     hindernis_sperre = False
     L.led_Y1()
+    L.led_R21()
+    L.led_G21()
     print("--Press button to start--")
     while not GPIO.input(BUTTON_PIN):
         time.sleep(0.1)
@@ -83,6 +85,7 @@ def start_program():
     while GPIO.input(BUTTON_PIN):
         time.sleep(0.1)
     print("Program started!")
+    W.write_Log("program_started")
     time.sleep(0.5)
     
 def geradeaus_lenken():
@@ -216,6 +219,7 @@ def linien_suchen(hsv_img):
 try:
     if test:
         speed = 0.0
+    W.open_Log(True)
     F.gerade()
     L.leds_aus()
     L.led_startup()
@@ -225,15 +229,29 @@ try:
     hsv_frame, bgr_frame = K.get_image_back()
     x, y, s, farbe = K.finde_hindernisse(hsv_frame)
     if farbe == "R":
+        W.write_Log("red_detected")
         Uturn = True
         Uturndetected = True
+        L.led_R20()
+        L.led_G20()
         L.led_R21()
+        
     elif farbe == "G":
+        W.write_Log("green_detected")
         Uturndetected = True
         Uturn = False
+        L.led_R20()
+        L.led_G20()
         L.led_G21()
+        W.write_Log("green_detected_ending")
+        
+    else:
+        W.write_log("nichts_erkannt")
     
     F.vor(startspeed)
+    time.sleep(0.5)
+    F.stop()
+    W.close_Log()
     
 #====================Beginn der Hauptschleife=========================
     
@@ -410,6 +428,7 @@ try:
     L.led_ende()
     L.led_R1()
     L.led_G1()
+    W.close_Log()
     
 
 except KeyboardInterrupt:
