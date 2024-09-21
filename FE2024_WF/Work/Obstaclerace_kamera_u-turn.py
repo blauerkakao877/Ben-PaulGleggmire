@@ -11,6 +11,7 @@ import numpy as np
 import Kameramoduls as K
 import Ultrasonic as U
 import Write_Logfile as W
+import sys
 
 
 # Initialize MotorKit and ServoKit
@@ -18,19 +19,19 @@ Mkit = MotorKit(i2c=board.I2C())
 Skit = ServoKit(channels=16)
 
 # Constants and Variables
-speed = 0.7
-startspeed = 0.5
-steerangle = 93
+speed = 0.57
+startspeed = 0.47
+steerangle = 95
 k = 0.6   #Adjust as needed standard faktor fuer gerade
-kh = 0.9  #Adjust as needed faktor fuer hindernisse
+kh = 0.7  #Adjust as needed faktor fuer hindernisse
 Seitehalten = 0
 BUTTON_PIN = 16
-servmitte = 93
+servmitte = 95
 geradeaus = 0
 current_direction = "n"
 linie = False
 linien_zeit = 0
-linien_warten = 2.1 #vermeidet das linien mehrmals gezählt werden
+linien_warten = 2.3 #vermeidet das linien mehrmals gezählt werden
 linien_counter = 0
 x = 0
 y = 0
@@ -41,15 +42,15 @@ rechts = False
 hellL = 0
 hellR = 0
 abstand = 0
-linien_zaehlen = 0.16 #wartezeit/Sperrzeit bis linie ausgewertet wird
-linien_zaehlen_LG = 0.13  #Links+Grun
-linien_zaehlen_RG = 0.22  #Rechts+Grun
-linien_zaehlen_LR = 0.13  #Links+Rot
-linien_zaehlen_RR = 0.22  #Rechts+Rot
+linien_zaehlen = 0.14 #wartezeit/Sperrzeit bis linie ausgewertet wird
+linien_zaehlen_LG = 0.11  #Links+Grun
+linien_zaehlen_RG = 0.20  #Rechts+Grun
+linien_zaehlen_LR = 0.11  #Links+Rot
+linien_zaehlen_RR = 0.20  #Rechts+Rot
 blaue_linie = False
 orange_linie = False
 hindernis = False
-h_warten = 1.4
+h_warten = 1.0
 h_zeit = 0.0
 gesamt = 0.0
 Rennen_laeuft = True
@@ -76,8 +77,6 @@ def start_program():
     K.init("obstacle")
     hindernis_sperre = False
     L.led_Y1()
-    L.led_R21()
-    L.led_G21()
     print("--Press button to start--")
     while not GPIO.input(BUTTON_PIN):
         time.sleep(0.1)
@@ -88,6 +87,15 @@ def start_program():
     W.write_Log("program_started")
     time.sleep(0.5)
     
+def stop_program():
+    F.stop()
+    F.gerade()
+    L.led_ende()
+    L.led_R1()
+    L.led_G1()
+    W.close_Log()
+    sys.exit()
+
 def geradeaus_lenken():
     global geradeaus
     global gesamt
@@ -103,8 +111,9 @@ def DoUturn():
     global Uturndone
     
     F.stop()
+    F.gerade()
     F.ruck(0.5)
-    F.nach_rechts()
+    #F.nach_rechts()
     time.sleep(1.0)
     F.stop()
     geradeaus = geradeaus - 180
@@ -112,10 +121,12 @@ def DoUturn():
         current_direction = "r"
     elif current_direction == "r":
         current_direction = "l"
+    F.anfahren(speed)
     F.vor(speed)
     F.nach_links()
-    time.sleep(0.5)
+    time.sleep(0.2)
     geradeaus_lenken()
+    messen()
     NowUturn = False
     Uturndone = True
     
@@ -215,6 +226,60 @@ def linien_suchen(hsv_img):
                 linien_zeit = time.time()
                 orange_linie = True
                 print("Orange")
+                
+#-----------------------------------------------------
+                
+def messen():
+    global winkel
+    global gesamt
+    global hsv_frame
+    global bgr_frame
+    global hoehe
+    global linien_counter
+    global links
+    global rechts
+    global hellL
+    global hellR
+    global linksMag
+    global rechtsMag
+    global hellLMag
+    global hellRMag
+    global current_direction
+    global x
+    global y
+    global s
+    global farbe
+    
+    #abstand_R = Ultrasonic.distanz_R()
+    #abstand_L = Ultrasonic.distanz_L()
+    winkel, gesamt = G.Winkelmessen()
+    hsv_frame, bgr_frame = K.get_image()
+    hoehe = hsv_frame.shape[0]
+    
+# setting speed higher after first corner 
+    if linien_counter > 0:
+        F.vor(speed)
+#--Wände finden + auswerten--
+    links, rechts, hellL, hellR = K.waende(bgr_frame)
+#--Magenta Wände finden + auswerten--
+    linksMag, rechtsMag, hellLMag, hellRMag = K.waende_Magenta(hsv_frame)
+    if current_direction == "r":
+        if rechtsMag:
+            rechtsMag = False #korektur, weil magenta kann nicht an der rechten wand stehen
+    elif current_direction == "l":
+        if linksMag:
+            linksMag = False #korektur, weil magenta kann nicht an der linken wand stehen
+    else:
+        rechtsMag = False
+        linksMag = False
+        
+    if rechtsMag:
+        print(rechtsMag)
+    if rechtsMag:
+        print(linksMag)
+#--Hindernisse finden + auswerten--
+    x, y, s, farbe = K.finde_hindernisse(hsv_frame)
+        
 #=============================Hauptprogram===============================================
 try:
     if test:
@@ -232,60 +297,24 @@ try:
         W.write_Log("red_detected")
         Uturn = True
         Uturndetected = True
-        L.led_R20()
-        L.led_G20()
         L.led_R21()
+
         
     elif farbe == "G":
         W.write_Log("green_detected")
         Uturndetected = True
         Uturn = False
-        L.led_R20()
-        L.led_G20()
         L.led_G21()
-        W.write_Log("green_detected_ending")
         
     else:
-        W.write_log("nichts_erkannt")
-    
+        W.write_Log("nichts_erkannt")
+    F.anfahren(startspeed)
     F.vor(startspeed)
-    time.sleep(0.5)
-    F.stop()
-    W.close_Log()
-    
+
 #====================Beginn der Hauptschleife=========================
     
     while not GPIO.input(BUTTON_PIN) and Rennen_laeuft:
-        #abstand_R = Ultrasonic.distanz_R()
-        #abstand_L = Ultrasonic.distanz_L()
-        winkel, gesamt = G.Winkelmessen()
-        hsv_frame, bgr_frame = K.get_image()
-        hoehe = hsv_frame.shape[0]
-        
-# setting speed higher after first corner 
-        if linien_counter > 0:
-            F.vor(speed)
-#--Wände finden + auswerten--
-        links, rechts, hellL, hellR = K.waende(bgr_frame)
-#--Magenta Wände finden + auswerten--
-        linksMag, rechtsMag, hellLMag, hellRMag = K.waende_Magenta(hsv_frame)
-        if current_direction == "r":
-            if rechtsMag:
-                rechtsMag = False #korektur, weil magenta kann nicht an der rechten wand stehen
-        elif current_direction == "l":
-            if linksMag:
-                linksMag = False #korektur, weil magenta kann nicht an der linken wand stehen
-        else:
-            rechtsMag = False
-            linksMag = False
-            
-        if rechtsMag:
-            print(rechtsMag)
-        if rechtsMag:
-            print(linksMag)
-#--Hindernisse finden + auswerten--
-        x, y, s, farbe = K.finde_hindernisse(hsv_frame)
-#--Linien suchen--
+        messen()
 #====End Sequenz==================================================================
         linien_suchen(hsv_frame)
         if not Rennen_laeuft and not test:
@@ -301,9 +330,12 @@ try:
             L.led_W1()
             DoUturn()
             L.led_W0()
+            messen()
+            linien_suchen(hsv_frame)
             
 #==TEST==
         if test:
+            W.write_Log("started_in_testmode")
             if farbe == "R":
                 cv2.line(bgr_frame, (x, 0), (x, hoehe), (0, 0, 255), 2)
             if farbe == "G":
@@ -350,6 +382,7 @@ try:
                         F.nach_rechts()
                         time.sleep(0.8)
                         F.stop()
+                        F.anfahren(speed)
                         F.vor(speed)
                         F.gerade()
                     else:
@@ -357,6 +390,7 @@ try:
                         F.nach_links()
                         time.sleep(0.8)
                         F.stop()
+                        F.anfahren(speed)
                         F.vor(speed)
                         F.gerade()
             
@@ -423,12 +457,7 @@ try:
                 
                     
 #-----------------------ENDE--------------------------
-    F.stop()
-    F.gerade()
-    L.led_ende()
-    L.led_R1()
-    L.led_G1()
-    W.close_Log()
+    stop_program()
     
 
 except KeyboardInterrupt:

@@ -35,6 +35,19 @@ def ruck(speed):
     speed1 = -1.0*speed #----Speed hier ändern----
     kit.motor1.throttle = speed1
     kit.motor2.throttle = speed1
+    
+#---------------------------------------
+
+def anfahren(speed):
+    speed1 = 0.5*speed #----slowing speed down----
+    speed2 = 0.7*speed #----slowing speed down----
+    
+    kit.motor1.throttle = speed1
+    kit.motor2.throttle = speed1
+    time.sleep(0.1)
+    kit.motor1.throttle = speed2
+    kit.motor2.throttle = speed2
+    time.sleep(0.1)
 
 #---------------------------------------
 
