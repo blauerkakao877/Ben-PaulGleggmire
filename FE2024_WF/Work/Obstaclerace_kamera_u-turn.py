@@ -111,11 +111,17 @@ def DoUturn():
     global Uturndone
     
     F.stop()
-    F.gerade()
-    F.ruck(0.5)
-    #F.nach_rechts()
-    time.sleep(1.0)
-    F.stop()
+    messen()
+    if hellL > 10000:
+        F.nach_rechts()
+        F.ruck(0.5)
+        time.sleep(0.8)
+        F.stop()
+    else:
+        F.gerade()
+        F.ruck(0.5)
+        time.sleep(1.0)
+        F.stop()
     geradeaus = geradeaus - 180
     if current_direction == "l":
         current_direction = "r"
@@ -173,6 +179,8 @@ def linien_suchen(hsv_img):
                     Rennen_laeuft = False #Rennen Ende erkannt, setze Stopsignal
                 if (linien_counter == 8) and (Uturn == True) and (Uturndone == False) and (Uturndetected == True):
                     NowUturn = True  #Uturn position detected
+                    linie_imbild = False
+                    blaue_linie = False
                     L.led_W1()
                 else:
                     NowUturn = False
@@ -198,6 +206,8 @@ def linien_suchen(hsv_img):
                     Rennen_laeuft = False #Rennen Ende erkannt, setze Stopsignal
                 if (linien_counter == 8) and (Uturn == True) and (Uturndone == False) and (Uturndetected == True):
                     NowUturn = True  #Uturn position detected
+                    linie_imbild = False
+                    orange_linie = False
                     L.led_W1()
                 else:
                     NowUturn = False
@@ -321,8 +331,8 @@ try:
             L.led_Y1()
             F.stop()
             F.gerade()
-            F.ruck(0.5)
-            time.sleep(1.1)
+            F.ruck(0.7)
+            time.sleep(1.2)
             F.stop()
             break
         
@@ -378,22 +388,25 @@ try:
                     F.stop()
                     time.sleep(0.2)
                     if gesamt >= geradeaus:
-                        F.ruck(speed)
+                        F.stop()
+                        time.sleep(0.1)
                         F.nach_rechts()
-                        time.sleep(0.8)
-                        F.stop()
-                        F.anfahren(speed)
-                        F.vor(speed)
-                        F.gerade()
-                    else:
                         F.ruck(speed)
-                        F.nach_links()
                         time.sleep(0.8)
                         F.stop()
+                        F.gerade()
                         F.anfahren(speed)
                         F.vor(speed)
+                    else:
+                        F.stop()
+                        time.sleep(0.1)
+                        F.nach_links()
+                        F.ruck(speed)
+                        time.sleep(0.8)
+                        F.stop()
                         F.gerade()
-            
+                        F.anfahren(speed)
+                        F.vor(speed)
          
         else:
             if farbe == "R" and not linie_imbild:
