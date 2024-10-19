@@ -3,6 +3,7 @@ import numpy as np
 import cv2
 import time
 import math
+import libcamera
 import LED as L
 
 picam2 = None
@@ -96,6 +97,7 @@ def init(mode="obstacle"):
     picam2.preview_configuration.main.format = "RGB888"
     picam2.preview_configuration.align()
     picam2.configure("preview")
+    #picam2.set_controls({'HdrMode': libcamera.controls.HdrModeEnum.SingleExposure})
     picam2.set_controls({"Saturation": 1.5})
     picam2.set_controls({"Brightness": 0.3})
     picam2.set_controls({"Contrast": 1.5})
@@ -141,7 +143,7 @@ def get_image():
     global image
     
     frame = picam2.capture_array()
-    image = frame[55:240, 0:320]
+    image = frame[30:240, 0:320]
     hoehe = image.shape[0]
     breite = image.shape[1]
     hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
@@ -382,28 +384,29 @@ def waende(bgr_img):
     #print("maxR :",maxHistR)
     
     # Seitenkollisionen:
-    if maxHistL > 13000:
+    if maxHistL > 12000:
         kollL = True
     else:
         kollL = False
     
-    if maxHistR > 13000:
+    if maxHistR > 12000:
         kollR = True
     else:
         kollR = False
 
     #Frontkollision:
-    if maxHistL > 25000 and maxHistR > 25000:
+    #if maxHistL > 25000 and maxHistR > 25000:
+    if maxHistL > 11000 and maxHistR > 11000:
         kollL = True
         kollR = True
     else:
      #Seitenkollisionen:
-        if maxHistL > 13000:
+        if maxHistL > 12000:
             kollL = True
         else:
             kollL = False
         
-        if maxHistR > 13000:
+        if maxHistR > 12000:
             kollR = True
         else:
             kollR = False
@@ -586,8 +589,8 @@ if __name__ == '__main__':
             linien_zeit = time.time()
             while True:
                 
-                #hsv_bild, bgr_bild = get_image() #test front camera
-                hsv_bild, bgr_bild = get_image_back() #test back camera
+                hsv_bild, bgr_bild = get_image() #test front camera
+               # hsv_bild, bgr_bild = get_image_back() #test back camera
                 
                 b_linie = finde_blau(hsv_bild)
                 o_linie = finde_orange(hsv_bild)

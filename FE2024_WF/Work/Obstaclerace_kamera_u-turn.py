@@ -43,18 +43,18 @@ hellL = 0
 hellR = 0
 abstand = 0
 linien_zaehlen = 0.14 #wartezeit/Sperrzeit bis linie ausgewertet wird
-linien_zaehlen_LG = 0.11  #Links+Grun
+linien_zaehlen_LG = 0.10  #Links+Grun
 linien_zaehlen_RG = 0.20  #Rechts+Grun
 linien_zaehlen_LR = 0.11  #Links+Rot
 linien_zaehlen_RR = 0.20  #Rechts+Rot
 blaue_linie = False
 orange_linie = False
 hindernis = False
-h_warten = 1.0
+h_warten = 0.5
 h_zeit = 0.0
 gesamt = 0.0
 Rennen_laeuft = True
-hoehe = 200
+hoehe = 210
 breite = 320
 hindernis_sperre = False
 linie_imbild = False
@@ -62,6 +62,8 @@ NowUturn = False
 Uturn = False
 Uturndetected = False
 Uturndone = False
+stop_time = time.time() + 180.0
+reduced = False
 #==TEST==
 test = False
 
@@ -113,14 +115,14 @@ def DoUturn():
     F.stop()
     messen()
     if hellL > 10000:
-        F.nach_rechts()
+        F.Uturn_rechts()
         F.ruck(0.5)
-        time.sleep(0.8)
+        time.sleep(1.3)
         F.stop()
     else:
         F.gerade()
         F.ruck(0.5)
-        time.sleep(1.0)
+        time.sleep(1.2)
         F.stop()
     geradeaus = geradeaus - 180
     if current_direction == "l":
@@ -129,10 +131,10 @@ def DoUturn():
         current_direction = "l"
     F.anfahren(speed)
     F.vor(speed)
-    F.nach_links()
-    time.sleep(0.2)
-    geradeaus_lenken()
+    F.Uturn_links()
+    time.sleep(0.6)
     messen()
+    geradeaus_lenken()
     NowUturn = False
     Uturndone = True
     
@@ -152,6 +154,16 @@ def linien_suchen(hsv_img):
     global Uturn
     global Uturndone
     global Uturndetected
+    global speed
+    global reduced
+    global stop_time
+    
+    if linien_counter == 12:
+        if not reduced:
+            speed = speed*1.0
+            F.vor(speed)
+            reduced = True
+            stop_time = time.time() + 3.0
     
     if  (linien_counter == 12) or ((linien_counter == 8) and (Uturn == True) and (Uturndone == False)):
         hsv_crop = hsv_img[50:round(hoehe/2), 90:230]
@@ -324,16 +336,19 @@ try:
 #====================Beginn der Hauptschleife=========================
     
     while not GPIO.input(BUTTON_PIN) and Rennen_laeuft:
+        if time.time() > stop_time:
+            Rennen_laeuft = False
         messen()
 #====End Sequenz==================================================================
         linien_suchen(hsv_frame)
+            
         if not Rennen_laeuft and not test:
             L.led_Y1()
             F.stop()
             F.gerade()
-            F.ruck(0.7)
-            time.sleep(1.2)
-            F.stop()
+            #F.ruck(0.7)
+            #time.sleep(1.2)
+            #F.stop()
             break
         
         elif NowUturn == True:
@@ -365,19 +380,19 @@ try:
         if (links or linksMag) and not (rechts):
             if gesamt <= geradeaus + 60.0:
                 F.nach_rechts()
-#Korrektur für Frontcrash
+#Korrektur für sidecrash
             else:
                 F.nach_links()
             
         elif (rechts or rechtsMag) and not links:
             if gesamt >= geradeaus - 60.0:
                 F.nach_links()
-#Korrektur für Frontcrash           
+#Korrektur für sideecrash           
             else:
                 F.nach_rechts()
             
         elif rechts and links:
-            
+#frontcrash
             if hellL > 14000 or hellR > 14000:
                 if gesamt >= geradeaus:
                     F.nach_links()
@@ -465,8 +480,13 @@ try:
                     L.led_Y1()
                     if time.time() - h_zeit > h_warten:
                         hindernis = False
-                else:
-                    geradeaus_lenken()
+                else:      #nichts wichtiges in Sicht
+                    if hellR > 6500:
+                        F.nach_links()
+                    elif hellL > 6500:
+                        F.nach_rechts()
+                    else:
+                        geradeaus_lenken()
                 
                     
 #-----------------------ENDE--------------------------

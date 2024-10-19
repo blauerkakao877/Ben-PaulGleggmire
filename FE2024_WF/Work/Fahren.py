@@ -52,16 +52,16 @@ def anfahren(speed):
 #---------------------------------------
 
 def gerade():
-    Skit.servo[0].angle = 93
+    Skit.servo[0].angle = 95
     
 #---------------------------------------
     
 def steuern(lenkwinkel):
-    if lenkwinkel > 115:
-        lenkwinkel = 115
+    if lenkwinkel > 130:
+        lenkwinkel = 130
 
-    if lenkwinkel < 65:
-        lenkwinkel = 65
+    if lenkwinkel < 60:
+        lenkwinkel = 60
 
     Skit.servo[0].angle = lenkwinkel
     time.sleep(w)
@@ -69,64 +69,37 @@ def steuern(lenkwinkel):
 #---------------------------------------
     
 def lenkenlinks():
-       Skit.servo[0].angle = 125
+       Skit.servo[0].angle = 130
        time.sleep(0.8)
-       Skit.servo[0].angle = 93
+       Skit.servo[0].angle = 95
        time.sleep(0.6)
        
 #---------------------------------------
        
 def lenkenrechts():
-       Skit.servo[0].angle = 55
+       Skit.servo[0].angle = 60
        time.sleep(0.8)
-       Skit.servo[0].angle = 93
+       Skit.servo[0].angle = 95
        time.sleep(0.6)
        
 #---------------------------------------
        
 def nach_links():
-       Skit.servo[0].angle = 115
+       Skit.servo[0].angle = 130
        
 #---------------------------------------
        
 def nach_rechts():
-       Skit.servo[0].angle = 65
+       Skit.servo[0].angle = 60
        
 #---------------------------------------
        
-def linkshalten1():
-       Skit.servo[0].angle = 110
-       time.sleep(w)
+def Uturn_links():
+       Skit.servo[0].angle = 120
        
 #---------------------------------------
        
-def rechtshalten1():
+def Uturn_rechts():
        Skit.servo[0].angle = 70
-       time.sleep(w)
-   
-#---------------------------------------
-       
-def linkshalten2():
-       Skit.servo[0].angle = 70
-       time.sleep(w)
        
 #---------------------------------------
-       
-def rechtshalten2():
-       Skit.servo[0].angle = 110
-       time.sleep(w)
-       
-#---------------------------------------
-
-def wandweg_L():
-    Skit.servo[0].angle = 125
-    time.sleep(0.2)
-    Skit.servo[0].angle = 75
-    
-#---------------------------------------
-    
-def wandweg_R():
-    Skit.servo[0].angle = 125
-    time.sleep(0.2)
-    Skit.servo[0].angle = 75
-    
