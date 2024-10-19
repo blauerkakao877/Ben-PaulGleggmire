@@ -1,4 +1,4 @@
-<div align="center"><img src="../other/img/logo.png" width="300" alt=" logo"></div>
+<div align="center"><img src="../other/Roadrunners_log_klein_trans.png" width="300" alt=" logo"></div>
 
 # <div align="center">Demonstration Video  </div> 
 
