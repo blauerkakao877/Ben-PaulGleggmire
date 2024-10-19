@@ -9,4 +9,4 @@
 
 # <div align="center">![HOME](../other/img/Home.png)[Return Home](../)</div>  
 
-> from kirk@snjh.tc.edu.tw
+
