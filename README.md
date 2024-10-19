@@ -3,17 +3,48 @@ Roadrunners - Future engineers 2024
 
 <img src="https://github.com/blauerkakao877/Roadrunners-FE24/assets/131390374/50f191a3-0340-4c7b-ba7b-8b8aab709dd7" width="400" height="400">
 
-- This is the official Github repository for the WRO Germany team Roadrunners.
-- All code, documentation and files are in this repository.
-- In this technical document, the directory will be established based on the scoring criteria.
-#### 1. Mobility Management
-#### 2. Power and Sense Management
-#### 3. Obstacle Management
-#### 4. Pictures - Team and Vehicle
-#### 5. Performance Videos
-#### 6. Utilization
-#### 7. Engineering Factor
-## Our team 
+## Table of Contents 📚👇
+
+1. [Overview](#overview) 🌟
+2. [Design Process](#Design-Process)🔧
+3. [Car Photos](#carphoto)
+4. [Mobility Management](#Mobility-Management)
+    - [Chassis](#Chassis)
+    - [Assembly Instructions](#assembly-instructions) 🛠
+    - [Driving Motor and Gearing](#Driving-Motor-and-Gearing)
+    - [Steering Mechanism](#Steering-Mechanism)
+    - [Power and Sense Management](#Power-and-Sense-Management)  
+    - [Power supply](#Power-supply)
+    - [Controllers](#Controllers)
+    - [Sensors](#Sensors)
+    - [Camera](#camera)
+    - [Schematics](#schematics) 📐👀
+    - [Components List](#components-list) 🔍
+5. [Software Design](#software) 💻👨‍💻
+    - [Software Development](#software-development)
+    - [Opening Race](#opening-race)
+    - [Obstacle Race](#obstacle-race)
+    - [Programming Languages](#programming-languages) 👩‍💻
+    - [Dependencies](#dependencies) 
+6. [Utilities](#utilities) 🛠
+    - [Failsafe Mechanisms](#failsafe)
+    - [Debugging Tools](#debugging-tools) 🐞🔍
+7. [Team Photos](#team-photos) 📸
+8. [Demonstration Videos](#demonstration-videos) 🎥
+9. [Contributors](#contributors) 👥
+10. [Resources](#sources) ℹ
+
+   
+<a name="overview"></a>
+
+
+## Overview 🌟
+
+![Foto 01 10 23, 13 22 02](https://github.com/Nezar187/GSG_SmartiecarV2/assets/131591590/60bbc2ea-8552-432e-a204-dabbc420be3d)
+
+Welcome to the official GitHub repository for Team Smart Riders from Germany, participating in the WRO World Finals 2023. This repository contains all the code, documentation, and resources for our project, SmartiecarV2. We have used scoring criteria from the ruleblock as headings in our documentation to make it easy to navigate our repository.
+
+<img src="https://github.com/Nezar187/GSG_SmartiecarV2/assets/131591590/7b0c5513-870f-475c-9993-cfca6aa5659f" width="75%">
 
 
 
