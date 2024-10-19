@@ -40,7 +40,7 @@ Roadrunners - Future engineers 2024
 
 ## Overview 🌟
 
-![Foto 01 10 23, 13 22 02](https://github.com/Nezar187/GSG_SmartiecarV2/assets/131591590/60bbc2ea-8552-432e-a204-dabbc420be3d)
+![Foto 01 10 23, 13 22 02](./v-photos/Beauty01.jpeg)
 
 Welcome to the official GitHub repository for Team Smart Riders from Germany, participating in the WRO World Finals 2023. This repository contains all the code, documentation, and resources for our project, SmartiecarV2. We have used scoring criteria from the ruleblock as headings in our documentation to make it easy to navigate our repository.
 
