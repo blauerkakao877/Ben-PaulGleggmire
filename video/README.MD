@@ -2,7 +2,7 @@
 
 ## <div align="center">Demonstration Video</div> 
 - ### Open Challenge
-[![2023WRO Future-Engineers_qualifying-round](open1.jpg)](https://youtu.be/Z78iSG1QYfs "2023WRO Future-Engineers_qualifying-round") 
+[![2023WRO Future-Engineers_qualifying-round](open1.jpeg)](https://youtu.be/Z78iSG1QYfs "2023WRO Future-Engineers_qualifying-round") 
 
 - ### Obstacle Challenge
 [![2023WRO Future-Engineers_Obstacle Challenge](./img/Obstacle_Challenge.jpg)](https://youtu.be/CwvGDfQJ8cQ "2023WRO Future-Engineers_Obstacle Challenge")
