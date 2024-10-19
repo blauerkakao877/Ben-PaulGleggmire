@@ -37,6 +37,7 @@ x = 0
 y = 0
 s = 0
 farbe = "N"
+letzte_farbe = "N"
 links = False
 rechts = False
 hellL = 0
@@ -205,6 +206,15 @@ def linien_suchen(hsv_img):
                 blaue_linie = False
                 linie_imbild = False
                 L.led_B0()
+                if linien_counter == 4 and Uturndetected == False:
+                    if letzte_farbe == "G":
+                        Uturn = False
+                        Uturndetected = True
+                        L.led_G21()
+                    elif letzte_farbe == "R":
+                        Uturn = True
+                        Uturndetected = True
+                        L.led_R21()
                     
     elif current_direction == "r":
         if (time.time() - linien_zeit) > linien_warten:
@@ -232,6 +242,15 @@ def linien_suchen(hsv_img):
                 orange_linie = False
                 linie_imbild = False
                 L.led_O0()
+                if linien_counter == 4 and Uturndetected == False:
+                    if letzte_farbe == "G":
+                        Uturn = False
+                        Uturndetected = True
+                        L.led_G21()
+                    elif letzte_farbe == "R":
+                        Uturn = True
+                        Uturndetected = True
+                        L.led_R21()
         
     else:
         linie = K.finde_blau(hsv_crop)
@@ -425,7 +444,7 @@ try:
          
         else:
             if farbe == "R" and not linie_imbild:
-            #if farbe == "R":
+                letzte_farbe = farbe
                 if x > 0:
                     abstand = 0 - x
                     lenkwinkel = 93 + kh * (abstand)
@@ -449,7 +468,7 @@ try:
                     hindernis = True
                     
             elif farbe == "G" and not linie_imbild:
-            #elif farbe == "G":
+                letzte_farbe = farbe
                 if  x < 320 and x > 0:
                     abstand = 320 - x
                     lenkwinkel = 93 + kh * (abstand)
