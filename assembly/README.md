@@ -22,6 +22,4 @@
 
 <img src="WhatsApp Image 2024-10-26 at 14.21.51.jpeg" width="100%">
 
-<img src="WhatsApp Image 2024-10-26 at 14.21.51.jpeg" width="100%">
-
 <img src="WhatsApp Image 2024-10-26 at 14.21.52 (1).jpeg" width="100%">
