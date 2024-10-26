@@ -57,11 +57,11 @@ def gerade():
 #---------------------------------------
     
 def steuern(lenkwinkel):
-    if lenkwinkel > 130:
-        lenkwinkel = 130
+    if lenkwinkel > 120:
+        lenkwinkel = 120
 
-    if lenkwinkel < 60:
-        lenkwinkel = 60
+    if lenkwinkel < 70:
+        lenkwinkel = 70
 
     Skit.servo[0].angle = lenkwinkel
     time.sleep(w)
@@ -70,27 +70,27 @@ def steuern(lenkwinkel):
     
 def lenkenlinks():
        Skit.servo[0].angle = 130
-       time.sleep(0.8)
+       time.sleep(0.7)
        Skit.servo[0].angle = 95
-       time.sleep(0.6)
+       time.sleep(0.5)
        
 #---------------------------------------
        
 def lenkenrechts():
        Skit.servo[0].angle = 60
-       time.sleep(0.8)
+       time.sleep(0.7)
        Skit.servo[0].angle = 95
-       time.sleep(0.6)
+       time.sleep(0.5)
        
 #---------------------------------------
        
 def nach_links():
-       Skit.servo[0].angle = 130
+       Skit.servo[0].angle = 120
        
 #---------------------------------------
        
 def nach_rechts():
-       Skit.servo[0].angle = 60
+       Skit.servo[0].angle = 70
        
 #---------------------------------------
        

@@ -20,10 +20,10 @@ Skit = ServoKit(channels=16)
 
 # Constants and Variables
 speed = 0.57
-startspeed = 0.47
+startspeed = 0.57
 steerangle = 95
 k = 0.6   #Adjust as needed standard faktor fuer gerade
-kh = 0.7  #Adjust as needed faktor fuer hindernisse
+kh = 0.52  #Adjust as needed faktor fuer hindernisse
 Seitehalten = 0
 BUTTON_PIN = 16
 servmitte = 95
@@ -31,7 +31,7 @@ geradeaus = 0
 current_direction = "n"
 linie = False
 linien_zeit = 0
-linien_warten = 2.3 #vermeidet das linien mehrmals gezählt werden
+linien_warten = 2.4 #vermeidet das linien mehrmals gezählt werden
 linien_counter = 0
 x = 0
 y = 0
@@ -43,7 +43,7 @@ rechts = False
 hellL = 0
 hellR = 0
 abstand = 0
-linien_zaehlen = 0.14 #wartezeit/Sperrzeit bis linie ausgewertet wird
+linien_zaehlen = 0.17 #wartezeit/Sperrzeit bis linie ausgewertet wird
 linien_zaehlen_LG = 0.10  #Links+Grun
 linien_zaehlen_RG = 0.20  #Rechts+Grun
 linien_zaehlen_LR = 0.11  #Links+Rot
@@ -51,7 +51,7 @@ linien_zaehlen_RR = 0.20  #Rechts+Rot
 blaue_linie = False
 orange_linie = False
 hindernis = False
-h_warten = 0.5
+h_warten = 0.3
 h_zeit = 0.0
 gesamt = 0.0
 Rennen_laeuft = True
@@ -201,6 +201,7 @@ def linien_suchen(hsv_img):
         else:
             if blaue_linie and time.time() - linien_zeit > linien_zaehlen:
                 linien_counter = linien_counter + 1
+                L.led_B1()
                 #geradeaus = linien_counter*(-90)
                 geradeaus =  geradeaus - 90
                 blaue_linie = False
@@ -237,6 +238,7 @@ def linien_suchen(hsv_img):
         else:
             if orange_linie and time.time() - linien_zeit > linien_zaehlen:
                 linien_counter = linien_counter + 1
+                L.led_O1()
                 #geradeaus = linien_counter*(90)
                 geradeaus = geradeaus + 90
                 orange_linie = False
@@ -256,6 +258,10 @@ def linien_suchen(hsv_img):
         linie = K.finde_blau(hsv_crop)
         if linie == True:
             current_direction = "l"
+            if letzte_farbe == "G":
+                linien_zaehlen = linien_zaehlen_LG
+            elif letzte_farbe == "R":
+                linien_zaehlen = linien_zaehlen_RR
             linien_zeit = time.time()
             blaue_linie = True
             print("Blau")
@@ -264,6 +270,10 @@ def linien_suchen(hsv_img):
             linie = K.finde_orange(hsv_crop)
             if linie == True:
                 current_direction = "r"
+                if letzte_farbe == "G":
+                    linien_zaehlen =linien_zaehlen_RG
+                elif letzte_farbe == "R":
+                    linien_zaehlen = linien_zaehlen_RR
                 linien_zeit = time.time()
                 orange_linie = True
                 print("Orange")
@@ -447,16 +457,12 @@ try:
                 letzte_farbe = farbe
                 if x > 0:
                     abstand = 0 - x
-                    lenkwinkel = 93 + kh * (abstand)
+                    lenkwinkel = 95 + kh * (abstand)
                     if gesamt < geradeaus + 80:
                         F.steuern(lenkwinkel)
                     hindernis = True
                     h_zeit = time.time()
-                    if (Uturndetected == False) and (linien_counter == 3):
-                        Uturn = True
-                        Uturndetected = True
-                        L.led_R21()
-                        L.led_G20()
+                    
                     if current_direction == "r":
                         linien_zaehlen = linien_zaehlen_RR
                     elif current_direction == "l":
@@ -471,16 +477,11 @@ try:
                 letzte_farbe = farbe
                 if  x < 320 and x > 0:
                     abstand = 320 - x
-                    lenkwinkel = 93 + kh * (abstand)
+                    lenkwinkel = 95 + kh * (abstand)
                     if gesamt > geradeaus - 80:
                         F.steuern(lenkwinkel)
                     hindernis = True
                     h_zeit = time.time()
-                    if (Uturndetected == False) and (linien_counter == 3):
-                        Uturn = False
-                        Uturndetected = True
-                        L.led_G21()
-                        L.led_R20()
                         
                     if current_direction == "l":
                         linien_zaehlen = linien_zaehlen_LG
@@ -500,12 +501,12 @@ try:
                     if time.time() - h_zeit > h_warten:
                         hindernis = False
                 else:      #nichts wichtiges in Sicht
-                    if hellR > 6500:
-                        F.nach_links()
-                    elif hellL > 6500:
-                        F.nach_rechts()
-                    else:
-                        geradeaus_lenken()
+                    #if hellR > 6500:
+                     #   F.nach_links()
+                    #elif hellL > 6500:
+                     #   F.nach_rechts()
+                    #else:
+                    geradeaus_lenken()
                 
                     
 #-----------------------ENDE--------------------------
