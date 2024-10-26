@@ -80,7 +80,7 @@ Our new version still consists of a Lego driving vase and a self-designed plasti
 <img src="./v-photos/roadrunner_versions_1.jpeg" width="80%"> 
 
 The photo shows a comparison between our two car versions.
-For learners, we provide a detailed assembly instructions [here](./v-photos/assembly.md) 
+For learners, we provide a detailed assembly instructions [here](./assembly/README.md) 
 
 
 Last year, we used an Arduino for control and a Pixy2 Smartcam as a camera. The Arduino often reacted slowly and the camera image could not be optimally adjusted.
