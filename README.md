@@ -1,95 +1,163 @@
 Roadrunners - Future engineers 2024 
 ====
 
-<img src="https://github.com/blauerkakao877/Roadrunners-FE24/assets/131390374/50f191a3-0340-4c7b-ba7b-8b8aab709dd7" width="400" height="400">
+<div align="center"><img src="./other/Roadrunners_log_groß_trans.png" width="75%" alt="logo"></div>
 
-## Table of Contents 📚👇
+## Table of Contents
 
-1. [Overview](#overview) 🌟
-2. [Design Process](#Design-Process)🔧
-3. [Car Photos](#carphoto)
-4. [Mobility Management](#Mobility-Management)
+- [Overview](#overview)
+- [Design Process](#Design-Process)
+- [Car Photos](#carphoto)
+- [Mobility Management](#Mobility-Management)
     - [Chassis](#Chassis)
-    - [Assembly Instructions](#assembly-instructions) 🛠
-    - [Driving Motor and Gearing](#Driving-Motor-and-Gearing)
+    - [Motorization](#Motorization)
     - [Steering Mechanism](#Steering-Mechanism)
-    - [Power and Sense Management](#Power-and-Sense-Management)  
+- [Power and Sense Management](#Power-and-Sense-Management)  
     - [Power supply](#Power-supply)
     - [Controllers](#Controllers)
     - [Sensors](#Sensors)
     - [Camera](#camera)
-    - [Schematics](#schematics) 📐👀
-    - [Components List](#components-list) 🔍
-5. [Software Design](#software) 💻👨‍💻
+    - [Schematics](#schematics)
+- [Software Design](#software)
     - [Software Development](#software-development)
     - [Opening Race](#opening-race)
     - [Obstacle Race](#obstacle-race)
-    - [Programming Languages](#programming-languages) 👩‍💻
+    - [Programming Languages](#programming-languages)
     - [Dependencies](#dependencies) 
-6. [Utilities](#utilities) 🛠
+- [Utilities](#utilities)
     - [Failsafe Mechanisms](#failsafe)
-    - [Debugging Tools](#debugging-tools) 🐞🔍
-7. [Team Photos](#team-photos) 📸
-8. [Demonstration Videos](#demonstration-videos) 🎥
-9. [Contributors](#contributors) 👥
-10. [Resources](#sources) ℹ
+    - [Debugging Tools](#debugging-tools)
+- [Assembly](#assembly)  
+    - [Bill of Materials](#bill-of-materials)
+    - [Assembly Instructions](#assembly-instruction)
+- [Team Photos](#team-photos)
+- [Demonstration Videos](#demonstration-videos)
+- [Contributors](#contributors)
+- [Resources](#resources)
 
-   
+
 <a name="overview"></a>
+## Overview
+
+<div align="center"><img src="./v-photos/Beauty01.jpeg" width="60%"></div>
 
 
-## Overview 🌟
+Welcome to the official GitHub repository for Team Roadrunners from Germany, participating in the WRO World Finals 2024. This repository contains all the code, documentation, and resources for our project. We have used scoring criteria from the rulebook as headings in our documentation to make it easy to navigate our repository.
 
-<img src="./v-photos/Beauty01.jpeg" width="50%">
+<a name="carphoto"></a>
+
+## Car Photos
+
+These photos here provide an overview in reduced resolution how our car look like and which components are where.
+
+The high-resolution car photos are found [here](./v-photos/README.md) .
+
+<img src="./v-photos/front_labels.jpeg" width="40%">  <img src="./v-photos/back_labels.jpeg" width="40%">
+
+<img src="./v-photos/top_labels.jpeg" width="40%"> <img src="./v-photos/bottom_labels.jpeg" width="30%">
+
+<img src="./v-photos/right_labels.jpeg" width="40%"> <img src="./v-photos/left_labels.jpeg" width="40%">
 
 
-Welcome to the official GitHub repository for Team Roadrunners from Germany, participating in the WRO World Finals 2024. This repository contains all the code, documentation, and resources for our project. We have used scoring criteria from the ruleblock as headings in our documentation to make it easy to navigate our repository.
 
-<img src="https://github.com/Nezar187/GSG_SmartiecarV2/assets/131591590/7b0c5513-870f-475c-9993-cfca6aa5659f" width="75%">
+<a name="Mobility-Management"></a>
 
+## Mobility Management
 
+<a name="Chassis"></a>
 
+### Chassis
 
 We built our car from Lego parts and plastic plates.
 The chassis consists of Lego Technic parts. 
 We looked in the book ‘The Unofficial LEGO Technic Builder's Guide 2nd Edition’ to find out how to build a car from LEGO, especially how to build a steering system.
 Then we developed our own chassis. 
-Our first car last year had a plastic base plate, LEGO parts on it and then another plastic top plate and was quite big.
-This year we wanted to try and build a smaller car so that it would be easier to get past the obstacles. 
+Our first car had a plastic base plate, LEGO parts on it and then another plastic top plate and was rather big.
+For the world final, we wanted to try and build a smaller car so that it would be easier to get past the obstacles. 
 To do this, we first focussed on building the smallest possible chassis with the smallest possible motors. We only used Lego this year and managed to create a much smaller chassis.
-However, there is another plastic plate on the chassis for the sensors and the control electronics.
+Our new version still consists of a Lego driving vase and a self-designed plastic plate to mount the electronics. We also used the same motor models, wheels and steering servo so we could reuse most of our programs.
+
+<img src="./v-photos/roadrunner_versions_1.jpeg" width="80%"> 
+
+The photo shows a comparison between our two car versions.
+For learners, we provide a detailed assembly instructions [here](./v-photos/assembly.md) 
+
 
 Last year, we used an Arduino for control and a Pixy2 Smartcam as a camera. The Arduino often reacted slowly and the camera image could not be optimally adjusted.
-This year we are using a Raspberry Pi with a Pi wide-angle camera. 
-There are many electronic components available as HATs for the Raspberry Pi that you can simply plug onto the Pi. We have also taken advantage of this to save space so that our car can remain smaller.
+This year we are using a Raspberry Pi5 with a Pi wide-angle camera. 
+There are many electronic components available as stackable HATs for the Raspberry Pi. We have taken advantage of this to save space so that our car can remain smaller.
 
 We also thought that it would be good to be able to see what the car is currently seeing or analysing while driving. This helps to find reasons for errors.
-We didn't want to build a display on our car. For one thing, they are rather large and heavy and it's not easy to read what's on them when you're standing next to the pitch. Our idea is to use LEDs in different colours. We built our own LED strip with red and green for the obstacles, blue and orange for the lines and yellow and white to indicate that the car is ready to start.
+We didn't want to build a display on our car. For once, displays are rather large and heavy and it's not easy to read what's on them when you're standing next to the field. Our idea is to use LEDs in different colours. We built our own LED strip with red and green for the obstacles, blue and orange for the lines and yellow and white to indicate that the car is ready to start.
+We later added another red and green LED to indicate the car got the u-turn right.
 
 When testing the obstacle race, we had problems with our car getting stuck on the inside wall in very tight bends. For example: driving in the right-hand direction, a red obstacle on the inside at the very end and another red obstacle immediately after the bend.
 When we realised that you are allowed to touch the walls this year, we installed wall rollers at the very end at the front and on the side, which ensure that the car can still squeeze around the corner in most cases if it touches the wall when turning in.
 
-Motorisation and power supply
-We use Lego Powerfunctions motors as a drive because they are very easy to install in a Lego chassis.
-In the beginning we tried to drive with a longitudinally installed Lego XL motor, but it had too little speed and was much too slow. We then used an L-motor. It worked quite well with that when you were going fast. 
-Then we used 2 Powerfunctions L Lego motors because 1 motor alone didn't have enough power when driving slowly and our car got stuck on bumps. 
+<a name="Motorization"></a>
 
-We connected the two engines to each other via a gearbox because the rules state that you can only have two engines if you couple them mechanically. At first we thought that it was good to make the car as fast as possible. But then we realised that you can drive much more accurately if you drive more slowly. 
+### Motorization
 
-You need a motor driver so that the Raspberry Pi can control the motors. We used a motor HAT from Adafruit, which can be plugged into the Raspberry Pi. 
+We use Lego Powerfunctions L-Motors as a drive because they are very easy to install in a Lego chassis.
+
+Technical data: 9V, 390 rounds/min with no load, max. torque 1.8 N/cm, max. 1.3A current
+
+In the beginning, we tried to drive with a longitudinally installed Lego XL motor, but it had only 220 rounds/min and was much too slow. We then used an L-motor. Our car worked quite well with that when we were going fast, but got stuck on bumps on the mat when driving slowly. Then we realised that you can drive much more accurately if you drive more slowly. So we used 2 Powerfunctions L Lego motors, because 1 motor alone didn't have enough torque when driving slowly. 
+
+We connected the two engines to each other via a gearbox because the rules state that you can only have two engines if you couple them mechanically. with this motor setup, our car can now on one hand drive slowly enough to be precise and on the other hand drive fast enough to get good race times.
+
+For our new car version, we used smaller gears to build a smaller motor block from the same two L-motors.
+
+<img src="./v-photos/Compare_motors.png" width="50%"> 
+
+
+You need a motor driver so that the Raspberry Pi can control the motors. We used a motor HAT from Adafruit with TB6612 MOSFETs, which can be stacked on the Raspberry Pi's headers. The motor driver shield comes with its own PWM chip to control the motor speed. This hardware PWM control is much more precise as the software PWM provided by the Raspberry Pi itsself.
+
+<img src="./v-photos/Motordriver.jpg" width="20%">
+
 We then had to connect the motors to the motor driver for the power supply. To do this, we cut off the normal Lego connections and soldered on JST connectors. 
 We didn't screw the cut cables directly to the HAT because the power function cable cores are quite thin and don't hold well in the screw terminals.
-For steering we use a Geekservo Lego-compatible servo, which has a housing like a Lego brick. The Raspberry Pi controls the steering servo via a 16-channel servo HAT from Waveshare. This can be plugged onto the motor HAT so that it doesn't take up any extra space.
-You only need one channel of the HAT servo for the servo. 
-It can also control LEDs. We use 6 of the other slots to control our LED strip.
-We use a 7.4V lithium-polymer battery (Lipo) for the overall power supply. On our car we need 9V for the Lego traction motors and 5V for the servo, the LEDs and the Raspberry Pi. The voltage of the battery is not always the same, it drops from 8.4V when fully charged to 6.0 when the battery is empty.
-We have installed a step-up converter (XL6109) for the motors, which increases the voltage from the battery to a constant 9V. 
+
+
+<a name="Steering-Mechanism"></a>
+
+### Steering Mechanism
+
+For steering, we use a Geekservo Lego-compatible servo, which has a housing like a Lego brick. The Raspberry Pi controls the steering servo via a 16-channel servo HAT from Waveshare. This can be plugged onto the motor HAT so that it doesn't take up any extra space.
+You only need one channel of the HAT servo for the servo. We use 6 of the other slots to control our LED strip.
+
+Our car has an Ackermann steering mechanism. The intention of Ackermann geometry is to avoid the need for tyres to slip sideways when following the path around a curve (Wikipedia). It ensures, that all axles point to the center point of the curve.
+
+<img src="./v-photos/Ackermann_Steering_Geometry.png" width="50%"> <img src="./v-photos/Compare_steering.png" width="40%"> 
+
+Our previous car had a simple parallel steering mechanism. We tested both variants with our new minified car and found that our can make much tighter turns with the Ackermann steering mechanism.
+
+<a name="Power-and-Sense-Management"></a>
+
+## Power and Sense Management
+
+<a name="Power-supply"></a>
+
+### Power Supply
+
+<img src="./schemes/Blockdiagram_power.png" width="80%">
+
+On our car, we have four different voltage levels.
+We use a 11.1V lithium-polymer battery (Lipo) for the overall power supply. On our car, we need 9V for the Lego driving motors and 5V for the servo, the LEDs and the Raspberry Pi. The voltage of the battery is not always the same, it drops from 12.6V when fully charged to 9.0 when the battery is empty.
+We need always to control the battery level, that we can change the main battery before it is empty. Therefore, we have installed a mini-voltmeter with blue display on our car that that shows the current battery voltage.
+We have installed an adjustable step-down converter (XL4015) for the motors, which we have set to a constant output of 9V. The XL4015 needs an input of at least 10.5V to be able to output 9V. 
 
 For everything that needs 5V, we have a step-down converter that has a USB connection for the Raspberry Pi and screw terminals for the servo HAT.
-The step-down converter needs at least 7.5V at the input, so it switches off our car even when the battery is only half empty. On the other hand, this is a good fuse to prevent the battery from running out and being damaged.
-In our circuit diagram you can see how the components are wired together and supplied with power from the Lipo battery.
+The step-down converter needs at least 7.5V at the input, which is always guaranteed as the battery must be changed before dropping to 7.5V. 
 
-Sensors
+The cameras, the ultrasonic sensor and the gyro sensor are supplied with 3.3V by the Raspberry Pi. 
+
+In our circuit diagram you can see in detail how the components are wired together and supplied with power.
+
+<a name="Sensors"></a>
+
+### Sensors
+
 For the sensors, we first considered which ones we could use for which race mode. Last year we already had experience with ultrasonic distance sensors and wanted to use them again.
 We decided in favour of the URM09 digital sensors from DFRobot because they can work with 3.3V and because their mounting holes fit Lego. 
 The Raspberry Pi only has 3.3V logic voltage and most ultrasonic sensors need 5V.
@@ -175,24 +243,19 @@ When evaluating the line, we count the number of lines already found.
 We then calculate the straight-ahead direction in degrees as number_lines*90 for the direction of travel to the right or number_lines* (-90) for the left.
 This means that our car automatically drives round the bend when it steers back to the gyro after the line.
 
+<a name="assembly"></a>
 
+## Assembly
 
+<a name="bill-of-materials"></a>
 
+### Bill of Materials
 
-Sources and Resources:
-The Unofficial LEGO Technic Builder's Guide 2nd Edition
-Ingmar Stapel: Robot cars with the Raspberry Pi
-Learn.adafruit.com
-Dfrobot.com
-Opencv.org/get-started
-Docs.Opencv.org
+- Raspberry Pi5 4 GB
+- Adafruit 
+<a name="resources"></a>
 
-
-
-
-
-
-
+## Resources
 
 
 
