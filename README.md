@@ -5,8 +5,7 @@ Roadrunners - Future engineers 2024
 
 ## Table of Contents
 
-- [Overview](#overview)
-- [Design Process](#Design-Process)
+- [Introduction](#introduction)
 - [Car Photos](#carphoto)
 - [Mobility Management](#Mobility-Management)
     - [Chassis](#Chassis)
