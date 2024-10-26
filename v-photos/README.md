@@ -25,3 +25,11 @@ In this section, we show photos of our car from all angles, one set with explain
 <img src="back_labels.jpeg" width="100%">
 
 <img src="top_labels.jpeg" width="100%">
+
+<img src="bottom_labels.jpeg" width="90%">
+
+<img src="right_labels.jpeg" width="100%">
+
+<img src="left_labels.jpeg" width="100%">
+
+[Back to main page](../README.md)
