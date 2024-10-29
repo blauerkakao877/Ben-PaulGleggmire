@@ -157,25 +157,54 @@ In our circuit diagram you can see in detail how the components are wired togeth
 
 ### Sensors
 
-For the sensors, we first considered which ones we could use for which race mode. Last year we already had experience with ultrasonic distance sensors and wanted to use them again.
-We decided in favour of the URM09 digital sensors from DFRobot because they can work with 3.3V and because their mounting holes fit Lego. 
+<a name="Controllers"></a>
+
+### Controllers
+
+Our main controller is a Rasperry Pi5 4GB. It runs on 5V power supply via USB-C connector. All sensors and cameras run on 3.3V and are powered by the Raspberry Pi's 3.3V output. 
+The motor driver is an Adafruit motor shield Adafruit with TB6612 MOSFET, which sits on the Raspberry Pi's stacking headers. 
+Logic power from the moto driver comes from the Raspberry Pi. To power the motors, we screwed cables soldered to the output of a XL4015 step-down module to the motor power terminals of the motor shield.
+The shield then supplies the motors with the correct amount of power according to the selected speed.
+The servo shield is stacked on top of the motor shield and gets its logic power from the Raspberry Pi. The power for the Servo steering motor and the LEDs comes from the same 5V step-down module we use to power
+the Raspberry Pi. The module can provide up to 5A current, so we are confident this will be enough for the Pi, the Servo and the LEDs.
+
+
+<a name="Sensors"></a>
+
+### Sensors
+
+We first tought about which ones we could use for which race mode. Last year we already had experience with ultrasonic distance sensors and wanted to use them again.
+We decided in favour of the URM09 digital sensors from DFRobot because they can work with 3.3V and because their mounting holes fit Lego.
+
+<img src="./v-photos/Ultrasonic.jpg" width="20%">
+
 The Raspberry Pi only has 3.3V logic voltage and most ultrasonic sensors need 5V.
 We mounted an ultrasonic sensor at the front of each side to measure the distances to the side walls and one to the front to measure the distance to a wall opposite.
 We then considered that we would have to recognise the lines in the obstacle race in order to find the bends. Only with the distances to the side could you measure an obstacle that is directly behind the bend and then miss the bend. 
-
-We have installed an Adafruit AS7262 6-channel colour sensor for line detection. The sensor has its own LED to illuminate the floor.
 We also wanted to be able to recognise in which direction the car has just turned and how far it has already turned overall. For this we need a gyro sensor or an IMU sensor.
-One problem with gyro sensors is drift. The gyro does not return to 0 when turning and turning back and the error increases over time. We have tested various sensors. The Bosch BNO085 worked best. 
-To recognise the obstacles, you also need a camera. We chose a wide-angle camera, the Raspberry Pi V3 Wide Camera, so that the Raspberry Pi can see as much of the playing field as possible.
 
-Our first version from the opening race only used the two side ultrasonic sensors to find the first corner and then drive along the inside wall at a fixed distance. We then used the gyro to measure when the car had turned 360 degrees 3 times. Then we stopped.
-When we started the obstacle race, we realised that the colour sensor only sees a line if you query it at the exact moment the car crosses the line. If the control programme is not running fast enough, you can easily miss a line. That was a problem. 
-We then tried to recognise the lines with the camera. Once we had managed to set the camera so that orange and red were clearly different, it worked (see chapter on obstacles). 
-The LEDs show what the car is currently seeing: blue/orange for lines, red/green for obstacles. This is very useful for testing.
+<img src="./v-photos/Gyro.jpg" width="20%">
 
-n our obstacle programme, we also recognise the walls with the camera and steer straight ahead using the gyro. For fun, we tested how the programme behaves in the opening race. We were surprised to find that it also works and that you can even drive much faster because the Raspberry Pi processes the camera images much faster than the ultrasonic sensors can measure. 
+One problem with gyro sensors is drift. The gyro does not return to 0 when turning and turning back and the error increases over time. We have tested various sensors. The Bosch BNO085 worked best. This one has an onboard chip to compensate for the drift.
+It also has a specific game-mode, where it calculates the heading direction relative to its starting position.
+
+<a name="camera"></a>
+
+### Cameras
+
+We have two Raspberry Pi V3 Wide Cameras on our car. The front camera is used to detect walls, lines and obstacles while we drive. The rear camera is used to detect the obstacle, that determines the u-turn and is used to navigate into the parking lot. 
+We chose a wide-angle cameras, so that the Raspberry Pi can see as much of the playing field as possible.
+Our previous car used two side ultrasonic sensors to find the first corner and then drive along the inside wall at a fixed distance. We then used the gyro to measure when the car had turned 360 degrees 3 times. Then we stopped.
+In our obstacle programme, we recognise the walls with the camera and steer straight ahead using the gyro. For fun, we tested how the programme behaves in the opening race. We were surprised to find that it also works and that you can even drive much faster 
+because the Raspberry Pi processes the camera images much faster than the ultrasonic sensors can measure. 
 We then decided to make another opening version of our obstacle race, in which we removed the obstacle detection and increased the speed.
+Once we had managed to set the camera so that orange and red were clearly different, it worked (see chapter on obstacles). So for our minified new car version, we omitted the side ultrasonics to save space.
 
+
+### Debugging LEDs
+
+Our car has a self-constructed LED-strip on its back for test feedback.
+The LEDs show what the car is currently seeing: blue/orange for lines, red/green for obstacles. 
  Programming obstacles
 We use Python3 as the programming language and the listing on the right shows the sequence of the main loop.
 
