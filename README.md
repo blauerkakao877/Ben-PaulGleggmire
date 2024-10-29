@@ -176,7 +176,7 @@ the Raspberry Pi. The module can provide up to 5A current, so we are confident t
 We first tought about which ones we could use for which race mode. Last year we already had experience with ultrasonic distance sensors and wanted to use them again.
 We decided in favour of the URM09 digital sensors from DFRobot because they can work with 3.3V and because their mounting holes fit Lego.
 
-<img src="./v-photos/Ultrasonic.jpg" width="20%">
+<img src="./v-photos/Ultrasonic.png" width="20%">
 
 The Raspberry Pi only has 3.3V logic voltage and most ultrasonic sensors need 5V.
 We mounted an ultrasonic sensor at the front of each side to measure the distances to the side walls and one to the front to measure the distance to a wall opposite.
