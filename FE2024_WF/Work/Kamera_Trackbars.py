@@ -377,7 +377,9 @@ read_colorfilter_data()
 while True:
     
     # Capture frame from camera
-    frame, bgr_frame = I.get_image()
+    #frame, bgr_frame = I.get_image()
+    frame, bgr_frame = I.get_image_back()
+    
 
     # Get current trackbar positions for green color detection
     lower_color[0] = cv2.getTrackbarPos("Lower Hue", "Green Detection")

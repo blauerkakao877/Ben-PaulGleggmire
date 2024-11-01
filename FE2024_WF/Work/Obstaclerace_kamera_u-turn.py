@@ -65,8 +65,12 @@ Uturndetected = False
 Uturndone = False
 stop_time = time.time() + 180.0
 reduced = False
+park_runde = False
+park_stop_time = time.time() + 180.0
 #==TEST==
 test = False
+#==Parken==
+parken = True
 
 # Setup GPIO
 GPIO.setmode(GPIO.BCM)
@@ -188,8 +192,8 @@ def linien_suchen(hsv_img):
                 blaue_linie = True
                 linie_imbild = True
                 L.led_B1()
-                if linien_counter == 12:
-                    Rennen_laeuft = False #Rennen Ende erkannt, setze Stopsignal
+                #if linien_counter == 12:
+                    #Rennen_laeuft = False #Rennen Ende erkannt, setze Stopsignal
                 if (linien_counter == 8) and (Uturn == True) and (Uturndone == False) and (Uturndetected == True):
                     NowUturn = True  #Uturn position detected
                     linie_imbild = False
@@ -225,8 +229,8 @@ def linien_suchen(hsv_img):
                 orange_linie = True
                 linie_imbild = True
                 L.led_O1()
-                if linien_counter == 12:
-                    Rennen_laeuft = False #Rennen Ende erkannt, setze Stopsignal
+                #if linien_counter == 12:
+                    #Rennen_laeuft = False #Rennen Ende erkannt, setze Stopsignal
                 if (linien_counter == 8) and (Uturn == True) and (Uturndone == False) and (Uturndetected == True):
                     NowUturn = True  #Uturn position detected
                     linie_imbild = False
@@ -330,6 +334,59 @@ def messen():
         print(linksMag)
 #--Hindernisse finden + auswerten--
     x, y, s, farbe = K.finde_hindernisse(hsv_frame)
+    
+#------------------------------------------------------------
+    
+def einparken():
+    global current_direction
+    eingeparkt = False
+    linksMag = False
+    rechtsMag = False
+    hellLMag = 0
+    hellRMag = 0
+    
+    if current_direction == "l":
+        F.parken_rechts()
+        F.ruck(0.3)
+    elif current_direction == "r":
+        F.parken_links()
+        F.ruck(0.3)
+        
+    while hellLMag < 20000 and hellRMag < 20000:
+        hsv_frame, bgr_frame = K.get_image_back()
+        linksMag, rechtsMag, hellLMag, hellRMag = K.waende_Magenta(hsv_frame)
+    F.stop()
+    
+    if current_direction == "l":
+        F.parken_links()
+        F.vor(0.3)
+    elif current_direction == "r":
+        F.parken_rechts()
+        F.vor(0.3)
+    time.sleep(0.3)
+    F.stop()
+    F.gerade()
+    F.ruck(0.3)
+        
+    while not eingeparkt:
+        hsv_frame, bgr_frame = K.get_image_back()
+        linksMag, rechtsMag, hellLMag, hellRMag = K.waende_Magenta(hsv_frame)
+        parken_hellL, parken_hellR = K.parken_waende(bgr_frame)
+        
+        #if parken_hellL > parken_hellR:
+        if hellLMag > hellRMag:
+            F.nach_links()
+        else:
+            F.nach_rechts()
+        
+        if parken_hellL > 35000 or parken_hellR > 35000:
+            F.stop()
+            F.gerade()
+            F.ruck(0.3)
+            time.sleep(0.3)
+            eingeparkt = True
+        
+        
         
 #=============================Hauptprogram===============================================
 try:
@@ -366,7 +423,15 @@ try:
     
     while not GPIO.input(BUTTON_PIN) and Rennen_laeuft:
         if time.time() > stop_time:
-            Rennen_laeuft = False
+            if parken:
+               park_runde = True
+            else:
+                Rennen_laeuft = False
+        if park_runde and time.time() > park_stop_time:
+            F.stop()
+            einparken()
+            break
+            
         messen()
 #====End Sequenz==================================================================
         linien_suchen(hsv_frame)
@@ -404,8 +469,27 @@ try:
             print(linien_counter)
             print("Hinderniss_sperre",hindernis_sperre)
 #==TEST=ENDE==
-             
 #----------------------Ende Linien/Wände/Hindernisse finden------------------------
+            
+#...berechne ab hier Lenkung...
+            
+        if park_runde:
+            if current_direction == "r":
+                if farbe == "R":
+                    farbe = "G"
+            elif current_direction == "l":
+                if farbe == "G":
+                    farbe = "R"
+            
+            if hellLMag > 10000 or hellRMag > 10000:
+                if current_direction == "l":
+                    park_stop_time = time.time() + 0.6
+                elif current_direction == "r":
+                    park_stop_time = time.time() + 0.5
+            
+            
+            
+            
         if (links or linksMag) and not (rechts):
             if gesamt <= geradeaus + 60.0:
                 F.nach_rechts()

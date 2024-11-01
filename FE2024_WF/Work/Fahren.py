@@ -94,6 +94,16 @@ def nach_rechts():
        
 #---------------------------------------
        
+def parken_links():
+       Skit.servo[0].angle = 130
+       
+#---------------------------------------
+       
+def parken_rechts():
+       Skit.servo[0].angle = 60
+       
+#---------------------------------------
+       
 def Uturn_links():
        Skit.servo[0].angle = 120
        

@@ -156,7 +156,7 @@ def get_image_back():
     global image
     
     frame = picam2_back.capture_array()
-    image = frame[130:240, 0:320]
+    image = frame[123:240, 0:320]
     hoehe = image.shape[0]
     breite = image.shape[1]
     hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
@@ -384,12 +384,12 @@ def waende(bgr_img):
     #print("maxR :",maxHistR)
     
     # Seitenkollisionen:
-    if maxHistL > 12000:
+    if maxHistL > 14000:
         kollL = True
     else:
         kollL = False
     
-    if maxHistR > 12000:
+    if maxHistR > 14000:
         kollR = True
     else:
         kollR = False
@@ -401,12 +401,12 @@ def waende(bgr_img):
         kollR = True
     else:
      #Seitenkollisionen:
-        if maxHistL > 12000:
+        if maxHistL > 14000:
             kollL = True
         else:
             kollL = False
         
-        if maxHistR > 12000:
+        if maxHistR > 14000:
             kollR = True
         else:
             kollR = False
@@ -418,6 +418,39 @@ def waende(bgr_img):
    # print("hellR :",hellR)
 
     return kollL, kollR, hellL, hellR
+
+#-----------------------------------
+
+def parken_waende(bgr_img):
+    hoehe
+    global maskL
+    global maskR
+# finde wände
+    crop_image = bgr_img[hoehe - 120:hoehe, 0:320]
+    mask = wand_filter(crop_image)
+
+# Betrachte linke und rechte Seite getrennt, nur Ausschnitt
+    maskL = mask[0:120, 0:159]
+    maskR = mask[0:120, 160:320]
+    
+    #cv2.imshow("histL",maskL)
+    #cv2.imshow("histR",maskR)
+    
+#histogramm, um Höhe der Wände zu bestimmen
+    histL = np.sum(maskL, axis=1)
+    histR = np.sum(maskR, axis=1)
+    maxHistL = np.max(histL)
+    maxHistR = np.max(histR)
+    #print("maxL :",maxHistL)
+    #print("maxR :",maxHistR)
+
+# Helligkeit links und rechts
+    parken_hellL = maxHistL
+    parken_hellR = maxHistR
+   # print("hellL :",hellL)
+   # print("hellR :",hellR)
+
+    return parken_hellL, parken_hellR
 
 #--------------------Magenta--------------------------------
 def wand_Magenta_filter(hsv_img):
@@ -589,8 +622,8 @@ if __name__ == '__main__':
             linien_zeit = time.time()
             while True:
                 
-                hsv_bild, bgr_bild = get_image() #test front camera
-               # hsv_bild, bgr_bild = get_image_back() #test back camera
+                #hsv_bild, bgr_bild = get_image() #test front camera
+                hsv_bild, bgr_bild = get_image_back() #test back camera
                 
                 b_linie = finde_blau(hsv_bild)
                 o_linie = finde_orange(hsv_bild)
