@@ -11,7 +11,7 @@ Video 2: Narrow - Wide - Wide - Narrow
 [Open Challenge Video2](https://youtu.be/laptwTRzWzo?si=Pb4UfQdD5Fco0qD1)
 
 - ### Obstacle Challenge
-- 
+
 Video 1: No U-turn
 
 [Obstacle Challenge Video1](https://youtu.be/BXc-rboRti8?si=dm9C6TamQ3Nrlfux)
