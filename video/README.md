@@ -5,7 +5,7 @@
 - ### Open Challenge
 Video 1: Narrow - Wide - Narrow - Wide
 
-[[Open Challenge Video1](open1.png)](https://youtu.be/o6MmGwUaCAk?si=sWz62jpoBcbhCbCM)
+[![Open Challenge Video1](open1.png)](https://youtu.be/o6MmGwUaCAk?si=sWz62jpoBcbhCbCM)
 
 Video 2: Narrow - Wide - Wide - Narrow
 
