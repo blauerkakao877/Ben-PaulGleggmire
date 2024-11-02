@@ -355,6 +355,9 @@ This means that our car automatically drives round the bend when it steers back 
 
 ## Resources
 
+- https://learn.adafruit.com/
+- https://opencv.org/university
+- 
 
 
 
