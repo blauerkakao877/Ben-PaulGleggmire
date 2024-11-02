@@ -232,8 +232,7 @@ We use this information to determine the next control movement.
 Avoid the wall first: 
 If the collision alarm is set on one side, we steer hard away from the wall.
  
-### Then avoid an obstacle:
-
+Then avoid an obstacle:
 If there is an obstacle in the image and there is no line at the bottom of the image, steer so that the obstacle in the image moves all the way to the left (red) or all the way to the right (green).
 The camera will lose the obstacle from the picture before we are completely past it. We therefore remember that we are steering by obstacle and the time.
 
