@@ -79,6 +79,7 @@ Our new version still consists of a Lego driving vase and a self-designed plasti
 <img src="./v-photos/roadrunner_versions_1.jpeg" width="80%"> 
 
 The photo shows a comparison between our two car versions.
+The following photos show the Lego driving base and a schematic to cut the electronics carrier plate from a plastic plate.
 
 #### Lego Driving Base
 
@@ -86,7 +87,7 @@ The photo shows a comparison between our two car versions.
 
 #### Electronics Plate
 
-<img src="./schemes/Electronics_carrier_plate.png" width="80%"> 
+<img src="./schemes/Electronics_Carrier_Plate.png" width="80%"> 
 
 For learners, we provide a detailed assembly instructions [here](./assembly/README.md) 
 
@@ -160,7 +161,11 @@ The step-down converter needs at least 7.5V at the input, which is always guaran
 
 The cameras, the ultrasonic sensor and the gyro sensor are supplied with 3.3V by the Raspberry Pi. 
 
-In our circuit diagram you can see in detail how the components are wired together and supplied with power.
+In our circuit diagrams you can see in detail how the components are wired together and supplied with power.
+
+#### Motor power supply wiring diagram
+
+<img src="./schemes/motoren_WF24_steckplatine.png" width="80%">
 
 <a name="Sensors"></a>
 
@@ -221,6 +226,9 @@ Once we had managed to set the camera so that orange and red were clearly differ
 Our car has a self-constructed LED-strip on its back for test feedback.
 The LEDs show what the car is currently seeing: blue/orange for lines, red/green for obstacles.
 
+#### Sensors and LEDs wiring diagram
+
+<img src="./schemes/sensoren_WF24_steckplatine.png" width="80%">
 
 ## Programming obstacles
 We use Python3 as the programming language and the listing on the right shows the sequence of the main loop.
@@ -293,6 +301,10 @@ When evaluating the line, we count the number of lines already found.
 We then calculate the straight-ahead direction in degrees as number_lines*90 for the direction of travel to the right or number_lines* (-90) for the left.
 This means that our car automatically drives round the bend when it steers back to the gyro after the line.
 
+#### Obstacle program flow chart
+
+<img src="./schemes/Race_flowchart.jpg" width="100%">
+
 <a name="assembly"></a>
 
 ## Assembly
@@ -301,8 +313,42 @@ This means that our car automatically drives round the bend when it steers back 
 
 ### Bill of Materials
 
-- Raspberry Pi5 4 GB
-- Adafruit 
+#### Electronics
+
+- 1 x Raspberry Pi5 4GB
+- 1 x Raspberry Pi 5 Official Fan
+- 2 x Raspberry Pi Camera Module V3 Wide
+- 2 x 30cm CSI Camera cable
+- 1 x Adafruit DC & Stepper Motor HAT 
+- 1 x Waveshare 16-Channel Servo Driver HAT
+- 1 x Adafruit 9-DOF IMU BNO085 (Gyro)
+- 1 x DFRobot URM09 digital Ultrasonic
+- 1 x XL4015 Step-Down Module
+- 1 x 5V/5A USB Step-Down Module
+- 4 x WAGO Connectors
+- 2 x Mould King L-Motors (Lego compatible)
+- 1 x Elecfreaks 360 grey Lego-compatible servo 
+- 1 x 11.1V 1500mAh Lipo battery
+- 1 x mechanical on/off switch
+- 1 x DFRobot digital push button
+- 2 x mini voltmeter
+- var. Jumper cables
+
+
+
+#### Structural Elements
+
+- 1 x acrylic plate 4mm, transparent
+- 2 x Arducam Camera housing
+- 4 x Lego Spike Prime small wheels
+- 8 x 3mm x 20 mm machine screws with countersunk head
+- 12 x 3mm screw nuts
+- 1 x breadboard 170 connectors
+- 2 x breadboard 55 connectors
+- 4x 3mm cap nuts
+- Raspberry Pi standoffs with screw nuts
+- var. Lego Technic parts 
+
 <a name="resources"></a>
 
 ## Resources
