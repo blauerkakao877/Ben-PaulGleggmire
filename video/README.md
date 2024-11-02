@@ -15,11 +15,11 @@ Video 2: Narrow - Wide - Wide - Narrow
 
 Video 1: No U-turn
 
-[![Obstacle Challenge Video1](Obstacle1.png)](https://youtu.be/BXc-rboRti8?si=dm9C6TamQ3Nrlfux)
+[![Obstacle Challenge Video1](Obstacle2.png)](https://youtu.be/BXc-rboRti8?si=dm9C6TamQ3Nrlfux)
 
 Video 2: With U-turn
 
-[![Obstacle Challenge Video2](Obstacle2.png)](https://youtu.be/xWzXfCR_uqE?si=9jsWWTOr0A01JLgW)
+[![Obstacle Challenge Video2](Obstacle1.png)](https://youtu.be/xWzXfCR_uqE?si=9jsWWTOr0A01JLgW)
 
 - ### Explaination Video
   This video explains our obstacle race
