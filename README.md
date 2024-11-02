@@ -79,6 +79,15 @@ Our new version still consists of a Lego driving vase and a self-designed plasti
 <img src="./v-photos/roadrunner_versions_1.jpeg" width="80%"> 
 
 The photo shows a comparison between our two car versions.
+
+#### Lego Driving Base
+
+<img src="./v-photos/driving_base" width="80%"> 
+
+#### Electronics Plate
+
+<img src="./schemes/Electronics_carrier_plate.png" width="80%"> 
+
 For learners, we provide a detailed assembly instructions [here](./assembly/README.md) 
 
 
