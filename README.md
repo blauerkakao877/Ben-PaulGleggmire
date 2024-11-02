@@ -194,6 +194,8 @@ It also has a specific game-mode, where it calculates the heading direction rela
 
 ### Cameras
 
+<img src="./v-photos/Camera.png" width="20%">
+
 We have two Raspberry Pi V3 Wide Cameras on our car. The front camera is used to detect walls, lines and obstacles while we drive. The rear camera is used to detect the obstacle, that determines the u-turn and is used to navigate into the parking lot. 
 We chose a wide-angle cameras, so that the Raspberry Pi can see as much of the playing field as possible.
 Our previous car used two side ultrasonic sensors to find the first corner and then drive along the inside wall at a fixed distance. We then used the gyro to measure when the car had turned 360 degrees 3 times. Then we stopped.
@@ -204,6 +206,8 @@ Once we had managed to set the camera so that orange and red were clearly differ
 
 
 ### Debugging LEDs
+
+<img src="./v-photos/Ultrasonic.jpg" width="20%">
 
 Our car has a self-constructed LED-strip on its back for test feedback.
 The LEDs show what the car is currently seeing: blue/orange for lines, red/green for obstacles. 
