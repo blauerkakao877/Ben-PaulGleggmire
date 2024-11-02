@@ -17,15 +17,9 @@ Roadrunners - Future engineers 2024
     - [Sensors](#Sensors)
     - [Camera](#camera)
     - [Schematics](#schematics)
-- [Software Design](#software)
+- [Programming](#programming)
     - [Software Development](#software-development)
-    - [Opening Race](#opening-race)
     - [Obstacle Race](#obstacle-race)
-    - [Programming Languages](#programming-languages)
-    - [Dependencies](#dependencies) 
-- [Utilities](#utilities)
-    - [Failsafe Mechanisms](#failsafe)
-    - [Debugging Tools](#debugging-tools)
 - [Assembly](#assembly)  
     - [Bill of Materials](#bill-of-materials)
     - [Assembly Instructions](#assembly-instruction)
@@ -165,7 +159,7 @@ In our circuit diagrams you can see in detail how the components are wired toget
 
 #### Motor power supply wiring diagram
 
-<img src="./schemes/motoren_WF24_steckplatine.png" width="80%">
+<img src="./schemes/motoren_WF24_Steckplatine.png" width="80%">
 
 <a name="Sensors"></a>
 
@@ -228,10 +222,18 @@ The LEDs show what the car is currently seeing: blue/orange for lines, red/green
 
 #### Sensors and LEDs wiring diagram
 
-<img src="./schemes/sensoren_WF24_steckplatine.png" width="80%">
+<img src="./schemes/sensoren_WF24_Steckplatine.png" width="80%">
 
-## Programming obstacles
-We use Python3 as the programming language and the listing on the right shows the sequence of the main loop.
+<a name="programming"></a>
+
+## Programming
+
+<a name="software-development"></a>
+
+### Software Development
+
+We developed your software using Python3 as the programming language and Thonny as our editor. We also tried Visual Studio Code, but this was still is a beta state on Raspberry Pi 5 /Debian Bookworm operating system when we started so we got back to Thonny. 
+We use GitHub as our source code repository. The listings of sour source files are found [here](./src/README.md)
 
 ### Main loop
 
