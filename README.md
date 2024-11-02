@@ -207,7 +207,7 @@ Once we had managed to set the camera so that orange and red were clearly differ
 
 ### Debugging LEDs
 
-<img src="./v-photos/Ultrasonic.jpg" width="20%">
+<img src="./v-photos/LEDs_Labels.png" width="20%">
 
 Our car has a self-constructed LED-strip on its back for test feedback.
 The LEDs show what the car is currently seeing: blue/orange for lines, red/green for obstacles. 
