@@ -213,10 +213,11 @@ Our car has a self-constructed LED-strip on its back for test feedback.
 The LEDs show what the car is currently seeing: blue/orange for lines, red/green for obstacles.
 
 
-### Programming obstacles
+## Programming obstacles
 We use Python3 as the programming language and the listing on the right shows the sequence of the main loop.
 
-Main loop
+### Main loop
+
 In the obstacle race, we use the camera to analyse the playing field and the gyro sensor to determine the orientation of the car.
 We use the OpenCV and Numpy libraries for image processing. To read the gyro and drive and control the car, we used libraries from Adafruit Circuitpython.
 We read the next camera image and cut off the top edge in order to minimise the amount of the image that does not belong to the playing field. 
@@ -226,11 +227,13 @@ We filter the lines and obstacles from the HSV image.
 We use the lines to calculate the current straight ahead gyro course.
 We use this information to determine the next control movement.
 
-Determining the next control movement
+### Determining the next control movement
+
 Avoid the wall first: 
 If the collision alarm is set on one side, we steer hard away from the wall.
  
-Then avoid an obstacle: 
+### Then avoid an obstacle:
+
 If there is an obstacle in the image and there is no line at the bottom of the image, steer so that the obstacle in the image moves all the way to the left (red) or all the way to the right (green).
 The camera will lose the obstacle from the picture before we are completely past it. We therefore remember that we are steering by obstacle and the time.
 
@@ -242,7 +245,8 @@ Steer by gyro to the straight ahead direction in degrees
 
 If an obstacle is visible and at the same time there is a line at the bottom of the screen (in the colour of the direction of travel), the obstacle is directly behind the curve. We then drive up to the line before we swerve out of the way. Otherwise, the car may no longer see the wall and swerve inwards to avoid the obstacle before it has passed the inside corner. 
 
-Processing the walls
+### Processing the walls
+
 We filter out the parts of the BGR image that appear very dark in all 3 colour channels at the same time. This results in a black and white mask in which the walls are white and everything else is black.
 As a measure of how close we are to a wall, we take the height of the wall in the image. Due to the perspective, nearer parts of the wall appear higher in the picture than those further away.
 We now split the wall mask in the centre into a wall image on the left and a wall image on the right. To determine the height, we use numpy to count the sum of all pixels in each image column. 
@@ -255,7 +259,8 @@ Then we tried to use a greyscale image that only shows the brightness.
 This doesn't work so well either, because the blue lines and green obstacles often appear very dark in the greyscale image and would then be mistaken for walls.
 This effect can be avoided with the BGR image because the blue lines in the blue channel and the green obstacles in the green channel appear lighter and can therefore be filtered out.  
 
-Processing the obstacles
+### Processing the obstacles
+
 To recognise the obstacles, we first filter red areas and green areas from the HSV image, resulting in a black and white mask for red and one for green.
 The obstacles appear white on a black background. We apply a blur effect so that there is no noise in the masks.
 Then, as with the lines, we invert the masks so that the obstacles appear black on white. Then we use the Simple Blob Detector again to find black ‘blobs’ on the masks. 
@@ -264,7 +269,8 @@ The largest of the two is the next obstacle.
 We use slightly different parameters for the blob detector for the obstacles than for the lines. 
 For the control, we then supply the x and y position of the blob centre point and the size of the blob in pixels.
 
-Processing the lines
+### Processing the lines
+
 The lines are used to determine the direction of travel, how many corners have already been travelled and the current straight-ahead course according to Gyro.
 During the race, we cut out a small area at the bottom centre of the HSV image. We only look for the lines in this area. 
 If a line appears in this area, the car is almost on the line. To find a line, we filter out the colour of the line in the HSV image. 
