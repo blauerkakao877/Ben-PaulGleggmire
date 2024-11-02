@@ -161,6 +161,8 @@ In our circuit diagram you can see in detail how the components are wired togeth
 
 ### Controllers
 
+<img src="./v-photos/Ultrasonic.jpg" width="20%"> <img src="./v-photos/Ultrasonic.jpg" width="20%"> <img src="./v-photos/Ultrasonic.jpg" width="20%">
+
 Our main controller is a Rasperry Pi5 4GB. It runs on 5V power supply via USB-C connector. All sensors and cameras run on 3.3V and are powered by the Raspberry Pi's 3.3V output. 
 The motor driver is an Adafruit motor shield Adafruit with TB6612 MOSFET, which sits on the Raspberry Pi's stacking headers. 
 Logic power from the moto driver comes from the Raspberry Pi. To power the motors, we screwed cables soldered to the output of a XL4015 step-down module to the motor power terminals of the motor shield.
