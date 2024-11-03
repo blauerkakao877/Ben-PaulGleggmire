@@ -29,9 +29,8 @@ Roadrunners - Future engineers 2024
 - [Assembly](#assembly)  
     - [Bill of Materials](#bill-of-materials)
     - [Assembly Instructions](#assembly-instruction)
+- [Performance Videos](#videos)
 - [Team Photos](#team-photos)
-- [Demonstration Videos](#demonstration-videos)
-- [Contributors](#contributors)
 - [Resources](#resources)
 
 
@@ -431,7 +430,26 @@ It then stops near the parking lot and uses its rear camera to navigate backward
 - 2 x breadboard 55 connectors
 - 4x 3mm cap nuts
 - Raspberry Pi standoffs with screw nuts
-- var. Lego Technic parts 
+- var. Lego Technic parts
+
+<a name="assembly-instruction"></a>
+
+### Assembly Instructions
+
+Assembly instructions (photos) for details of the driving base and a schematic for the plasic base plate are found [here](./assembly/README.md) 
+
+<a name="videos"></a>
+
+## Car Performance Videos
+
+We have provided various performance videos to show our car in action.
+They can be found found [here](./videos/README.md) 
+
+<a name="team-photos"></a>
+
+## Team Photos
+
+The photos of our team are found [here](./t-photos/README.md) 
 
 <a name="resources"></a>
 
