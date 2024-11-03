@@ -30,7 +30,7 @@ Roadrunners - Future engineers 2024
     - [Bill of Materials](#bill-of-materials)
     - [Assembly Instructions](#assembly-instruction)
 - [Performance Videos](#videos)
-- [Team Photos](#team-photos)
+- [Team](#team-photos)
 - [Resources](#resources)
 
 
