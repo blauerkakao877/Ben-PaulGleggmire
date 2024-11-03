@@ -443,11 +443,16 @@ Assembly instructions (photos) for details of the driving base and a schematic f
 ## Car Performance Videos
 
 We have provided various performance videos to show our car in action.
-They can be found found [here](./videos/README.md) 
+They can be found found [here](./video/README.md) 
 
 <a name="team-photos"></a>
 
-## Team Photos
+## Team
+
+Our team consists of 3 members.
+Ben Lüttecke - Car building
+Paul Krohn - Programmer
+Jason Inkmann - Car building, Test support
 
 The photos of our team are found [here](./t-photos/README.md) 
 
