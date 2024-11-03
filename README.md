@@ -462,7 +462,8 @@ The photos of our team are found [here](./t-photos/README.md)
 
 - https://learn.adafruit.com/
 - https://opencv.org/university
-- 
+- https://raspberrypi.org
+- https://custom-build-robots.com
 
 
 
