@@ -15,11 +15,12 @@ Roadrunners - Future engineers 2024
     - [Power supply](#Power-supply)
     - [Controllers](#Controllers)
     - [Sensors](#Sensors)
-    - [Camera](#camera)
+    - [Cameras](#camera)
+    - [Debugging LEDs](#LEDs)
     - [Schematics](#schematics)
 - [Programming](#programming)
     - [Software Development](#software-development)
-    - [Obstacle Race](#obstacle-race)
+    - [Obstacle Challenge](#obstacle-challenge)
 - [Assembly](#assembly)  
     - [Bill of Materials](#bill-of-materials)
     - [Assembly Instructions](#assembly-instruction)
@@ -81,7 +82,7 @@ The following photos show the Lego driving base and a schematic to cut the elect
 
 #### Electronics Plate
 
-<img src="./schemes/Electronics_Carrier_Plate.png" width="80%"> 
+<img src="./schemes/Electronics_Carrier_Plate.png" width="50%"> 
 
 For learners, we provide a detailed assembly instructions [here](./assembly/README.md) 
 
@@ -159,11 +160,7 @@ In our circuit diagrams you can see in detail how the components are wired toget
 
 #### Motor power supply wiring diagram
 
-<img src="./schemes/motoren_WF24_Steckplatine.png" width="80%">
-
-<a name="Sensors"></a>
-
-### Sensors
+<img src="./schemes/motoren_WF24_Steckplatine.png" width="60%">
 
 <a name="Controllers"></a>
 
@@ -183,14 +180,21 @@ the Raspberry Pi. The module can provide up to 5A current, so we are confident t
 
 ### Sensors
 
-We first tought about which ones we could use for which race mode. Last year we already had experience with ultrasonic distance sensors and wanted to use them again.
+#### Ultrasonics
+
+We first tought about which types of sensors we could use for which race mode. Last year, we already had experience with ultrasonic distance sensors and wanted to use them again.
 We decided in favour of the URM09 digital sensors from DFRobot because they can work with 3.3V and because their mounting holes fit Lego.
 
 <img src="./v-photos/Ultrasonic.png" width="20%">
 
-The Raspberry Pi only has 3.3V logic voltage and most ultrasonic sensors need 5V.
-We mounted an ultrasonic sensor at the front of each side to measure the distances to the side walls and one to the front to measure the distance to a wall opposite.
-We then considered that we would have to recognise the lines in the obstacle race in order to find the bends. Only with the distances to the side could you measure an obstacle that is directly behind the bend and then miss the bend. 
+The Raspberry P has 3.3V logic voltage and most ultrasonic sensors need 5V.
+On our first car version, we mounted an ultrasonic sensor at the front of each side to measure the distances to the side walls and one to the front to measure the distance to a wall opposite.
+We then discovered, that we can also estimate the wall distance from the height of the wall in the camera image. Additionally, the camera sees always what is ahead of the car. 
+Depending on the current steering, a side ultrasonic can also measure behind and not ahead. So for our new minified car, we omitted the side ultrasonics and just kept the front ultrasonic.
+We use this one to detect front wall crashes. When the car runs into a front wall, the camera may already look over the wall and we cannot detect the front crash from the camera image. 
+
+#### Gyro/IMU
+
 We also wanted to be able to recognise in which direction the car has just turned and how far it has already turned overall. For this we need a gyro sensor or an IMU sensor.
 
 <img src="./v-photos/Gyro.jpg" width="20%">
@@ -212,6 +216,7 @@ because the Raspberry Pi processes the camera images much faster than the ultras
 We then decided to make another opening version of our obstacle race, in which we removed the obstacle detection and increased the speed.
 Once we had managed to set the camera so that orange and red were clearly different, it worked (see chapter on obstacles). So for our minified new car version, we omitted the side ultrasonics to save space.
 
+<a name="LEDs"></a>
 
 ### Debugging LEDs
 
@@ -220,9 +225,24 @@ Once we had managed to set the camera so that orange and red were clearly differ
 Our car has a self-constructed LED-strip on its back for test feedback.
 The LEDs show what the car is currently seeing: blue/orange for lines, red/green for obstacles.
 
+<a name="schematics"></a>
+
+### Schematics
+
 #### Sensors and LEDs wiring diagram
 
-<img src="./schemes/sensoren_WF24_Steckplatine.png" width="80%">
+This diagram shows a breadboard view of how to wire the sensors, LEDs and cameras.
+
+<img src="./schemes/sensoren_WF24_Steckplatine.png" width="60%">
+
+#### Circuit Schematics Diagram
+
+This diagram shows the wiring of all electrical components. All wiring diagrams have been created using Fritzing software.
+
+The cameras have actually more connections than shown, but there was no proper raspberry pi camera piece for Fritzing.
+
+<img src="./schemes/Wiring_diagram_WF24.png" width="60%">
+
 
 <a name="programming"></a>
 
@@ -235,7 +255,9 @@ The LEDs show what the car is currently seeing: blue/orange for lines, red/green
 We developed your software using Python3 as the programming language and Thonny as our editor. We also tried Visual Studio Code, but this was still is a beta state on Raspberry Pi 5 /Debian Bookworm operating system when we started so we got back to Thonny. 
 We use GitHub as our source code repository. The listings of sour source files are found [here](./src/README.md)
 
-### Main loop
+<a name="obstacle-challenge"></a>
+
+### Obstacle Challenge
 
 In the obstacle race, we use the camera to analyse the playing field and the gyro sensor to determine the orientation of the car.
 We use the OpenCV and Numpy libraries for image processing. To read the gyro and drive and control the car, we used libraries from Adafruit Circuitpython.
