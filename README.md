@@ -321,7 +321,7 @@ The largest of the two is the next obstacle.
 We use slightly different parameters for the blob detector for the obstacles than for the lines. 
 For the control, we then supply the x and y position of the blob centre point and the size of the blob in pixels.
 
-### Processing the lines
+#### Processing the lines
 
 The lines are used to determine the direction of travel, how many corners have already been travelled and the current straight-ahead course according to Gyro.
 During the race, we cut out a small area at the bottom centre of the HSV image. We only look for the lines in this area. 
@@ -339,9 +339,9 @@ This means that our car automatically drives round the bend when it steers back 
 
 The next two images show examples of the camera images and the processing step results by displaying the intermediate filter masks. We used this display as a development and debugging tool to see the real camera perspective on the game pad.
 
-<img src="./other/front_com_processing" width="100%">
+<img src="./other/front_cam_processing.png" width="100%">
 
-<img src="./other/rear_cam_processing" width="100%">
+<img src="./other/rear_cam_processing.png" width="100%">
 
 <a name="decision"></a>
 
