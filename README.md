@@ -21,6 +21,11 @@ Roadrunners - Future engineers 2024
 - [Programming](#programming)
     - [Software Development](#software-development)
     - [Obstacle Challenge](#obstacle-challenge)
+        - [Flowchart](#flowchart)
+        - [Measurements Processing](#processing)
+        - [Steering Decision](#decision)
+        - [U-Turn](#u-turn)
+        - [Parking](#parking)
 - [Assembly](#assembly)  
     - [Bill of Materials](#bill-of-materials)
     - [Assembly Instructions](#assembly-instruction)
@@ -233,7 +238,7 @@ The LEDs show what the car is currently seeing: blue/orange for lines, red/green
 
 This diagram shows a breadboard view of how to wire the sensors, LEDs and cameras.
 
-<img src="./schemes/sensoren_WF24_Steckplatine.png" width="60%">
+<img src="./schemes/sensoren_WF24_Steckplatine.png" width="70%">
 
 #### Circuit Schematics Diagram
 
@@ -241,7 +246,7 @@ This diagram shows the wiring of all electrical components. All wiring diagrams 
 
 The cameras have actually more connections than shown, but there was no proper raspberry pi camera piece for Fritzing.
 
-<img src="./schemes/Wiring_diagram_WF24.png" width="60%">
+<img src="./schemes/Wiring_diagram_WF24.png" width="70%">
 
 
 <a name="programming"></a>
@@ -260,32 +265,38 @@ We use GitHub as our source code repository. The listings of sour source files a
 ### Obstacle Challenge
 
 In the obstacle race, we use the camera to analyse the playing field and the gyro sensor to determine the orientation of the car.
-We use the OpenCV and Numpy libraries for image processing. To read the gyro and drive and control the car, we used libraries from Adafruit Circuitpython.
+
+Our program starts with an initialization sequence at power-on, then waits for the start button to be pressed. A LED (white for open race, yellow for obstacle race) indicates that the car is ready to run.
+
+The first step before starting is that the car gets a frame from the rear camera and processes it for obstacles in view. If there is an obstacle in sight behind the car, we already know if to run an u-turn after 2 rounds.
+
+The car then enters the main loop.
+It first checks, if there is a reason to exit and stop or to run a special treatment like u-turn or parking.
+Then it gets the measurements of the sensors and a frame from the front camera.
+These measurements are then processed and the results are used to determine the next steering decision.
+Due to the processing power of the Raspberry Pi5, the main loop runs at a speed of 35-40 cycles per second.
+
+<a name="flowchart"></a>
+
+#### Obstacle program flow chart
+
+This flowchart gives an overview of the structure of our obstacles program. We explain the steps in more detail further down.
+
+<img src="./schemes/Race_flowchart.jpg" width="100%">
+
+<a name="processing"></a>
+
+#### Measurements Processing
+
+#### Gyro Heading
+To read the gyro and drive and control the car, we used libraries from Adafruit Circuitpython. From the actual heading, we calculate the total heading which we use in our steering decision. When the car turns clockwise, the heading adds positive to the total. When its turning counter-clockwise, this adds a negative heading to the total.
+
+#### Image Processing
+We use the OpenCV and Numpy libraries for image processing. 
 We read the next camera image and cut off the top edge in order to minimise the amount of the image that does not belong to the playing field. 
 The camera delivers the image in BGR (blue-green-red) format. In order to be able to filter out colours better, the image is also converted into an HSV (Hue Saturation Value) format.
-We filter the black walls from the BGR image and calculate whether there is a risk of collision on the right or left.
-We filter the lines and obstacles from the HSV image.
-We use the lines to calculate the current straight ahead gyro course.
-We use this information to determine the next control movement.
 
-### Determining the next control movement
-
-Avoid the wall first: 
-If the collision alarm is set on one side, we steer hard away from the wall.
- 
-Then avoid an obstacle:
-If there is an obstacle in the image and there is no line at the bottom of the image, steer so that the obstacle in the image moves all the way to the left (red) or all the way to the right (green).
-The camera will lose the obstacle from the picture before we are completely past it. We therefore remember that we are steering by obstacle and the time.
-
-If the obstacle is no longer visible, we continue for a timeout in the last direction past the obstacle.
-Then we reset the ‘Obstacle’ flag.
-
-If there is no wall and no obstacle control:
-Steer by gyro to the straight ahead direction in degrees
-
-If an obstacle is visible and at the same time there is a line at the bottom of the screen (in the colour of the direction of travel), the obstacle is directly behind the curve. We then drive up to the line before we swerve out of the way. Otherwise, the car may no longer see the wall and swerve inwards to avoid the obstacle before it has passed the inside corner. 
-
-### Processing the walls
+#### Processing the walls
 
 We filter out the parts of the BGR image that appear very dark in all 3 colour channels at the same time. This results in a black and white mask in which the walls are white and everything else is black.
 As a measure of how close we are to a wall, we take the height of the wall in the image. Due to the perspective, nearer parts of the wall appear higher in the picture than those further away.
@@ -298,6 +309,7 @@ We first tried to filter the walls using the HSV image. However, this did not wo
 Then we tried to use a greyscale image that only shows the brightness. 
 This doesn't work so well either, because the blue lines and green obstacles often appear very dark in the greyscale image and would then be mistaken for walls.
 This effect can be avoided with the BGR image because the blue lines in the blue channel and the green obstacles in the green channel appear lighter and can therefore be filtered out.  
+
 
 ### Processing the obstacles
 
@@ -325,9 +337,50 @@ When evaluating the line, we count the number of lines already found.
 We then calculate the straight-ahead direction in degrees as number_lines*90 for the direction of travel to the right or number_lines* (-90) for the left.
 This means that our car automatically drives round the bend when it steers back to the gyro after the line.
 
-#### Obstacle program flow chart
+The next two images show examples of the camera images and the processing step results by displaying the intermediate filter masks. We used this display as a development and debugging tool to see the real camera perspective on the game pad.
 
-<img src="./schemes/Race_flowchart.jpg" width="100%">
+<img src="./other/front_com_processing" width="100%">
+
+<img src="./other/rear_cam_processing" width="100%">
+
+<a name="decision"></a>
+
+#### Steering Decision
+
+First Priority: Avoid the wall
+
+If the collision alarm is set on one side, we steer hard away from the wall.
+
+Second Priority: Avoid the magenta parking lot
+
+If the collision alarm is set on one side, we steer hard away from the wall.
+
+Third Priority: Avoid an obstacle
+
+If there is an obstacle in the image and there is no line at the bottom of the image, steer so that the obstacle in the image moves all the way to the left (red) or all the way to the right (green).
+The camera will lose the obstacle from the picture before we are completely past it. We therefore remember that we are steering by obstacle and the time.
+
+Fourth Priority: Pass Obstacle
+
+If the obstacle is no longer visible, we continue for a timeout in the last direction past the obstacle.
+Then we reset the ‘Obstacle’ flag.
+
+Fifth Priority: Steer straight
+If there is no wall and no obstacle control:
+Steer by gyro to the straight ahead direction in degrees
+
+If an obstacle is visible and at the same time, there is a line at the bottom of the screen (in the colour of the direction of travel), the obstacle is directly behind the curve. We then drive up to the line before we swerve out of the way. Otherwise, the car may no longer see the wall and swerve inwards to avoid the obstacle before it has passed the inside corner. 
+
+<a name="u-turn"></a>
+
+#### U-Turn
+
+
+<a name="parking"></a>
+
+#### Parking
+
+
 
 <a name="assembly"></a>
 
