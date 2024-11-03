@@ -310,8 +310,11 @@ Then we tried to use a greyscale image that only shows the brightness.
 This doesn't work so well either, because the blue lines and green obstacles often appear very dark in the greyscale image and would then be mistaken for walls.
 This effect can be avoided with the BGR image because the blue lines in the blue channel and the green obstacles in the green channel appear lighter and can therefore be filtered out.  
 
+#### Processing the parking lot
 
-### Processing the obstacles
+We handle the parking lot very similar to the walls. The only difference is that we filter it from the HSV image, not from the BGR image. Apart from that, during driving, the parking lot is considered a s special type of wall. It appears always on one side (which is depending on the driving direction) and must be avoided like a wall. So we use the same algorithm as for walls to estimate the distance from the height in the mask.
+
+#### Processing the obstacles
 
 To recognise the obstacles, we first filter red areas and green areas from the HSV image, resulting in a black and white mask for red and one for green.
 The obstacles appear white on a black background. We apply a blur effect so that there is no noise in the masks.
@@ -375,12 +378,16 @@ If an obstacle is visible and at the same time, there is a line at the bottom of
 
 #### U-Turn
 
+The car tries to detect an u-turn at startup by processing an image of the rear camera at startup and check it for the biggest obstacle. If ther is no obstacle in sight right behind the car, the last obstacle of the round must be the one the car has passed before crossing the 4th line. So if u-turn is not decided when seeing the 4th line, the car takes the last color used for steering to determine the u-turn finally.
+To indicate it knows about the u-turn, it lights a red or green LED.
+After two rounds, the car continues until it sees the 9th line, then goes back a little and then turns around. That way it makes sure it has properly passed the last obstacle of the round, which may stand in the middle of the start/stop section, before actually turning.
 
 <a name="parking"></a>
 
 #### Parking
 
-
+To proceed to the parking lot after three rounds, our car switches in a parking round mode. In this mode, it sets all obstacle colors to the same color, green for clockwise, red for counter-clockwise. This ensures that it will always approach the parking lot driving near the outer wall.
+It then stops near the parking lot and uses its rear camera to navigate backwards into the parking lot.
 
 <a name="assembly"></a>
 
