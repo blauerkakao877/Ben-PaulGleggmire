@@ -82,7 +82,7 @@ The following photos show the Lego driving base and a schematic to cut the elect
 
 #### Lego Driving Base
 
-<img src="./v-photos/driving_base" width="80%"> 
+<img src="./v-photos/basis.jpg" width="80%"> 
 
 #### Electronics Plate
 
