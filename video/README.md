@@ -21,6 +21,12 @@ Video 2: With U-turn
 
 [![Obstacle Challenge Video2](Obstacle1.png)](https://youtu.be/xWzXfCR_uqE?si=9jsWWTOr0A01JLgW)
 
+Video 3 with parking no U-turn
+
+[![Obstacle Challenge Video3](Obstacle3.png)](https://www.youtube.com/watch?v=kjcUSFApCdg)
+
+
+
 - ### Explaination Video
   This video explains our obstacle race
   
