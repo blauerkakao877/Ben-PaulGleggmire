@@ -24,6 +24,6 @@
 
 <img src="Bauteile Hinterachse.jpg" width="100%">
 
-<img src="../schemes/Electronics_Carrier_PLate.png" width="100%>
+<img src="../schemes/Electronics_Carrier_PLate.png" width="100%">
 
 
