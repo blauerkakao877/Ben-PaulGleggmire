@@ -22,7 +22,7 @@
 
 <img src="Motorblock ohne Rahmen.jpg" width="100%">
 
-<img src="Bauteile Hinterachse.jpg" width="100%">
+<img src="Bauteile Hinterachse" width="100%">
 
 <img src="../schemes/Electronics_Carrier_PLate.png" width="100%">
 
