@@ -449,10 +449,13 @@ They can be found found [here](./video/README.md)
 
 ## Team
 
-Our team consists of 3 members.
-Ben Lüttecke - Car building
-Paul Krohn - Programmer
-Jason Inkmann - Car building, Test support
+Our team consists of 3 members:
+
+Ben Lüttecke: Car building
+
+Paul Krohn: Programmer
+
+Jason Inkmann: Car building, Test support
 
 The photos of our team are found [here](./t-photos/README.md) 
 
