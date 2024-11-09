@@ -42,6 +42,16 @@ Roadrunners - Future engineers 2024
 
 Welcome to the official GitHub repository for Team Roadrunners from Germany, participating in the WRO World Finals 2024. This repository contains all the code, documentation, and resources for our project. We have used scoring criteria from the rulebook as headings in our documentation to make it easy to navigate our repository.
 
+### Dimensions of our car:
+
+- Height: 22cm
+- Width: 14cm
+- Lengh: 19cm
+- Weight: 886g
+
+ 
+  
+ 
 <a name="carphoto"></a>
 
 ## Car Photos
