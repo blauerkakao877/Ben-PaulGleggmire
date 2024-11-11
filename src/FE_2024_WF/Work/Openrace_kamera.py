@@ -73,7 +73,6 @@ def start_program():
     print("Program started!")
     time.sleep(0.5)
     stop_time = time.time() + 180.0
-    park_stop_time = time.time() + 180.0
     
 def geradeaus_lenken():
     global geradeaus
