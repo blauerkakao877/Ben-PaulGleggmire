@@ -395,7 +395,7 @@ After two rounds, the car continues until it sees the 9th line, then goes back a
 
 #### Parking
 
-To proceed to the parking lot after three rounds, our car switches in a parking round mode. In this mode, it sets all obstacle colors to the same color, green for clockwise, red for counter-clockwise. This ensures that it will always approach the parking lot driving near the outer wall.
+To proceed to the parking lot after three rounds, our car first stops for 5 seconds and then switches in a parking round mode. In this mode, it sets all obstacle colors to the same color, green for clockwise, red for counter-clockwise. This ensures that it will always approach the parking lot driving near the outer wall.
 It then stops near the parking lot and uses its rear camera to navigate backwards into the parking lot.
 
 <a name="assembly"></a>
