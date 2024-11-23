@@ -372,6 +372,35 @@ Third Priority: Avoid an obstacle
 If there is an obstacle in the image and there is no line at the bottom of the image, steer so that the obstacle in the image moves all the way to the left (red) or all the way to the right (green).
 The camera will lose the obstacle from the picture before we are completely past it. We therefore remember that we are steering by obstacle and the time.
 
+Steering formula:
+
+We steer away from the obstacle until its x-position in the camera image is far enough to the correct side, then we drive straight until the obstacle is passed.
+The steering angle is proportional to the distance of the obstacle's current x-position in the image to the target x position.
+The obstacle appears bigger in the image the nearer it is. To take the distance from the obstacle into account, we move the target x position from near the middle to the outside depending on the size of the obstacle in the image. With that, we avoid steering away from the obstacle too heavy when it is still far away.
+
+Image columns: 0 - 320, center = 160
+
+steeringpoints for green and clockwise, red is 320 - steeringpoint
+
+proportinal factor = 0.35
+
+if size < 50:
+
+   steeringPoint = 110
+
+
+elif size < 70: 
+
+   steeringpoint = 60  
+
+elif size < 100:
+
+   steeringpoint = 40
+
+servo steering  = servo center + (steeringpoint - x-pos)*proportional factor
+
+
+
 Fourth Priority: Pass Obstacle
 
 If the obstacle is no longer visible, we continue for a timeout in the last direction past the obstacle.
@@ -382,6 +411,7 @@ If there is no wall and no obstacle control:
 Steer by gyro to the straight ahead direction in degrees
 
 If an obstacle is visible and at the same time, there is a line at the bottom of the screen (in the colour of the direction of travel), the obstacle is directly behind the curve. We then drive up to the line before we swerve out of the way. Otherwise, the car may no longer see the wall and swerve inwards to avoid the obstacle before it has passed the inside corner. 
+
 
 <a name="u-turn"></a>
 
