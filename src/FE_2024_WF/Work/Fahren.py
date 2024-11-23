@@ -111,5 +111,15 @@ def Uturn_links():
        
 def Uturn_rechts():
        Skit.servo[0].angle = 70
+
+#---------------------------------------
+       
+def ausweichen_rechts():
+       Skit.servo[0].angle = 60
+       
+#---------------------------------------
+       
+def ausweichen_links():
+       Skit.servo[0].angle = 130
        
 #---------------------------------------
