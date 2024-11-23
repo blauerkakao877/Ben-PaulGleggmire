@@ -539,14 +539,14 @@ try:
                        if x < 160:
                             F.gerade()
                             F.ruck(0.3)
-                            time.sleep(0.4)
+                            time.sleep(0.8)
                             F.stop()
                             
                     if current_direction == "l":
                         if x > 160:
                             F.gerade()
                             F.ruck(0.3)
-                            time.sleep(0.4)
+                            time.sleep(0.8)
                             F.stop()
                         
                     F.anfahren(speed)
