@@ -437,6 +437,29 @@ def einparken():
         
     elif current_direction == "r":
         F.vor(0.3)
+        F.nach_links()
+        while gesamt > geradeaus -90:
+            time.sleep(0.1)
+            winkel, gesamt = G.Winkelmessen()
+        F.gerade()
+        
+        while U.distanz_V() > 5.0:
+            time.sleep(0.1)
+        time.sleep(0.5)
+        F.stop()
+        F.ruck(0.3)
+        
+        while U.distanz_V() < 8.0:
+            time.sleep(0.1)
+        F.nach_links()
+        
+        while gesamt < geradeaus:
+            time.sleep(0.1)
+            winkel, gesamt = G.Winkelmessen()
+        F.stop()
+        F.vor(0.3)
+        F.gerade()
+        
         hsv_frame, bgr_frame = K.get_image_back()
         linksMag, rechtsMag, hellLMag, hellRMag = K.waende_Magenta(hsv_frame)
         while hellRMag < 5000:
@@ -444,9 +467,10 @@ def einparken():
             hsv_frame, bgr_frame = K.get_image_back()
             linksMag, rechtsMag, hellLMag, hellRMag = K.waende_Magenta(hsv_frame)
         F.stop()
+        time.sleep(0.5)
         F.gerade()
         F.ruck(0.3)
-        time.sleep(0.1)
+        time.sleep(0.8)
         F.stop()
         F.parken_links()
         F.ruck(0.3)
@@ -612,10 +636,14 @@ try:
                 if current_direction == "l":
                     park_stop_time = time.time() + 0.2
                 elif current_direction == "r":
-                    park_stop_time = time.time() + 0.2
+                    park_stop_time = time.time() + 0.0
             
-            
-        if (links or linksMag) and not (rechts):
+        if hellLMag > 9000 and hellRMag > 9000:
+            if current_direction == "l":
+                F.nach_links()
+            elif current_direction == "r":
+                F.nach_rechts()
+        elif (links or linksMag) and not (rechts):
             if gesamt <= geradeaus + 60.0:
                 F.nach_rechts()
 #Korrektur für sidecrash
@@ -625,7 +653,7 @@ try:
         elif (rechts or rechtsMag) and not links:
             if gesamt >= geradeaus - 60.0:
                 F.nach_links()
-#Korrektur für sideecrash           
+#Korrektur für sidecrash           
             else:
                 F.nach_rechts()
             
