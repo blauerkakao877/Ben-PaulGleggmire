@@ -377,6 +377,7 @@ Steering formula:
 We steer away from the obstacle until its x-position in the camera image is far enough to the correct side, then we drive straight until the obstacle is passed.
 The steering angle is proportional to the distance of the obstacle's current x-position in the image to the target x position.
 The obstacle appears bigger in the image the nearer it is. To take the distance from the obstacle into account, we move the target x position from near the middle to the outside depending on the size of the obstacle in the image. With that, we avoid steering away from the obstacle too heavy when it is still far away.
+We use the blob size of the obstacle in pixels returned by the OpenCV blob detector to estimate the distance, not the height of the blob. If the obstacle falls over but is still good, the size of its shape remains the same but the height will be different.
 
 Image columns: 0 - 320, center = 160
 
@@ -426,7 +427,8 @@ After two rounds, the car continues until it sees the 9th line, then goes back a
 #### Parking
 
 To proceed to the parking lot after three rounds, our car first stops for 5 seconds and then switches in a parking round mode. In this mode, it sets all obstacle colors to the same color, green for clockwise, red for counter-clockwise. This ensures that it will always approach the parking lot driving near the outer wall.
-It then stops near the parking lot and uses its rear camera to navigate backwards into the parking lot.
+Before starting the parking round, the car checks if there is a near obstacle on the now wrong side. If that is the case, it backs up a little before starting so it can safely avoid this obstacle. During driving, it checks for the magenta parking lot. If the parking lot appears in the front camera at a big enough size, we are near enough. At this point, the car stops and then enters a specific parking routine. In counter-clockwise direction, the car drives already close to the parking lot. On the way from the last curve to the parking lot, it will always try to avoid an obstacle and so drive close to the parking lot walls. When the car is near enough, it starts driving slow and steering straight using its gyro, so it passes the parking lot parallel to the black wall. It stops when it sees the first magenta wall in its rear camera. It then stops, goes back a little bit and then turns until it sees both magenta walls in its rear camera. It then navigates backwards into the parking lot by steering si that both magenta walls appear of the same height in the rear camera image.
+When the car drives to the parking lot in clockwise direction, the parking lot is directly behind the curve. We had the problem that depending on the obstacle settings, our car ended up at diffent distances from the parking lot which was not so good for our parking algorithm. To fix that for clockwise, we first let it run into the wall next to the parking lot and go back while we measure the distance from the wall with our front ultrasonic. At a known distance, the turn sharply until the car points in straight direction. From there on, we continue the normal algorithm: drive straight until rear cam sees magenta and so on.
 
 <a name="assembly"></a>
 
