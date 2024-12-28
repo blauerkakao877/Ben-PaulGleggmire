@@ -23,7 +23,7 @@ speed = 0.57
 startspeed = 0.57
 steerangle = 95
 k = 0.6   #Adjust as needed standard faktor fuer gerade
-kh = 0.55  #Adjust as needed faktor fuer hindernisse
+kh = 0.35  #Adjust as needed faktor fuer hindernisse
 Seitehalten = 0
 BUTTON_PIN = 16
 servmitte = 95
@@ -31,7 +31,7 @@ geradeaus = 0
 current_direction = "n"
 linie = False
 linien_zeit = 0
-linien_warten = 2.5 #vermeidet das linien mehrmals gezählt werden
+linien_warten = 2.4 #vermeidet das linien mehrmals gezählt werden
 linien_counter = 0
 x = 0
 y = 0
@@ -45,13 +45,13 @@ hellR = 0
 abstand = 0
 linien_zaehlen = 0.10 #wartezeit/Sperrzeit bis erste linie ausgewertet wird
 linien_zaehlen_LG = 0.10  #Links+Grun
-linien_zaehlen_RG = 0.07  #Rechts+Grun
+linien_zaehlen_RG = 0.01  #Rechts+Grun
 linien_zaehlen_LR = 0.10  #Links+Rot
-linien_zaehlen_RR = 0.07  #Rechts+Rot
+linien_zaehlen_RR = 0.01  #Rechts+Rot
 blaue_linie = False
 orange_linie = False
 hindernis = False
-h_warten = 0.4
+h_warten = 0.75
 h_zeit = 0.0
 gesamt = 0.0
 Rennen_laeuft = True
@@ -68,6 +68,7 @@ reduced = False
 park_runde = False
 park_stop_time = time.time() + 18000.0
 linie_korrigiert = False
+steeringpoint = 60
 #==TEST==
 test = False
 #==Parken==
@@ -149,7 +150,7 @@ def DoUturn():
     F.anfahren(speed)
     F.vor(speed)
     F.Uturn_links()
-    time.sleep(0.6)
+    time.sleep(0.3)
     messen()
     geradeaus_lenken()
     NowUturn = False
@@ -185,7 +186,7 @@ def linien_suchen(hsv_img):
             
             if letzte_farbe == "G":
                 if current_direction == "l":
-                    stop_time = time.time() + 2.5
+                    stop_time = time.time() + 2.2
                 elif current_direction == "r":
                     stop_time = time.time() + 3.5
                     
@@ -419,23 +420,76 @@ def einparken():
     F.stop()
     time.sleep(1.0)
     if current_direction == "l":
+        F.nach_links()
+        F.ruck(0.3)
+        time.sleep(1.5)
+        F.stop()
+        time.sleep(0.1)
         F.vor(0.3)
+        F.nach_rechts()
+        while gesamt < geradeaus + 75 or U.distanz_V() < 7.0:
+            time.sleep(0.1)
+            winkel, gesamt = G.Winkelmessen()
+        F.gerade()
+  
+        while U.distanz_V() > 5.0:
+            time.sleep(0.1)
+        time.sleep(0.3)
+        F.stop()
+        time.sleep(0.1)
+        F.ruck(0.3)
+        
+        while U.distanz_V() < 11.0:
+            time.sleep(0.1)
+        F.nach_rechts()
+        
+        while gesamt > geradeaus:
+            time.sleep(0.1)
+            winkel, gesamt = G.Winkelmessen()
+        F.stop()
+        F.vor(0.3)
+        F.gerade()
+        
         hsv_frame, bgr_frame = K.get_image_back()
         linksMag, rechtsMag, hellLMag, hellRMag = K.waende_Magenta(hsv_frame)
-        while hellLMag < 5000:
+        while hellLMag < 4500:
             geradeaus_lenken()
             hsv_frame, bgr_frame = K.get_image_back()
             linksMag, rechtsMag, hellLMag, hellRMag = K.waende_Magenta(hsv_frame)
         F.stop()
+        time.sleep(0.5)
         F.gerade()
         F.ruck(0.3)
-        time.sleep(0.1)
+        time.sleep(0.45)
         F.stop()
         F.parken_rechts()
         F.ruck(0.3)
         
     elif current_direction == "r":
         F.vor(0.3)
+        F.nach_links()
+        while gesamt > geradeaus -85:
+            time.sleep(0.1)
+            winkel, gesamt = G.Winkelmessen()
+        F.gerade()
+        
+        while U.distanz_V() > 5.0:
+            time.sleep(0.1)
+        time.sleep(0.5)
+        F.stop()
+        F.ruck(0.3)
+        
+        while U.distanz_V() < 8.0:
+            time.sleep(0.1)
+        F.nach_links()
+        
+        while gesamt < geradeaus:
+            time.sleep(0.1)
+            winkel, gesamt = G.Winkelmessen()
+        F.stop()
+        F.vor(0.3)
+        F.gerade()
+        
         hsv_frame, bgr_frame = K.get_image_back()
         linksMag, rechtsMag, hellLMag, hellRMag = K.waende_Magenta(hsv_frame)
         while hellRMag < 5000:
@@ -443,9 +497,10 @@ def einparken():
             hsv_frame, bgr_frame = K.get_image_back()
             linksMag, rechtsMag, hellLMag, hellRMag = K.waende_Magenta(hsv_frame)
         F.stop()
+        time.sleep(0.5)
         F.gerade()
         F.ruck(0.3)
-        time.sleep(0.1)
+        time.sleep(0.8)
         F.stop()
         F.parken_links()
         F.ruck(0.3)
@@ -531,6 +586,23 @@ try:
                     F.stop()
                     L.led_countdown5()
                     time.sleep(0.5)
+                    #check for obstacle too near
+                    x = 160
+                    messen()
+                    if current_direction == "r":
+                       if x < 160:
+                            F.gerade()
+                            F.ruck(0.3)
+                            time.sleep(1.0)
+                            F.stop()
+                            
+                    if current_direction == "l":
+                        if x > 160:
+                            F.gerade()
+                            F.ruck(0.3)
+                            time.sleep(1.0)
+                            F.stop()
+                        
                     F.anfahren(speed)
                     F.vor(speed)
                     park_runde = True
@@ -539,6 +611,9 @@ try:
         if park_runde and time.time() > park_stop_time:
             F.stop()
             time.sleep(0.2)
+            L.led_G21()
+            L.led_R21()
+            L.led_W1()
             einparken()
             break
             
@@ -592,12 +667,16 @@ try:
             
             if hellLMag > 10000 or hellRMag > 10000:
                 if current_direction == "l":
-                    park_stop_time = time.time() + 0.2
+                    park_stop_time = time.time() + 0.0
                 elif current_direction == "r":
-                    park_stop_time = time.time() + 0.2
+                    park_stop_time = time.time() + 0.0
             
-            
-        if (links or linksMag) and not (rechts):
+        if hellLMag > 9600 and hellRMag > 9600:
+            if current_direction == "l":
+                F.nach_links()
+            elif current_direction == "r":
+                F.nach_rechts()
+        elif (links or linksMag) and not (rechts):
             if gesamt <= geradeaus + 60.0:
                 F.nach_rechts()
 #Korrektur für sidecrash
@@ -607,7 +686,7 @@ try:
         elif (rechts or rechtsMag) and not links:
             if gesamt >= geradeaus - 60.0:
                 F.nach_links()
-#Korrektur für sideecrash           
+#Korrektur für sidecrash           
             else:
                 F.nach_rechts()
             
@@ -648,8 +727,22 @@ try:
         else:
             if farbe == "R" and not linie_imbild:
                 letzte_farbe = farbe
-                if x > 0:
-                    abstand = 0 - x
+                L.led_W0()
+                
+                if s < 50:
+                    steeringpoint = 110
+                elif s < 70:
+                    steeringpoint = 60
+                elif s < 100:
+                    steeringpoint = 30
+                    
+                if s >= 100:
+                    F.ausweichen_rechts()
+                    hindernis = True
+                    h_zeit = time.time()
+
+                elif x > steeringpoint:
+                    abstand = steeringpoint - x
                     lenkwinkel = 95 + kh * (abstand)
                     if gesamt < geradeaus + 80:
                         F.steuern(lenkwinkel)
@@ -668,8 +761,20 @@ try:
                     
             elif farbe == "G" and not linie_imbild:
                 letzte_farbe = farbe
-                if  x < 320 and x > 0:
-                    abstand = 320 - x
+                L.led_W0()
+                
+                if s < 50:
+                    steeringpoint = 110
+                elif s < 70:
+                    steeringpoint = 60
+                elif s < 100:
+                    steeringpoint = 30
+                    
+                if s >= 100:
+                    F.ausweichen_links()
+                    h_zeit = time.time()
+                elif  x < 320 - steeringpoint and x > 0:
+                    abstand = 320 - steeringpoint - x
                     lenkwinkel = 95 + kh * (abstand)
                     if gesamt > geradeaus - 80:
                         F.steuern(lenkwinkel)
@@ -687,10 +792,10 @@ try:
                     hindernis = True
             
             else:
+                L.led_W1()
                 if hindernis:
                     F.gerade()
                     hindernis_sperre = True
-                    L.led_Y1()
                     if time.time() - h_zeit > h_warten:
                         hindernis = False
                 else:      #nichts wichtiges in Sicht
@@ -700,7 +805,6 @@ try:
                      #   F.nach_rechts()
                     #else:
                     geradeaus_lenken()
-                
                     
 #-----------------------END--------------------------
     stop_program()

@@ -423,14 +423,14 @@ def einparken():
         F.vor(0.3)
         hsv_frame, bgr_frame = K.get_image_back()
         linksMag, rechtsMag, hellLMag, hellRMag = K.waende_Magenta(hsv_frame)
-        while hellLMag < 5000:
+        while hellLMag < 4500:      #5000
             geradeaus_lenken()
             hsv_frame, bgr_frame = K.get_image_back()
             linksMag, rechtsMag, hellLMag, hellRMag = K.waende_Magenta(hsv_frame)
         F.stop()
         F.gerade()
         F.ruck(0.3)
-        time.sleep(0.1)
+        time.sleep(0.33)
         F.stop()
         F.parken_rechts()
         F.ruck(0.3)
@@ -563,14 +563,14 @@ try:
                        if x < 160:
                             F.gerade()
                             F.ruck(0.3)
-                            time.sleep(0.8)
+                            time.sleep(1.0)
                             F.stop()
                             
                     if current_direction == "l":
                         if x > 160:
                             F.gerade()
                             F.ruck(0.3)
-                            time.sleep(0.8)
+                            time.sleep(1.0)
                             F.stop()
                         
                     F.anfahren(speed)

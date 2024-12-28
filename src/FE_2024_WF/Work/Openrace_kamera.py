@@ -17,8 +17,8 @@ Mkit = MotorKit(i2c=board.I2C())
 Skit = ServoKit(channels=16)
 
 # Constants and Variables
-speed = 0.53
-startspeed = 0.43
+speed = 0.72
+startspeed = 0.42
 steerangle = 95
 k = 0.6  # Adjust as needed
 Seitehalten = 0
@@ -28,7 +28,7 @@ geradeaus = 0
 current_direction = "n"
 linie = False
 linien_zeit = 0
-linien_warten = 0.8 #vermeidet das linien mehrmals gezählt werden
+linien_warten = 0.45 #vermeidet das linien mehrmals gezählt werden
 linien_counter = 0
 stop_time = time.time() + 180.0 
 x = 0
@@ -40,9 +40,9 @@ rechts = False
 hellL = 0
 hellR = 0
 abstand = 0
-linien_zaehlen_b =  0.45 #0.4 #0.21 #wartezeit bis linie ausgewertet wird
-linien_zaehlen_o =  0.55 #0.4 #0.21 #wartezeit bis linie ausgewertet wird
-linien_zaehlen =  0.7    #0.4 #0.21 #wartezeit bis linie ausgewertet wird 
+linien_zaehlen_b =  0.16 #0.4 #0.44 #wartezeit bis linie ausgewertet wird
+linien_zaehlen_o =  0.16 #0.4 #0.54 #wartezeit bis linie ausgewertet wird
+linien_zaehlen =  0.38    #0.4 #0.21 #wartezeit bis linie ausgewertet wird 
 blaue_linie = False
 orange_linie = False
 hindernis = False
@@ -72,7 +72,6 @@ def start_program():
         time.sleep(0.1)
     print("Program started!")
     time.sleep(0.5)
-    stop_time = time.time() + 180.0
     
 def geradeaus_lenken():
     global geradeaus
@@ -104,7 +103,7 @@ def linien_suchen(hsv_img):
             speed = speed*1.0
             F.vor(speed)
             reduced = True
-            stop_time = time.time() + 2.0 #2.2
+            stop_time = time.time() + 1.4 #2.2
     
     
     if current_direction == "l":

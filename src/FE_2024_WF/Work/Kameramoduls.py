@@ -487,12 +487,12 @@ def waende_Magenta(hsv_img):
     #print("maxR :",maxHistR)
     
     # Seitenkollisionen:
-    if maxHistL > 12000:
+    if maxHistL > 10000:
         kollL = True
     else:
         kollL = False
     
-    if maxHistR > 12000:
+    if maxHistR > 10000:
         kollR = True
     else:
         kollR = False
@@ -653,6 +653,9 @@ if __name__ == '__main__':
                 cv2.imshow("Magenta_Maske", M_mask)
                 cv2.imshow("Maske_links", maskL)
                 cv2.imshow("Maske_rechts",maskR)
+                
+                print("pos: ",x, "   size: ",s)
+                print("Magenta_Links: ",Mhell_L, "Magenta_rechts: ",Mhell_R)
                 
                 
                 
