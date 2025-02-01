@@ -8,7 +8,7 @@ import LED as L
 import gyro as G
 import cv2
 import numpy as np
-import Kameramoduls as K
+import Kameramoduls_neu as K
 import Ultrasonic as U
 
 
@@ -17,7 +17,7 @@ Mkit = MotorKit(i2c=board.I2C())
 Skit = ServoKit(channels=16)
 
 # Constants and Variables
-speed = 0.72
+speed = 0.42
 startspeed = 0.42
 steerangle = 95
 k = 0.6  # Adjust as needed
