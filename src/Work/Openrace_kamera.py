@@ -17,8 +17,45 @@ Mkit = MotorKit(i2c=board.I2C())
 Skit = ServoKit(channels=16)
 
 # Constants and Variables
-speed = 0.42
-startspeed = 0.42
+#default
+speed = 0.45
+startspeed = 0.45
+linien_zaehlen_b =  0.52  #wartezeit bis linie ausgewertet wird
+linien_zaehlen_o =  0.52  #wartezeit bis linie ausgewertet wird
+linien_zaehlen =  0.52    #wartezeit bis linie ausgewertet wird
+linien_warten = 1.0      #vermeidet das linien mehrmals gezählt werden
+end_time = 2.0            #wartezeit bis auto nach letzter kurve anhält
+#---------------------
+# kopiervorlagen für versch geschwindigkeiten
+#langsam
+slow1 = True #False
+speed1 = 0.45
+startspeed1 = 0.45
+linien_zaehlen_b1 =  0.52  #wartezeit bis linie ausgewertet wird
+linien_zaehlen_o1 =  0.52  #wartezeit bis linie ausgewertet wird
+linien_zaehlen1 =  0.52    #wartezeit bis linie ausgewertet wird
+linien_warten1 = 1.0       #vermeidet das linien mehrmals gezählt werden
+end_time1 = 2.0            #wartezeit bis auto nach letzter kurve anhält
+#mittel
+mid2 = False #True
+speed2 = 0.55
+startspeed2 = 0.55
+linien_zaehlen_b2 =  0.33  #wartezeit bis linie ausgewertet wird
+linien_zaehlen_o2 =  0.33  #wartezeit bis linie ausgewertet wird
+linien_zaehlen2 =  0.33    #wartezeit bis linie ausgewertet wird
+linien_warten2 = 0.70      #vermeidet das linien mehrmals gezählt werden
+end_time2 = 1.5            #wartezeit bis auto nach letzter kurve anhält
+#schnell !!!ACHTUNG UNSICHER!!!
+fast3 = False
+speed3 = 0.60
+startspeed3 = 0.65
+linien_zaehlen_b3 =  0.28  #0.4 #0.44 #wartezeit bis linie ausgewertet wird
+linien_zaehlen_o3 =  0.28  #0.4 #0.54 #wartezeit bis linie ausgewertet wird
+linien_zaehlen3 =  0.28    #0.4 #0.21 #wartezeit bis linie ausgewertet wird
+linien_warten3 = 0.70      #vermeidet das linien mehrmals gezählt werden
+end_time3 = 1.2            #wartezeit bis auto nach letzter kurve anhält
+########################
+
 steerangle = 95
 k = 0.6  # Adjust as needed
 Seitehalten = 0
@@ -28,7 +65,6 @@ geradeaus = 0
 current_direction = "n"
 linie = False
 linien_zeit = 0
-linien_warten = 0.45 #vermeidet das linien mehrmals gezählt werden
 linien_counter = 0
 stop_time = time.time() + 180.0 
 x = 0
@@ -40,9 +76,6 @@ rechts = False
 hellL = 0
 hellR = 0
 abstand = 0
-linien_zaehlen_b =  0.16 #0.4 #0.44 #wartezeit bis linie ausgewertet wird
-linien_zaehlen_o =  0.16 #0.4 #0.54 #wartezeit bis linie ausgewertet wird
-linien_zaehlen =  0.38    #0.4 #0.21 #wartezeit bis linie ausgewertet wird 
 blaue_linie = False
 orange_linie = False
 hindernis = False
@@ -61,13 +94,50 @@ GPIO.setup(BUTTON_PIN, GPIO.IN)
 
 # Function to start the program
 def start_program():
+    global speed
+    global startspeed
+    global linien_zaehlen_b
+    global linien_zaehlen_o
+    global linien_zaehlen
+    global linien_warten
+    global end_time
+    
     G.gyro_start()
     K.init("open")
+    L.leds_aus()
+    if slow1:
+        speed = speed1
+        startspeed = startspeed1
+        linien_zaehlen_b = linien_zaehlen_b1 
+        linien_zaehlen_o = linien_zaehlen_o1
+        linien_zaehlen = linien_zaehlen1
+        linien_warten = linien_warten1
+        end_time = end_time1
+        L.led_R1()
+    if mid2:
+        speed = speed2
+        startspeed = startspeed2
+        linien_zaehlen_b = linien_zaehlen_b2
+        linien_zaehlen_o = linien_zaehlen_o2
+        linien_zaehlen = linien_zaehlen2
+        linien_warten = linien_warten2
+        end_time = end_time2
+        L.led_G1()
+    if fast3:
+        speed = speed3
+        startspeed = startspeed3
+        linien_zaehlen_b = linien_zaehlen_b3
+        linien_zaehlen_o = linien_zaehlen_o3
+        linien_zaehlen = linien_zaehlen3
+        linien_warten = linien_warten3
+        end_time = end_time3
+        L.led_B1()
+        
     L.led_W1()
     print("--Press button to start--")
     while not GPIO.input(BUTTON_PIN):
         time.sleep(0.1)
-    L.led_W0()
+    L.leds_aus()
     while GPIO.input(BUTTON_PIN):
         time.sleep(0.1)
     print("Program started!")
@@ -103,8 +173,7 @@ def linien_suchen(hsv_img):
             speed = speed*1.0
             F.vor(speed)
             reduced = True
-            stop_time = time.time() + 1.4 #2.2
-    
+            stop_time = time.time() + end_time
     
     if current_direction == "l":
         if (time.time() - linien_zeit) > linien_warten:
@@ -188,8 +257,6 @@ try:
     while not GPIO.input(BUTTON_PIN) and Rennen_laeuft:
         if time.time() > stop_time:
             Rennen_laeuft = False
-        #abstand_R = Ultrasonic.distanz_R()
-        #abstand_L = Ultrasonic.distanz_L()
         winkel, gesamt = G.Winkelmessen()
         hsv_frame, bgr_frame = K.get_image()
         
@@ -205,10 +272,6 @@ try:
             L.led_Y1()
             F.stop()
             F.gerade()
-            #time.sleep(0.1)
-            #F.ruck(0.6)
-            #time.sleep(1.0)
-            #F.stop()
             break
 #==TEST==
         if test:
