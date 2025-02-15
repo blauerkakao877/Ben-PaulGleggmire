@@ -10,6 +10,7 @@ import cv2
 import numpy as np
 import Kameramoduls_neu as K
 import Ultrasonic as U
+import color_detector as C
 
 
 # Initialize MotorKit and ServoKit
@@ -84,6 +85,8 @@ h_zeit = 0.0
 gesamt = 0.0
 Rennen_laeuft = True
 reduced = False
+blau = False
+orange = False
 
 #==TEST==
 test = False
@@ -104,6 +107,7 @@ def start_program():
     
     G.gyro_start()
     K.init("open")
+    C.co_init()
     L.leds_aus()
     if slow1:
         speed = speed1
@@ -259,6 +263,7 @@ try:
             Rennen_laeuft = False
         winkel, gesamt = G.Winkelmessen()
         hsv_frame, bgr_frame = K.get_image()
+        blau, orange = C.co_d()
         
         
 #--Wände finden + auswerten--
