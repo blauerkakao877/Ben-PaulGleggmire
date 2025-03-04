@@ -107,7 +107,7 @@ def start_program():
     
     G.gyro_start()
     K.init("open")
-    C.co_init()
+    #C.col_init()
     L.leds_aus()
     if slow1:
         speed = speed1
@@ -169,6 +169,7 @@ def linien_suchen(hsv_img):
     global reduced
     global stop_time
     
+    
     if linien_counter < 12:
         hsv_crop = hsv_img[170:200, 50:210]
     else:
@@ -182,7 +183,9 @@ def linien_suchen(hsv_img):
     if current_direction == "l":
         if (time.time() - linien_zeit) > linien_warten:
             linie = K.finde_blau(hsv_crop)
-            if linie == True:
+            #blau, orange = C.col_detect()
+            if linie == True or blau == True:
+                L.led_B1()
                 linien_zeit = time.time()
                 blaue_linie = True
                 linien_zaehlen = linien_zaehlen_b
@@ -191,7 +194,7 @@ def linien_suchen(hsv_img):
         else:
             if blaue_linie and time.time() - linien_zeit > linien_zaehlen:
                 linien_counter = linien_counter + 1
-                L.led_B1()
+                L.led_B0()
                 geradeaus = linien_counter*(-90)
                 blaue_linie = False
                     
@@ -201,7 +204,9 @@ def linien_suchen(hsv_img):
         #L.led_B0()
         if (time.time() - linien_zeit) > linien_warten:
             linie = K.finde_orange(hsv_crop)
-            if linie == True:
+            #blau, orange = C.col_detect()
+            if linie == True or orange == True:
+                L.led_O1()
                 linien_zeit = time.time()
                 orange_linie = True
                 linien_zaehlen = linien_zaehlen_o
@@ -211,13 +216,15 @@ def linien_suchen(hsv_img):
         else:
             if orange_linie and time.time() - linien_zeit > linien_zaehlen:
                 linien_counter = linien_counter + 1
-                L.led_O1()
+                L.led_O0()
                 geradeaus = linien_counter*(90)
                 orange_linie = False
         
     else:
         linie = K.finde_blau(hsv_crop)
-        if linie == True:
+        #blau, orange = C.col_detect()
+        if linie == True or blau == True:
+            L.led_B1()
             current_direction = "l"
             linien_zeit = time.time()
             #linien_counter = linien_counter + 1
@@ -230,7 +237,9 @@ def linien_suchen(hsv_img):
             
         else:
             linie = K.finde_orange(hsv_crop)
-            if linie == True:
+            #blau, orange = C.col_detect()
+            if linie == True or orange == True:
+                L.led_O0()
                 current_direction = "r"
                 linien_zeit = time.time()
                 #linien_counter = linien_counter + 1
@@ -263,7 +272,6 @@ try:
             Rennen_laeuft = False
         winkel, gesamt = G.Winkelmessen()
         hsv_frame, bgr_frame = K.get_image()
-        blau, orange = C.co_d()
         
         
 #--Wände finden + auswerten--
