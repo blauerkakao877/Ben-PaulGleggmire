@@ -3,7 +3,7 @@ import time
 
 import numpy as np
 from picamera2 import Picamera2
-import Kameramoduls as I
+import Kameramoduls_neu as I
 
 picam2 = None
 
@@ -461,7 +461,7 @@ while True:
         break
     elif Key == ord('s'):
         write_colorfilter_data()
-        print("colours saved")
+        print("+++++++++++++colours saved+++++++++++++")
         break
         
     
