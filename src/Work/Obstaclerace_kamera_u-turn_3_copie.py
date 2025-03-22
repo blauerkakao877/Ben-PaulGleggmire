@@ -19,8 +19,8 @@ Mkit = MotorKit(i2c=board.I2C())
 Skit = ServoKit(channels=16)
 
 # Constants and Variables
-speed = 0.47
-startspeed = 0.47
+speed = 0.57
+startspeed = 0.57
 steerangle = 95
 k = 0.6   #Adjust as needed standard faktor fuer gerade
 kh = 0.35  #Adjust as needed faktor fuer hindernisse
@@ -51,7 +51,7 @@ linien_zaehlen_RR = 0.01  #Rechts+Rot
 blaue_linie = False
 orange_linie = False
 hindernis = False
-h_warten = 0.65
+h_warten = 0.75
 h_zeit = 0.0
 gesamt = 0.0
 Rennen_laeuft = True
@@ -99,7 +99,7 @@ def start_program():
     while GPIO.input(BUTTON_PIN):
         time.sleep(0.1)
     print("Program started!")
-    W.write_Log("program_started")
+    #W.write_Log("program_started")
     time.sleep(0.5)
     stop_time = time.time() + 18000.0
     park_stop_time = time.time() + 18000.0
@@ -549,15 +549,10 @@ try:
     W.open_Log(True)
     F.gerade()
     L.leds_aus()
-    L.led_obstaclerace()
-    L.led_Y1()
-    time.sleep(0.3)
-    L.led_Y0()
-    time.sleep(0.3)
-    L.led_Y1()
-    time.sleep(0.3)
+    L.led_startup()
     L.leds_aus()
     start_program()
+    print("succesfuly started")
 #check for obstacle color behind car for u-turn
     hsv_frame, bgr_frame = K.get_image_back()
     x, y, s, farbe = K.finde_hindernisse(hsv_frame)
@@ -580,6 +575,8 @@ try:
         
     else:
         W.write_Log("nichts_erkannt")
+        
+    print("losfahren")
     F.anfahren(startspeed)
     F.vor(startspeed)
 
@@ -820,5 +817,5 @@ except KeyboardInterrupt:
     F.gerade()
     F.stop()
     L.leds_aus()
-    print("Program stopped by the user keyboard.")
+    print("Program stopped by the user.")
     

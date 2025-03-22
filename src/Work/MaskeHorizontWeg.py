@@ -3,7 +3,7 @@ import cv2 as cv
 
 # Loading images
 img1 = cv.imread("/home/pi/FE_2025/Work/Bilder_machen/Bilder/Weg_vor_auto_04.01.2025.png")
-img2 = cv.imread("/home/pi/FE_2025/Data/Mask_white_top.png")
+img2 = cv.imread("/home/pi/FE_2025/Work/Bilder_machen/Bilder/Weg_vor_auto_04.01.2025_Mask_whitetop.png")
 
 # We want to put the logo on the top-left corner, so we create ROI
 rows, cols, channels = img2.shape
