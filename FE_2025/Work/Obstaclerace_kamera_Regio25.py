@@ -176,6 +176,9 @@ def linien_suchen(hsv_img):
     global reduced
     global stop_time
     global linie_korrigiert
+    global park_runde
+    global park_stop_time
+    
     
     if linien_counter == 12:
         if not reduced:
@@ -241,13 +244,20 @@ def linien_suchen(hsv_img):
                 linie_imbild = False
                 linie_korrigiert = False
                 L.led_B0()
+                if park_runde:
+                    park_stop_time = time.time() + 0.4
+                
+                
+                
+                
                 if linien_counter == 4 and Uturndetected == False:
                     if letzte_farbe == "G":
                         Uturn = False
                         Uturndetected = True
                         L.led_G21()
                     elif letzte_farbe == "R":
-                        Uturn = True
+                        #Uturn = True
+                        Uturn = False #No uturn in regio
                         Uturndetected = True
                         L.led_R21()
                     
@@ -287,7 +297,7 @@ def linien_suchen(hsv_img):
                         Uturndetected = True
                         L.led_G21()
                     elif letzte_farbe == "R":
-                        Uturn = True
+                        #Uturn = True
                         Uturndetected = True
                         L.led_R21()
         
@@ -405,7 +415,7 @@ def linie_uebersehen():
 
 #------------------------------------------------------------
     
-def einparken():
+def einparken_int():
     global current_direction
     global gesamt
     global geradeaus
@@ -538,7 +548,150 @@ def einparken():
             F.ruck(0.3)
             time.sleep(0.4)
             eingeparkt = True
+            
+#----------------------------------------------------
+    
+def einparken_lg():
+    global current_direction
+    global gesamt
+    global geradeaus
+    eingeparkt = False
+    linksMag = False
+    rechtsMag = False
+    hellLMag = 0
+    hellRMag = 0
+    ziel_winkel = 0.0
+    
+    
+    F.stop()
+    L.led_R21()
+    L.led_R1()
+    time.sleep(1.0)
+    if current_direction == "l":
+        F.nach_rechts()
+        F.ruck(0.3)
+        while gesamt > geradeaus +5:
+            time.sleep(0.1)
+            winkel, gesamt = G.Winkelmessen()
+        F.stop()
+        time.sleep(2.0)
+        F.gerade()
+        F.ruck(0.3)
+        time.sleep(1.6)
+        
+        #in Lücke wiggeln:)
+        
+        while not eingeparkt:
+            hsv_frame, bgr_frame = K.get_image_back()
+            linksMag, rechtsMag, hellLMag, hellRMag = K.waende_Magenta(hsv_frame)
+            parken_hellL, parken_hellR = K.parken_waende(bgr_frame)
+            
+            #if parken_hellL > parken_hellR:
+            if hellLMag > hellRMag:
+                F.nach_links()
+            else:
+                F.nach_rechts()
+            
+            if parken_hellL > 35000 or parken_hellR > 35000:
+                F.stop()
+                F.gerade()
+                F.ruck(0.3)
+                time.sleep(0.4)
+                eingeparkt = True
+        
+        
+        #hsv_frame, bgr_frame = K.get_image_back()
+        #linksMag, rechtsMag, hellLMag, hellRMag = K.waende_Magenta(hsv_frame)
+        #while hellLMag < 4500:
+            #geradeaus_lenken()
+            #hsv_frame, bgr_frame = K.get_image_back()
+            #linksMag, rechtsMag, hellLMag, hellRMag = K.waende_Magenta(hsv_frame)
+        
+def einparken_lr():
+    global current_direction
+    global gesamt
+    global geradeaus
+    eingeparkt = False
+    linksMag = False
+    rechtsMag = False
+    hellLMag = 0
+    hellRMag = 0
+    ziel_winkel = 0.0
+    
+    
+    F.stop()
+    L.led_R21()
+    L.led_R1()
+    time.sleep(1.0)
+    
+    eingeparkt = True
+    
+def einparken_rg():
+    global current_direction
+    global gesamt
+    global geradeaus
+    eingeparkt = False
+    linksMag = False
+    rechtsMag = False
+    hellLMag = 0
+    hellRMag = 0
+    ziel_winkel = 0.0
+    
+    
+    F.stop()
+    L.led_R21()
+    L.led_R1()
+    time.sleep(1.0)
+    
+    eingeparkt = True
+    
+def einparken_rr():    
+    global current_direction
+    global gesamt
+    global geradeaus
+    eingeparkt = False
+    linksMag = False
+    rechtsMag = False
+    hellLMag = 0
+    hellRMag = 0
+    ziel_winkel = 0.0
+    
+    
+    F.stop()
+    L.led_R21()
+    L.led_R1()
+    time.sleep(1.0)
+    
+    eingeparkt = True        
 
+def einparken():
+    global current_direction
+    global gesamt
+    global geradeaus
+    eingeparkt = False
+    linksMag = False
+    rechtsMag = False
+    hellLMag = 0
+    hellRMag = 0
+    ziel_winkel = 0.0
+    
+    F.stop()
+    L.led_R21()
+    L.led_R1()
+    time.sleep(1.0)
+    if current_direction == "l":
+        if letzte_farbe == "G":
+            einparken_lg()
+        else:
+            einparken_lr()
+                
+        
+    elif current_direction == "r":
+        if letzte_farbe == "G":
+            einparken_rg()
+        else:
+            einparken_rr()
+            
 #======================================================================
 #============================= mainprogram ============================
 #======================================================================     
@@ -559,29 +712,31 @@ try:
     time.sleep(0.5)
     L.leds_aus()
     start_program()
-    print("after start_program1")
 #check for obstacle color behind car for u-turn
     hsv_frame, bgr_frame = K.get_image_back()
     x, y, s, farbe = K.finde_hindernisse(hsv_frame)
-    print("after start_program2")
+    
     if time.time() > linien_zeit + 10.0:
         linie_uebersehen()
         
     if farbe == "R":
         #W.write_Log("red_detected")
-        Uturn = True
+        #Uturn = True
+        Uturn = False #No uturn in regio
         Uturndetected = True
         L.led_R21()
-
-        
+ 
     elif farbe == "G":
         #W.write_Log("green_detected")
         Uturndetected = True
         Uturn = False
         L.led_G21()
         
-    #else:
+    else:
         #W.write_Log("nichts_erkannt")
+        Uturndetected = True #No uturn in regio
+        Uturn = False #No uturn in regio
+        
     F.anfahren(speed)
     F.vor(speed)
 
@@ -592,7 +747,7 @@ try:
             if parken:
                 if not park_runde:
                     F.stop()
-                    L.led_countdown5()
+                    L.led_countdown3()
                     time.sleep(0.5)
                     #check for obstacle too near
                     x = 160
@@ -618,7 +773,7 @@ try:
                 Rennen_laeuft = False
         if park_runde and time.time() > park_stop_time:
             F.stop()
-            time.sleep(0.2)
+            time.sleep(2.0)
             L.led_G21()
             L.led_R21()
             L.led_W1()
@@ -637,12 +792,12 @@ try:
             #F.stop()
             break
         
-        elif NowUturn == True:
-            L.led_W1()
-            DoUturn()
-            L.led_W0()
-            messen()
-            linien_suchen(hsv_frame)
+        #elif NowUturn == True:
+           #L.led_W1()
+            #DoUturn()
+            #L.led_W0()
+            #messen()
+            #linien_suchen(hsv_frame)
             
 #==TEST==
         if test:
@@ -678,6 +833,10 @@ try:
                     park_stop_time = time.time() + 0.0
                 elif current_direction == "r":
                     park_stop_time = time.time() + 0.0
+                    
+                    
+                    
+                    
             
         if hellLMag > 9600 and hellRMag > 9600:
             if current_direction == "l":
