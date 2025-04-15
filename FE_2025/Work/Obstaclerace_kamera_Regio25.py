@@ -415,7 +415,7 @@ def linie_uebersehen():
 
 #------------------------------------------------------------
     
-def einparken_int():
+def einparken_inter():
     global current_direction
     global gesamt
     global geradeaus
@@ -623,9 +623,39 @@ def einparken_lr():
     L.led_R21()
     L.led_R1()
     time.sleep(1.0)
-    
-    eingeparkt = True
-    
+    if current_direction == "l":
+        F.nach_rechts()
+        F.ruck(0.3)
+        while gesamt > geradeaus +5:
+            time.sleep(0.1)
+            winkel, gesamt = G.Winkelmessen()
+        F.stop()
+        time.sleep(2.0)
+        F.gerade()
+        F.ruck(0.3)
+        time.sleep(1.0)
+        
+        #in Lücke wiggeln:)
+        
+        while not eingeparkt:
+            hsv_frame, bgr_frame = K.get_image_back()
+            linksMag, rechtsMag, hellLMag, hellRMag = K.waende_Magenta(hsv_frame)
+            parken_hellL, parken_hellR = K.parken_waende(bgr_frame)
+            
+            #if parken_hellL > parken_hellR:
+            if hellLMag > hellRMag:
+                F.nach_links()
+            else:
+                F.nach_rechts()
+            
+            if parken_hellL > 35000 or parken_hellR > 35000:
+                F.stop()
+                F.gerade()
+                F.ruck(0.3)
+                time.sleep(0.4)
+                eingeparkt = True
+        
+
 def einparken_rg():
     global current_direction
     global gesamt
@@ -642,6 +672,11 @@ def einparken_rg():
     L.led_R21()
     L.led_R1()
     time.sleep(1.0)
+    
+    F.geradeaus(0.4)
+    time.sleep(0.3)
+    geradeaus - 90
+    if U.distanz_v()
     
     eingeparkt = True
     
@@ -685,7 +720,6 @@ def einparken():
         else:
             einparken_lr()
                 
-        
     elif current_direction == "r":
         if letzte_farbe == "G":
             einparken_rg()
@@ -865,7 +899,7 @@ try:
                 else:
                     F.nach_rechts()
                 
-                if U.distanz_V() < 5.0:
+                if U.distanz_V() < 6.0:
                     F.stop()
                     time.sleep(0.2)
 #check ob linie verpasst
