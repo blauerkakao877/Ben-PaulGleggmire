@@ -249,7 +249,7 @@ try:
     start_program()
     F.anfahren(startspeed)
     F.vor(startspeed)
-    if linien_counter < 1:
+    if linien_counter > 1:
         F.vor(speed)
     
 #====================Beginn der Hauptschleife=========================
@@ -272,6 +272,7 @@ try:
             L.led_Y1()
             F.stop()
             F.gerade()
+            L.led_countdown5()
             break
 #==TEST==
         if test:
@@ -372,11 +373,13 @@ try:
     L.led_ende()
     L.led_R1()
     L.led_G1()
+    L.led_Y1()
     
 
 except KeyboardInterrupt:
     F.gerade()
     F.stop()
     L.leds_aus()
+    L.led_Y1()
     print("Program stopped by the user.")
     

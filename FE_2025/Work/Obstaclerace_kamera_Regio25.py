@@ -676,7 +676,8 @@ def einparken_rg():
     F.geradeaus(0.4)
     time.sleep(0.3)
     geradeaus - 90
-    if U.distanz_v()
+    F.stop()
+    #if U.distanz_v()
     
     eingeparkt = True
     
@@ -812,7 +813,31 @@ try:
             L.led_R21()
             L.led_W1()
             einparken()
-            break
+            if current_direction == "l":
+                if (geradeaus <= -1190):
+                    F.stop()
+                    F.geradeaus()
+                    F.vor(0.3)
+                    time.sleep(0.5)
+                    F.stop()
+                    F.ruck(0.3)
+                    time.sleep(0.6)
+                    F.stop()
+                    L.led_test_R2()
+                    L.led_test_G2()
+                    
+                if (geradeaus >= -1150):
+                    F.stop()
+                    F.geradeaus()
+                    F.vor(0.3)
+                    time.sleep(0.5)
+                    F.stop()
+                    F.ruck(0.3)
+                    time.sleep(0.6)
+                    F.stop()
+                    L.led_test_R2()
+                    L.led_test_G2()
+            break #==============================Ende-nach-Parken==============================================
             
         messen()
         linien_suchen(hsv_frame)

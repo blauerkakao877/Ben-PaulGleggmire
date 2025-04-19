@@ -351,6 +351,22 @@ def led_countdown5():
 #++++++++++++++++++++++++++++++++++++++++++++++++++++
     
     
+def led_countdown3():
+    leds_aus()
+    time.sleep(0.1)
+    led_Y1()
+    time.sleep(1.0)
+    led_W1()
+    time.sleep(1.0)
+    led_G21()
+    time.sleep(1.0)
+    leds_aus()
+    led_Y1()
+
+
+#++++++++++++++++++++++++++++++++++++++++++++++++++++
+    
+    
 def led_obstaclerace():
     leds_aus()
     led_R1()
@@ -539,7 +555,8 @@ if __name__ == '__main__':
         leds_aus()
         #led_start()
         leds_aus()
-        led_obstaclerace()
+        #led_obstaclerace()
+        led_test_R2()
         
                     
              
