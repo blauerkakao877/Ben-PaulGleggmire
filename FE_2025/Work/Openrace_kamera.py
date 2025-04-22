@@ -66,7 +66,7 @@ current_direction = "n"
 linie = False
 linien_zeit = 0
 linien_counter = 0
-stop_time = time.time() + 180.0 
+stop_time = time.time() + 1800.0 
 x = 0
 y = 0
 s = 0
@@ -101,10 +101,13 @@ def start_program():
     global linien_zaehlen
     global linien_warten
     global end_time
+    global stop_time
     
     G.gyro_start()
     K.init("open")
+    stop_time = time.time() + 1800.0 
     L.leds_aus()
+    
     if slow1:
         speed = speed1
         startspeed = startspeed1
@@ -382,4 +385,8 @@ except KeyboardInterrupt:
     L.leds_aus()
     L.led_Y1()
     print("Program stopped by the user.")
+    
+except:
+    L.leds_an()
+    F.stop()
     

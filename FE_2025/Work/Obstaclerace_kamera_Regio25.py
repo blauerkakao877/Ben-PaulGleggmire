@@ -13,7 +13,6 @@ import Ultrasonic as U
 import Write_Logfile as W
 import sys
 
-
 # Initialize MotorKit and ServoKit
 Mkit = MotorKit(i2c=board.I2C())
 Skit = ServoKit(channels=16)
@@ -667,17 +666,41 @@ def einparken_rg():
     hellRMag = 0
     ziel_winkel = 0.0
     
-    
     F.stop()
-    L.led_R21()
-    L.led_R1()
+    L.led_W1()
     time.sleep(1.0)
+    F.vor(0.3)
+    F.nach_links()
+    while gesamt > geradeaus -85:
+        time.sleep(0.1)
+        winkel, gesamt = G.Winkelmessen()
+    F.gerade()
     
-    F.geradeaus(0.4)
-    time.sleep(0.3)
-    geradeaus - 90
+    F.vor(0.5)
+    while U.distanz_V() > 8.0:
+        time.sleep(0.1)
+    time.sleep(0.5)
     F.stop()
-    #if U.distanz_v()
+    time.sleep(0.3)
+    F.vor(0.5)
+    time.sleep(1.0)
+    F.stop()
+    time.sleep(0.1)
+    
+    F.ruck(0.3)
+    
+    while U.distanz_V() < 8.0:
+        time.sleep(0.1)
+    F.nach_rechts()
+    
+    while gesamt > geradeaus -180:
+        time.sleep(0.1)
+        winkel, gesamt = G.Winkelmessen()
+    F.stop()
+    F.vor(0.3)
+    F.gerade()
+    L.led_test_R2()
+    
     
     eingeparkt = True
     
@@ -788,18 +811,19 @@ try:
                     x = 160
                     messen()
                     if current_direction == "r":
-                       if x < 160:
-                            F.gerade()
-                            F.ruck(0.3)
-                            time.sleep(1.0)
-                            F.stop()
+                        park_stop_time = time.time() + 0.4
+                        #if x < 160:
+                            #F.gerade()
+                            #F.ruck(0.3)
+                            #time.sleep(1.0)
+                            #F.stop()
                             
-                    if current_direction == "l":
-                        if x > 160:
-                            F.gerade()
-                            F.ruck(0.3)
-                            time.sleep(1.0)
-                            F.stop()
+                    #if current_direction == "l":
+                        #if x > 160:
+                            #F.gerade()
+                            #F.ruck(0.3)
+                            #time.sleep(1.0)
+                            #F.stop()
                         
                     F.anfahren(speed)
                     F.vor(speed)
@@ -813,30 +837,30 @@ try:
             L.led_R21()
             L.led_W1()
             einparken()
-            if current_direction == "l":
-                if (geradeaus <= -1190):
-                    F.stop()
-                    F.geradeaus()
-                    F.vor(0.3)
-                    time.sleep(0.5)
-                    F.stop()
-                    F.ruck(0.3)
-                    time.sleep(0.6)
-                    F.stop()
-                    L.led_test_R2()
-                    L.led_test_G2()
+            #if current_direction == "l":
+                #if (geradeaus <= -1190):
+                    #F.stop()
+                    #F.geradeaus()
+                    #F.vor(0.3)
+                    #time.sleep(0.5)
+                    #F.stop()
+                    #F.ruck(0.3)
+                    #time.sleep(0.6)
+                    #F.stop()
+                    #L.led_test_R2()
+                    #L.led_test_G2()
                     
-                if (geradeaus >= -1150):
-                    F.stop()
-                    F.geradeaus()
-                    F.vor(0.3)
-                    time.sleep(0.5)
-                    F.stop()
-                    F.ruck(0.3)
-                    time.sleep(0.6)
-                    F.stop()
-                    L.led_test_R2()
-                    L.led_test_G2()
+                #if (geradeaus >= -1150):
+                    #F.stop()
+                    #F.geradeaus()
+                    #F.vor(0.3)
+                    #time.sleep(0.5)
+                    #F.stop()
+                    #F.ruck(0.3)
+                    #time.sleep(0.6)
+                    #F.stop()
+                    #L.led_test_R2()
+                    #L.led_test_G2()
             break #==============================Ende-nach-Parken==============================================
             
         messen()
