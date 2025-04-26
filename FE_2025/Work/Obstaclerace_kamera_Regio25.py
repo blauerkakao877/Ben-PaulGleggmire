@@ -17,7 +17,7 @@ import sys
 Mkit = MotorKit(i2c=board.I2C())
 Skit = ServoKit(channels=16)
 
-# Constants and Variables
+#Constants and Variables
 speed = 0.47
 startspeed = 0.47
 steerangle = 95
@@ -98,7 +98,7 @@ def start_program():
     while GPIO.input(BUTTON_PIN):
         time.sleep(0.1)
     print("Program started! regio")
-    #W.write_Log("program_started")
+    W.write_Log("program_started Parken Test")
     time.sleep(0.5)
     stop_time = time.time() + 18000.0
     park_stop_time = time.time() + 18000.0
@@ -110,7 +110,7 @@ def stop_program():
     L.led_ende()
     L.led_R1()
     L.led_G1()
-    #W.close_Log()
+    W.close_Log()
     sys.exit()
 
 def geradeaus_lenken():
@@ -655,7 +655,7 @@ def einparken_lr():
                 eingeparkt = True
         
 
-def einparken_rg():
+def einparken_r():
     global current_direction
     global gesamt
     global geradeaus
@@ -668,7 +668,7 @@ def einparken_rg():
     
     F.stop()
     L.led_W1()
-    time.sleep(1.0)
+    time.sleep(2.0)
     F.vor(0.3)
     F.nach_links()
     while gesamt > geradeaus -85:
@@ -679,50 +679,79 @@ def einparken_rg():
     F.vor(0.5)
     while U.distanz_V() > 8.0:
         time.sleep(0.1)
-    time.sleep(0.5)
+    time.sleep(0.2)
     F.stop()
-    time.sleep(0.3)
     F.vor(0.5)
-    time.sleep(1.0)
+    time.sleep(1.2)
     F.stop()
     time.sleep(0.1)
     
     F.ruck(0.3)
     
-    while U.distanz_V() < 8.0:
+    while U.distanz_V() < 6.0:
         time.sleep(0.1)
     F.nach_rechts()
     
-    while gesamt > geradeaus -180:
+    while gesamt > geradeaus -185:
         time.sleep(0.1)
         winkel, gesamt = G.Winkelmessen()
     F.stop()
-    F.vor(0.3)
-    F.gerade()
+    
+    #W.write_Log("geradeaus Richtung vor -180: ")
+    #W.write_Log(str(geradeaus))
+    #W.write_Log("Gyro Richtung vor -180: ")
+    #W.write_Log(str(gesamt))
+     
+    current_direction = "l"
+    geradeaus = gesamt
+    
+    #W.write_Log("geradeaus Richtung nach -180: ")
+    #W.write_Log(str(geradeaus))
+    #W.write_Log("Gyro Richtung nach -180: ")
+    #W.write_Log(str(gesamt))
+    #W.close_Log()
+    geradeaus_lenken()
     L.led_test_R2()
     
     
-    eingeparkt = True
-    
-def einparken_rr():    
-    global current_direction
-    global gesamt
-    global geradeaus
-    eingeparkt = False
-    linksMag = False
-    rechtsMag = False
-    hellLMag = 0
-    hellRMag = 0
-    ziel_winkel = 0.0
-    
-    
+    hsv_frame, bgr_frame = K.get_image_back()
+    linksMag, rechtsMag, hellLMag, hellRMag = K.waende_Magenta(hsv_frame)
+    F.vor(0.3)
+    while hellLMag < 5500:
+        geradeaus_lenken()
+        hsv_frame, bgr_frame = K.get_image_back()
+        linksMag, rechtsMag, hellLMag, hellRMag = K.waende_Magenta(hsv_frame)
+            
     F.stop()
-    L.led_R21()
-    L.led_R1()
-    time.sleep(1.0)
+    L.leds_aus()
+    F.parken_rechts()
+    F.ruck(0.3)
+        
+    while gesamt > geradeaus -90:
+        time.sleep(0.1)
+        winkel, gesamt = G.Winkelmessen()
+    F.stop()
+    F.gerade()
+    F.ruck(0.3)
+         
+    park_stop = time.time() + 1.0
+    while not eingeparkt:
+        hsv_frame, bgr_frame = K.get_image_back()
+        linksMag, rechtsMag, hellLMag, hellRMag = K.waende_Magenta(hsv_frame)
+        parken_hellL, parken_hellR = K.parken_waende(bgr_frame)
+        
+        if hellLMag > hellRMag:
+            F.nach_links()
+        else:
+            F.nach_rechts()
+        
+        if parken_hellL > 35000 or parken_hellR > 35000 or time.time() > park_stop:
+            F.stop()
+            F.gerade()
+            F.ruck(0.3)
+            time.sleep(0.4)
+            eingeparkt = True
     
-    eingeparkt = True        
-
 def einparken():
     global current_direction
     global gesamt
@@ -745,10 +774,7 @@ def einparken():
             einparken_lr()
                 
     elif current_direction == "r":
-        if letzte_farbe == "G":
-            einparken_rg()
-        else:
-            einparken_rr()
+        einparken_r()
             
 #======================================================================
 #============================= mainprogram ============================
@@ -757,7 +783,7 @@ def einparken():
 try:
     if test:
         speed = 0.0
-    #W.open_Log(True)
+    W.open_Log(True)
     F.gerade()
     L.leds_aus()
     L.led_obstaclerace()
@@ -778,20 +804,20 @@ try:
         linie_uebersehen()
         
     if farbe == "R":
-        #W.write_Log("red_detected")
+        W.write_Log("red_detected")
         #Uturn = True
         Uturn = False #No uturn in regio
         Uturndetected = True
         L.led_R21()
  
     elif farbe == "G":
-        #W.write_Log("green_detected")
+        W.write_Log("green_detected")
         Uturndetected = True
         Uturn = False
         L.led_G21()
         
     else:
-        #W.write_Log("nichts_erkannt")
+        W.write_Log("nichts_erkannt")
         Uturndetected = True #No uturn in regio
         Uturn = False #No uturn in regio
         
@@ -884,7 +910,7 @@ try:
             
 #==TEST==
         if test:
-            #W.write_Log("started_in_testmode")
+            W.write_Log("started_in_testmode")
             if farbe == "R":
                 cv2.line(bgr_frame, (x, 0), (x, hoehe), (0, 0, 255), 2)
             if farbe == "G":
@@ -1064,5 +1090,10 @@ except KeyboardInterrupt:
     F.gerade()
     F.stop()
     L.leds_aus()
+    W.close_Log()
     print("Program stopped by the user keyboard.")
     
+except:
+    L.leds_an()
+    F.stop()
+    W.close_Log()
