@@ -734,7 +734,7 @@ def einparken_r():
     F.gerade()
     F.ruck(0.3)
          
-    park_stop = time.time() + 1.0
+    park_stop = time.time() + 2.0
     while not eingeparkt:
         hsv_frame, bgr_frame = K.get_image_back()
         linksMag, rechtsMag, hellLMag, hellRMag = K.waende_Magenta(hsv_frame)
@@ -751,7 +751,20 @@ def einparken_r():
             F.ruck(0.3)
             time.sleep(0.4)
             eingeparkt = True
-    
+         
+    winkel, gesamt = G.Winkelmessen()
+    park_stop = time.time() + 1.0
+    geradeaus = geradeaus -90
+    F.vor(0.3)
+    while time.time() < park_stop:
+        geradeaus_lenken()
+        time.sleep(0.1)
+    F.stop()
+    F.gerade()
+    F.ruck(0.3)
+    time.sleep(2.0)
+    F.stop()
+        
 def einparken():
     global current_direction
     global gesamt
