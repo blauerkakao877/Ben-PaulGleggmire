@@ -846,11 +846,9 @@ try:
         if time.time() > stop_time and not park_runde:
             F.stop()
             L.led_countdown3()
-            if not parken:
+            if (not parken) or (parken_aus):
                 Rennen_laeuft = False
             else:
-                if parken_aus:
-                    Rennen_laeuft = False
                 if not park_runde:
                     #check for obstacle too near
                     x = 160
@@ -876,7 +874,7 @@ try:
 
         if park_runde and time.time() > park_stop_time:
             F.stop()
-            time.sleep(2.0)
+            time.sleep(1.0)
             L.led_G21()
             L.led_R21()
             L.led_W1()
@@ -1061,7 +1059,7 @@ try:
                 elif s < 100:
                     steeringpoint = 30
                     
-                if s >= 100:
+                if s > 100:
                     F.ausweichen_links()
                     h_zeit = time.time()
                 elif  x < 320 - steeringpoint and x > 0:
