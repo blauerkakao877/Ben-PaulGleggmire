@@ -71,7 +71,8 @@ steeringpoint = 60
 #==TEST==
 test = False
 #==Parken==
-parken = True
+parken = False
+parken_aus = True
 
 # Setup GPIO
 GPIO.setmode(GPIO.BCM)
@@ -253,7 +254,7 @@ def linien_suchen(hsv_img):
                     if letzte_farbe == "G":
                         Uturn = False
                         Uturndetected = True
-                        L.led_G21()
+                        #L.led_G21()
                     elif letzte_farbe == "R":
                         #Uturn = True
                         Uturn = False #No uturn in regio
@@ -294,7 +295,7 @@ def linien_suchen(hsv_img):
                     if letzte_farbe == "G":
                         Uturn = False
                         Uturndetected = True
-                        L.led_G21()
+                        #L.led_G21()
                     elif letzte_farbe == "R":
                         #Uturn = True
                         Uturndetected = True
@@ -780,15 +781,17 @@ def einparken():
     L.led_R21()
     L.led_R1()
     time.sleep(1.0)
-    if current_direction == "l":
-        if letzte_farbe == "G":
-            einparken_lg()
-        else:
-            einparken_lr()
-                
-    elif current_direction == "r":
-        einparken_r()
-            
+    if not parken_aus:
+        if current_direction == "l":
+            if letzte_farbe == "G":
+                einparken_lg()
+            else:
+                einparken_lr()
+        elif current_direction == "r":
+            einparken_r()
+    elif parken_aus:
+        Rennen_laeuft = False
+
 #======================================================================
 #============================= mainprogram ============================
 #======================================================================     
@@ -827,7 +830,7 @@ try:
         W.write_Log("green_detected")
         Uturndetected = True
         Uturn = False
-        L.led_G21()
+        #L.led_G21()
         
     else:
         W.write_Log("nichts_erkannt")
@@ -841,11 +844,14 @@ try:
     
     while not GPIO.input(BUTTON_PIN) and Rennen_laeuft:
         if time.time() > stop_time and not park_runde:
-            if parken:
+            F.stop()
+            L.led_countdown3()
+            if not parken:
+                Rennen_laeuft = False
+            else:
+                if parken_aus:
+                    Rennen_laeuft = False
                 if not park_runde:
-                    F.stop()
-                    L.led_countdown3()
-                    time.sleep(0.5)
                     #check for obstacle too near
                     x = 160
                     messen()
@@ -867,8 +873,7 @@ try:
                     F.anfahren(speed)
                     F.vor(speed)
                     park_runde = True
-            else:
-                Rennen_laeuft = False
+
         if park_runde and time.time() > park_stop_time:
             F.stop()
             time.sleep(2.0)
@@ -956,10 +961,7 @@ try:
                 elif current_direction == "r":
                     park_stop_time = time.time() + 0.0
                     
-                    
-                    
-                    
-            
+                     
         if hellLMag > 9600 and hellRMag > 9600:
             if current_direction == "l":
                 F.nach_links()
@@ -1094,7 +1096,11 @@ try:
                      #   F.nach_rechts()
                     #else:
                     geradeaus_lenken()
-                    
+                   
+        if (parken == False) and (hellLMag > 1000 or hellRMag > 1000):
+            parken = True
+            parken_aus = False
+            L.led_G21()
 #-----------------------END--------------------------
     stop_program()
     
