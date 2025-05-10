@@ -203,6 +203,7 @@ def linien_suchen(hsv_img):
     if  (linien_counter == 12) or ((linien_counter == 8) and (Uturn == True) and (Uturndone == False)):
         hsv_crop = hsv_img[50:round(hoehe/2), 90:230]
         
+        
     else:
         if current_direction == "l":
 #nach links verschieben, damit linie orange nicht 2 mal gezählt wird und crash auf innenecke kommt
@@ -669,10 +670,10 @@ def einparken_r():
     
     F.stop()
     L.led_W1()
-    time.sleep(2.0)
+    time.sleep(0.5)
     F.vor(0.3)
     F.nach_links()
-    while gesamt > geradeaus -85:
+    while gesamt > 995:
         time.sleep(0.1)
         winkel, gesamt = G.Winkelmessen()
     F.gerade()
@@ -693,7 +694,7 @@ def einparken_r():
         time.sleep(0.1)
     F.nach_rechts()
     
-    while gesamt > geradeaus -185:
+    while gesamt > 895:
         time.sleep(0.1)
         winkel, gesamt = G.Winkelmessen()
     F.stop()
@@ -780,7 +781,17 @@ def einparken():
     F.stop()
     L.led_R21()
     L.led_R1()
-    time.sleep(1.0)
+    time.sleep(0.5)
+    if (current_direction == "r") and (gesamt > 1080):
+        while gesamt > 1080:
+            F.nach_rechts()
+            F.ruck(0.3)
+            time.sleep(0.1)
+            winkel, gesamt = G.Winkelmessen()
+        F.ruck(0.3)
+        time.sleep(2.3)
+        F.stop()
+    
     if not parken_aus:
         if current_direction == "l":
             if letzte_farbe == "G":
@@ -788,7 +799,10 @@ def einparken():
             else:
                 einparken_lr()
         elif current_direction == "r":
-            einparken_r()
+            if letzte_farbe == "R":
+                einparken_r()
+            else:
+                einparken_r()
     elif parken_aus:
         Rennen_laeuft = False
 
@@ -1095,7 +1109,7 @@ try:
                     #else:
                     geradeaus_lenken()
                    
-        if (parken == False) and (hellLMag > 1000 or hellRMag > 1000):
+        if (parken == False) and (hellLMag > 6000 or hellRMag > 6000):
             parken = True
             parken_aus = False
             L.led_G21()
