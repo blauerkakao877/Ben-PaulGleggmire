@@ -50,7 +50,7 @@ linien_zaehlen_RR = 0.01  #Rechts+Rot
 blaue_linie = False
 orange_linie = False
 hindernis = False
-h_warten = 0.65
+h_warten = 0.7 #0.65
 h_zeit = 0.0
 gesamt = 0.0
 Rennen_laeuft = True
@@ -789,7 +789,7 @@ def einparken():
             time.sleep(0.1)
             winkel, gesamt = G.Winkelmessen()
         F.ruck(0.3)
-        time.sleep(2.3)
+        time.sleep(1.6)
         F.stop()
     
     if not parken_aus:
