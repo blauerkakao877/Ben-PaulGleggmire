@@ -71,8 +71,8 @@ steeringpoint = 60
 #==TEST==
 test = False
 #==Parken==
-parken = False
-parken_aus = True
+parken = False    #!!unten "if" auskommentieren um Parken wirklich aus zu schalten!!
+parken_aus = True #!!unten "if" auskommentieren um Parken wirklich aus zu schalten!!
 
 # Setup GPIO
 GPIO.setmode(GPIO.BCM)
@@ -239,7 +239,6 @@ def linien_suchen(hsv_img):
             if blaue_linie and time.time() - linien_zeit > linien_zaehlen:
                 linien_counter = linien_counter + 1
                 L.led_B1()
-                #geradeaus = linien_counter*(-90)
                 geradeaus =  geradeaus - 90
                 blaue_linie = False
                 linie_imbild = False
@@ -260,7 +259,7 @@ def linien_suchen(hsv_img):
                         #Uturn = True
                         Uturn = False #No uturn in regio
                         Uturndetected = True
-                        L.led_R21()
+                        #L.led_R21()
                     
     elif current_direction == "r":
         if (time.time() - linien_zeit) > linien_warten:
@@ -286,7 +285,6 @@ def linien_suchen(hsv_img):
             if orange_linie and time.time() - linien_zeit > linien_zaehlen:
                 linien_counter = linien_counter + 1
                 L.led_O1()
-                #geradeaus = linien_counter*(90)
                 geradeaus = geradeaus + 90
                 orange_linie = False
                 linie_imbild = False
@@ -300,7 +298,7 @@ def linien_suchen(hsv_img):
                     elif letzte_farbe == "R":
                         #Uturn = True
                         Uturndetected = True
-                        L.led_R21()
+                        #L.led_R21()
         
     else:
         b_linie = K.finde_blau(hsv_crop)
@@ -568,6 +566,9 @@ def einparken_lg():
     L.led_R21()
     L.led_R1()
     time.sleep(1.0)
+    F.vor(0.3)
+    time.sleep(0.5)
+    F.stop()
     if current_direction == "l":
         F.nach_rechts()
         F.ruck(0.3)
@@ -575,10 +576,10 @@ def einparken_lg():
             time.sleep(0.1)
             winkel, gesamt = G.Winkelmessen()
         F.stop()
-        time.sleep(2.0)
+        time.sleep(1.0)
         F.gerade()
         F.ruck(0.3)
-        time.sleep(1.6)
+        time.sleep(1.6)   #///////////////////////////vlt anpassen////////////////////////////////
         
         #in Lücke wiggeln:)
         
@@ -782,7 +783,7 @@ def einparken():
     L.led_R21()
     L.led_R1()
     time.sleep(0.5)
-    if (current_direction == "r") and (gesamt > 1080):
+    if (current_direction == "r") and (gesamt > 1080):      #///////////////vlt hier noch "and if not (parken_aus)"////////////////
         while gesamt > 1080:
             F.nach_rechts()
             F.ruck(0.3)
@@ -823,7 +824,7 @@ try:
     time.sleep(0.3)
     L.led_Y1()
     L.led_W1()
-    time.sleep(0.5)
+    time.sleep(0.3)
     L.leds_aus()
     start_program()
 #check for obstacle color behind car for u-turn
@@ -838,7 +839,7 @@ try:
         #Uturn = True
         Uturn = False #No uturn in regio
         Uturndetected = True
-        L.led_R21()
+        #L.led_R21()
  
     elif farbe == "G":
         W.write_Log("green_detected")
@@ -893,30 +894,6 @@ try:
             L.led_R21()
             L.led_W1()
             einparken()
-            #if current_direction == "l":
-                #if (geradeaus <= -1190):
-                    #F.stop()
-                    #F.geradeaus()
-                    #F.vor(0.3)
-                    #time.sleep(0.5)
-                    #F.stop()
-                    #F.ruck(0.3)
-                    #time.sleep(0.6)
-                    #F.stop()
-                    #L.led_test_R2()
-                    #L.led_test_G2()
-                    
-                #if (geradeaus >= -1150):
-                    #F.stop()
-                    #F.geradeaus()
-                    #F.vor(0.3)
-                    #time.sleep(0.5)
-                    #F.stop()
-                    #F.ruck(0.3)
-                    #time.sleep(0.6)
-                    #F.stop()
-                    #L.led_test_R2()
-                    #L.led_test_G2()
             break #==============================Ende-nach-Parken==============================================
             
         messen()
@@ -1113,6 +1090,8 @@ try:
             parken = True
             parken_aus = False
             L.led_G21()
+            
+            
 #-----------------------END--------------------------
     stop_program()
     
