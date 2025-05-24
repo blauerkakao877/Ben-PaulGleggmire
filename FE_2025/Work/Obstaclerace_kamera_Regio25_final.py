@@ -855,6 +855,32 @@ def einparken():
                 einparken_r()
     elif parken_aus:
         Rennen_laeuft = False
+        
+def ausparken(hsv_frame):
+    global geradeaus
+    global current_direction
+    ausfahrt_L, ausfahrt_R = K.finde_ausfahrt(hsv_frame)
+    if ausfahrt_L:
+        winkel, gesamt = G.Winkelmessen()
+        geradeaus = 0
+        current_direction = "l"
+        F.parken_links()
+        F.vor(0.25)
+        while gesamt > geradeaus -70:
+            winkel, gesamt = G.Winkelmessen()
+            time.sleep(0.01)
+        F.gerade()
+        F.vor(0.3)
+        time.sleep(0.5)
+        F.stop()
+        F.parken_rechts()
+        F.vor(0.3)
+        while gesamt < geradeaus:
+            winkel, gesamt = G.Winkelmessen()
+            time.sleep(0.01)
+        F.stop()
+        F.anfahren(speed)
+        F.vor(speed)
 
 #======================================================================
 #============================= mainprogram ============================
@@ -879,7 +905,6 @@ try:
 #check for obstacle color behind car for u-turn
     hsv_frame, bgr_frame = K.get_image_back()
     x, y, s, farbe = K.finde_hindernisse(hsv_frame)
-    
     if time.time() > linien_zeit + 10.0:
         linie_uebersehen()
  
@@ -899,10 +924,12 @@ try:
         Uturndetected = True #No uturn in regio
         Uturn = False #No uturn in regio
 
-
+#-----------prüfe ob in Parkbox------------------
     if U.distanz_V() < 50.0:
         F.stop()
+        hsv_frame, bgr_frame = K.get_image()
         start_parkbande = True
+        ausparken()
     elif U.distanz_V() > 50.0:
         F.anfahren(speed)
         F.vor(speed)
