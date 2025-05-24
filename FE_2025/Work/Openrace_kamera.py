@@ -28,7 +28,7 @@ end_time = 2.0            #wartezeit bis auto nach letzter kurve anhält
 #---------------------
 # kopiervorlagen für versch geschwindigkeiten
 #langsam
-slow1 = True #False
+slow1 = False #True
 speed1 = 0.45
 startspeed1 = 0.45
 linien_zaehlen_b1 =  0.52  #wartezeit bis linie ausgewertet wird
@@ -44,16 +44,16 @@ linien_zaehlen_b2 =  0.33  #wartezeit bis linie ausgewertet wird
 linien_zaehlen_o2 =  0.33  #wartezeit bis linie ausgewertet wird
 linien_zaehlen2 =  0.33    #wartezeit bis linie ausgewertet wird
 linien_warten2 = 0.70      #vermeidet das linien mehrmals gezählt werden
-end_time2 = 1.5            #wartezeit bis auto nach letzter kurve anhält
+end_time2 = 1.6            #wartezeit bis auto nach letzter kurve anhält
 #schnell !!!ACHTUNG UNSICHER!!!
-fast3 = False
-speed3 = 0.60
-startspeed3 = 0.65
-linien_zaehlen_b3 =  0.28  #0.4 #0.44 #wartezeit bis linie ausgewertet wird
-linien_zaehlen_o3 =  0.28  #0.4 #0.54 #wartezeit bis linie ausgewertet wird
-linien_zaehlen3 =  0.28    #0.4 #0.21 #wartezeit bis linie ausgewertet wird
-linien_warten3 = 0.70      #vermeidet das linien mehrmals gezählt werden
-end_time3 = 1.2            #wartezeit bis auto nach letzter kurve anhält
+fast3 = True #False
+speed3 = 0.75 #0.75
+startspeed3 = 0.87 #0.85
+linien_zaehlen_b3 = 0.18 #0.28 #wartezeit bis linie ausgewertet wird
+linien_zaehlen_o3 = 0.18 #0.28 #wartezeit bis linie ausgewertet wird
+linien_zaehlen3 = 0.18 #0.28   #wartezeit bis linie ausgewertet wird
+linien_warten3 = 0.50 #0.70     #vermeidet das linien mehrmals gezählt werden
+end_time3 = 1.2 #1.3           #wartezeit bis auto nach letzter kurve anhält
 ########################
 
 steerangle = 95

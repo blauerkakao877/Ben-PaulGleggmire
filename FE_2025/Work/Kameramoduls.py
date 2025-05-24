@@ -487,12 +487,12 @@ def waende_Magenta(hsv_img):
     #print("maxR :",maxHistR)
     
     # Seitenkollisionen:
-    if maxHistL > 10000:    #10000
+    if maxHistL > 9000:    #10000
         kollL = True
     else:
         kollL = False
     
-    if maxHistR > 10000:    #10000
+    if maxHistR > 9000:    #10000
         kollR = True
     else:
         kollR = False
@@ -507,7 +507,7 @@ def waende_Magenta(hsv_img):
     hellR = maxHistR
 
     return kollL, kollR, hellL, hellR
-
+    
 #--------------------HINDERNISSE--------------------------------
 def finde_rot(hsv_img):
     global hindernis_detector
@@ -634,7 +634,7 @@ if __name__ == '__main__':
                 x = round(x_pos)
                 if b_linie:
                     cv2.line(bgr_bild, (0, 178), (320, 178), (255, 0, 0), 2)
-                if o_linie:	
+                if o_linie:
                     cv2.line(bgr_bild, (0, 180), (320, 180), (0, 128, 255), 2)
                 if farbe == "R":
                     cv2.line(bgr_bild, (x, 0), (x, hoehe), (0, 0, 255), 2)
