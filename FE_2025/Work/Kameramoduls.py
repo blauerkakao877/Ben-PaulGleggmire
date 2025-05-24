@@ -507,7 +507,33 @@ def waende_Magenta(hsv_img):
     hellR = maxHistR
 
     return kollL, kollR, hellL, hellR
+ 
+#----------------------------------------------------
+ 
+def finde_ausfahrt(hsv_img):
+    global hoehe
+    ausfahrt_L = False
+    ausfahrt_R = False
     
+# finde wände
+    crop_image = hsv_img
+    mask = wand_Magenta_filter(crop_image)
+
+# Betrachte linke und rechte Seite getrennt, nur Ausschnitt
+    maskL = mask[0:150, 20:159]
+    maskR = mask[0:150, 160:300]
+    
+#histogramm, um Höhe der Wände zu bestimmen
+    histL = np.sum(maskL, axis=0)
+    histR = np.sum(maskR, axis=0)
+    while (histL[150 -i] > 0) and (histR[i] >0):
+        i = i+1
+    if histL[150 -i] == 0:
+        ausfahrt_L = True
+    else:
+        ausfahrt_R = True
+    
+    return ausfahrt_L, ausfahrt_R
 #--------------------HINDERNISSE--------------------------------
 def finde_rot(hsv_img):
     global hindernis_detector
