@@ -514,21 +514,22 @@ def finde_ausfahrt(hsv_img):
     global hoehe
     ausfahrt_L = False
     ausfahrt_R = False
+    i = 1
     
-# finde wände
+#finde wände
     crop_image = hsv_img
     mask = wand_Magenta_filter(crop_image)
 
-# Betrachte linke und rechte Seite getrennt, nur Ausschnitt
+#Betrachte linke und rechte Seite getrennt, nur Ausschnitt
     maskL = mask[0:150, 20:159]
     maskR = mask[0:150, 160:300]
     
 #histogramm, um Höhe der Wände zu bestimmen
     histL = np.sum(maskL, axis=0)
     histR = np.sum(maskR, axis=0)
-    while (histL[150 -i] > 0) and (histR[i] >0):
+    while (histL[139 -i] > 0) and (histR[i] >0):
         i = i+1
-    if histL[150 -i] == 0:
+    if histL[139 -i] == 0:
         ausfahrt_L = True
     else:
         ausfahrt_R = True
@@ -683,8 +684,8 @@ if __name__ == '__main__':
                 print("pos: ",x, "   size: ",s)
                 print("Magenta_Links: ",Mhell_L, "Magenta_rechts: ",Mhell_R)
                 
-                
-                
+                ausfahrt_L, ausfahrt_R = finde_ausfahrt(hsv_bild)
+                print(ausfahrt_L, ausfahrt_R)
                 
               #  if time.time() - linien_zeit > 1000:
                #     linie = finde_orange(bild)

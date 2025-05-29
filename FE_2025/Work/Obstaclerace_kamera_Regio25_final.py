@@ -865,22 +865,47 @@ def ausparken(hsv_frame):
         geradeaus = 0
         current_direction = "l"
         F.parken_links()
-        F.vor(0.25)
+        F.vor(0.35)
         while gesamt > geradeaus -70:
             winkel, gesamt = G.Winkelmessen()
             time.sleep(0.01)
         F.gerade()
-        F.vor(0.3)
+        F.vor(0.35)
         time.sleep(0.5)
         F.stop()
         F.parken_rechts()
-        F.vor(0.3)
+        F.vor(0.35)
         while gesamt < geradeaus:
             winkel, gesamt = G.Winkelmessen()
             time.sleep(0.01)
         F.stop()
         F.anfahren(speed)
         F.vor(speed)
+        
+    elif ausfahrt_R:
+        winkel, gesamt = G.Winkelmessen()
+        geradeaus = 0
+        current_direction = "r"
+        F.parken_rechts()
+        F.vor(0.35)
+        while gesamt < geradeaus +70:
+            winkel, gesamt = G.Winkelmessen()
+            time.sleep(0.01)
+        F.gerade()
+        F.vor(0.35)
+        time.sleep(0.5)
+        F.stop()
+        F.parken_links()
+        F.vor(0.35)
+        while gesamt > geradeaus +15:
+            winkel, gesamt = G.Winkelmessen()
+            time.sleep(0.01)
+        F.stop()
+        F.anfahren(speed)
+        F.vor(speed)
+
+    else:
+        print("keine Ausfahrt")
 
 #======================================================================
 #============================= mainprogram ============================
@@ -929,7 +954,7 @@ try:
         F.stop()
         hsv_frame, bgr_frame = K.get_image()
         start_parkbande = True
-        ausparken()
+        ausparken(hsv_frame)
     elif U.distanz_V() > 50.0:
         F.anfahren(speed)
         F.vor(speed)
@@ -1184,4 +1209,5 @@ except KeyboardInterrupt:
 except:
     L.leds_an()
     F.stop()
+    print("!exept! Fehler")
     W.close_Log()
