@@ -11,6 +11,7 @@ import numpy as np
 import Kameramoduls as K
 import Ultrasonic as U
 import Write_Logfile as W
+import Proximity as P
 import sys
 
 # Initialize MotorKit and ServoKit
@@ -914,6 +915,7 @@ def ausparken(hsv_frame):
 try:
     if test:
         speed = 0.0
+    alarm_RV = P.proximity_alarm()
     W.open_Log(True)
     F.gerade()
     L.leds_aus()
@@ -1002,6 +1004,7 @@ try:
             
         messen()
         linien_suchen(hsv_frame)
+        P.proximity_alarm()
             
         if not Rennen_laeuft and not test:
             L.led_Y1()
@@ -1193,6 +1196,10 @@ try:
             parken = True
             parken_aus = False
             L.led_G21()
+            
+        if alarm_RV:
+            F.nach_links()
+            print("Hindernis vorne rechts")
             
             
 #-----------------------END--------------------------
