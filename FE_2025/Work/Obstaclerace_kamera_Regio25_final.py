@@ -915,8 +915,8 @@ def ausparken(hsv_frame):
 try:
     if test:
         speed = 0.0
-    alarm_RV = P.proximity_alarm()
     W.open_Log(True)
+    crash_timer_set = False
     F.gerade()
     L.leds_aus()
     L.led_obstaclerace()
@@ -1004,8 +1004,18 @@ try:
             
         messen()
         linien_suchen(hsv_frame)
-        P.proximity_alarm()
-            
+        prev_alarm_RV = alarm_RV
+        prev_alarm_LV = alarm_LV
+        prev_alarm_V = alarm_V
+        alarm_RV, alarm_LV, alarm_V = P.prox_alarm()
+        
+        if prev_alarm_RV and not alarm_RV:
+            crash_timer_set = False
+        if prev_alarm_LV and not alarm_LV:
+            crash_timer_set = False
+        if prev_alarm_V and not alarm_V:
+            crash_timer_set = False
+        
         if not Rennen_laeuft and not test:
             L.led_Y1()
             F.stop()
@@ -1057,7 +1067,8 @@ try:
                 elif current_direction == "r":
                     park_stop_time = time.time() + 0.0
                     
-                     
+#============================Normaler-Ablauf==================================
+          
         if hellLMag > 9600 and hellRMag > 9600:
             if current_direction == "l":
                 F.nach_links()
@@ -1109,6 +1120,33 @@ try:
                         F.gerade()
                         F.anfahren(speed)
                         F.vor(speed)
+                        
+        elif alarm_RV or alarm_LV or alarm_V:
+            if alarm_RV:
+                F.nach_links()
+                if not crash_timer_set:
+                    crash_timer = time.time()
+                    crash_timer_set = True
+                elif crash_timer + 2.0 <  time.time():
+                     F.stop()
+                     crash_timer_set = False
+                     
+            elif alarm_LV:
+                F.nach_rechts()
+                if not crash_timer_set:
+                    crash_timer = time.time()
+                    crash_timer_set = True
+                elif crash_timer + 2.0 < time.time():
+                     F.stop()
+                     crash_timer_set = False
+                     
+            elif alrm_V:
+                F.stop()
+                F.ruck(0.4)
+                time.sleep(0.4)
+                F.stop()
+                time.sleep(0.2)
+                F.vor(speed)
          
         else:
             if farbe == "R" and not linie_imbild:
