@@ -95,6 +95,9 @@ park_runde = False
 park_stop_time = time.time() + 18000.0
 linie_korrigiert = False
 steeringpoint = 60
+alarm_RV = False
+alarm_LV = False
+alarm_V = False
 #==TEST==
 test = False
 #==Parken==
@@ -1251,7 +1254,8 @@ except KeyboardInterrupt:
     W.close_Log()
     print("Program stopped by the user keyboard.")
     
-except:
+except Exception as e:
+    print("Fehlermeldung: ", e)
     L.leds_an()
     F.stop()
     print("!exept! Fehler")
