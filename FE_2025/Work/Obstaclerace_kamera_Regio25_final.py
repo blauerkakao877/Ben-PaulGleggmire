@@ -104,6 +104,7 @@ test = False
 parken = False    #!!unten "if" auskommentieren um Parken wirklich aus zu schalten!!
 parken_aus = True #!!unten "if" auskommentieren um Parken wirklich aus zu schalten!!
 start_parkbande = False
+Ausparken = True #hier das ausparken ein oder aus schalten 
 
 # Setup GPIO
 GPIO.setmode(GPIO.BCM)
@@ -955,13 +956,15 @@ try:
         Uturn = False #No uturn in regio
 
 #-----------prüfe ob in Parkbox------------------
-    if U.distanz_V() < 50.0:
+    if U.distanz_V() < 30.0 and Ausparken:
         F.stop()
+        print("Ausparken")
         hsv_frame, bgr_frame = K.get_image()
         start_parkbande = True
         ausparken(hsv_frame)
-    elif U.distanz_V() > 50.0:
-        F.anfahren(speed)
+        
+    else:
+        print("kein Ausparken")
         F.vor(speed)
 
 #==================== main loop =========================
@@ -1102,7 +1105,7 @@ try:
                 if U.distanz_V() < 6.0:
                     F.stop()
                     time.sleep(0.2)
-                        
+                    
                     if gesamt >= geradeaus:
                         F.stop()
                         time.sleep(0.1)
@@ -1143,7 +1146,7 @@ try:
                      F.stop()
                      crash_timer_set = False
                      
-            elif alrm_V:
+            elif alarm_V:
                 F.stop()
                 F.ruck(0.4)
                 time.sleep(0.4)
