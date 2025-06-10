@@ -1017,10 +1017,13 @@ try:
         
         if prev_alarm_RV and not alarm_RV:
             crash_timer_set = False
+            L.led_Y0()
         if prev_alarm_LV and not alarm_LV:
             crash_timer_set = False
+            L.led_Y0()
         if prev_alarm_V and not alarm_V:
             crash_timer_set = False
+            L.led_Y0()
         
         if not Rennen_laeuft and not test:
             L.led_Y1()
@@ -1133,23 +1136,42 @@ try:
                 if not crash_timer_set:
                     crash_timer = time.time()
                     crash_timer_set = True
+                    L.led_Y1()
                 elif crash_timer + 2.0 <  time.time():
                      F.stop()
                      crash_timer_set = False
+                     L.led_Y0()
+                     time.sleep(0.3)
+                     F.gerade()
+                     F.ruck(0.5)
+                     time.sleep(0.8)
+                     F.stop()
+                     time.sleep(0.1)
+                     F.vor(speed)
                      
             elif alarm_LV:
                 F.nach_rechts()
                 if not crash_timer_set:
                     crash_timer = time.time()
                     crash_timer_set = True
+                    L.led_Y1()
                 elif crash_timer + 2.0 < time.time():
                      F.stop()
                      crash_timer_set = False
+                     L.led_Y0()
+                     time.sleep(0.3)
+                     F.gerade()
+                     F.ruck(0.5)
+                     time.sleep(0.8)
+                     F.stop()
+                     time.sleep(0.1)
+                     F.vor(speed)
+                     
                      
             elif alarm_V:
                 F.stop()
                 F.ruck(0.4)
-                time.sleep(0.4)
+                time.sleep(1.0)
                 F.stop()
                 time.sleep(0.2)
                 F.vor(speed)
@@ -1240,6 +1262,7 @@ try:
             parken = True
             parken_aus = False
             L.led_G21()
+            L.led_W21()
             
         if alarm_RV:
             F.nach_links()

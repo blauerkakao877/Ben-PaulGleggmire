@@ -79,6 +79,15 @@ def led_R21():
     Skit.servo[12].angle = 50
         
 #=====================================================
+    
+def led_W20():
+    Skit.servo[11].angle = None
+        
+        
+def led_W21():
+    Skit.servo[11].angle = 90
+
+#=====================================================
 
 def leds_an():
     led_W1()
@@ -101,6 +110,7 @@ def leds_aus():
     led_O0()
     led_G20()
     led_R20()
+    led_W20()
         
 #++++++++++++++++++++++++++++++++++++++++++++++++++++
         
@@ -549,14 +559,8 @@ def  led_test_G2():
 if __name__ == '__main__':
     try:
         leds_aus()
-        #led_startup()
-        leds_aus()
-        #led_countdown5()
-        leds_aus()
-        #led_start()
-        leds_aus()
-        #led_obstaclerace()
-        led_test_R2()
+        time.sleep(0.5)
+        led_W21()
         
                     
              
