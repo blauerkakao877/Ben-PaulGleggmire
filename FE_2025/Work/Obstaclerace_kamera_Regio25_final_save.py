@@ -11,17 +11,51 @@ import numpy as np
 import Kameramoduls as K
 import Ultrasonic as U
 import Write_Logfile as W
+import Proximity as P
 import sys
 
 # Initialize MotorKit and ServoKit
 Mkit = MotorKit(i2c=board.I2C())
 Skit = ServoKit(channels=16)
 
-#Constants and Variables
-speed = 0.47
+#speed_settings
+mid2 = False #True
+slow1 = True #False
+#----standart settings------
+speed = 0.48 #0.47
 startspeed = 0.47
+linien_warten = 2.4       #vermeidet das linien mehrmals gezählt werden
+linien_zaehlen = 0.05     # 0.10 wartezeit/Sperrzeit bis erste linie ausgewertet wird
+linien_zaehlen_LG = 0.10  #Links+Grun
+linien_zaehlen_RG = 0.01  #Rechts+Grun
+linien_zaehlen_LR = 0.10  #Links+Rot
+linien_zaehlen_RR = 0.01  #Rechts+Rot
+h_warten = 0.69 #0.7
+#---------speed mid---------------
+speed2 = 0.48              #speed fuer das rennen
+startspeed2 = 0.47         #speed fuer ersten Abschnitt
+linien_warten2 = 2.4       #vermeidet das linien mehrmals gezählt werden
+linien_zaehlen2 = 0.05     #wartezeit/Sperrzeit bis erste linie ausgewertet wird
+linien_zaehlen_LG2 = 0.10  #Links+Grun
+linien_zaehlen_RG2 = 0.01  #Rechts+Grun
+linien_zaehlen_LR2 = 0.10  #Links+Rot
+linien_zaehlen_RR2 = 0.01  #Rechts+Rot
+h_warten2 = 0.69 
+#---------speed slow--------------
+speed1 = 0.32              #speed fuer das rennen
+startspeed1 = 0.35         #speed fuer ersten Abschnitt
+linien_warten1 = 2.8       #vermeidet das linien mehrmals gezählt werden
+linien_zaehlen1 = 0.10     #wartezeit/Sperrzeit bis erste linie ausgewertet wird
+linien_zaehlen_LG1 = 0.15  #Links+Grun
+linien_zaehlen_RG1 = 0.06  #Rechts+Grun
+linien_zaehlen_LR1 = 0.15  #Links+Rot
+linien_zaehlen_RR1 = 0.06  #Rechts+Rot
+h_warten1 = 0.75 
+#---------------------------------
+
+#Constants and Variables
 steerangle = 95
-k = 0.6   #Adjust as needed standard faktor fuer gerade
+k = 0.6    #Adjust as needed standard faktor fuer gerade
 kh = 0.35  #Adjust as needed faktor fuer hindernisse
 Seitehalten = 0
 BUTTON_PIN = 16
@@ -30,7 +64,6 @@ geradeaus = 0
 current_direction = "n"
 linie = False
 linien_zeit = 0
-linien_warten = 2.4 #vermeidet das linien mehrmals gezählt werden
 linien_counter = 0
 x = 0
 y = 0
@@ -42,15 +75,9 @@ rechts = False
 hellL = 0
 hellR = 0
 abstand = 0
-linien_zaehlen = 0.10 #wartezeit/Sperrzeit bis erste linie ausgewertet wird
-linien_zaehlen_LG = 0.10  #Links+Grun
-linien_zaehlen_RG = 0.01  #Rechts+Grun
-linien_zaehlen_LR = 0.10  #Links+Rot
-linien_zaehlen_RR = 0.01  #Rechts+Rot
 blaue_linie = False
 orange_linie = False
 hindernis = False
-h_warten = 0.55 #0.7-------
 h_zeit = 0.0
 gesamt = 0.0
 Rennen_laeuft = True
@@ -68,29 +95,57 @@ park_runde = False
 park_stop_time = time.time() + 18000.0
 linie_korrigiert = False
 steeringpoint = 60
+alarm_RV = False
+alarm_LV = False
+alarm_V = False
 #==TEST==
 test = False
 #==Parken==
-parken = False
-parken_aus = True #Um Parken auszuschalten unten im code if auskommentieren!! 
+parken = False    #!!unten "if" auskommentieren um Parken wirklich aus zu schalten!!
+parken_aus = True #!!unten "if" auskommentieren um Parken wirklich aus zu schalten!!
+start_parkbande = False
+Ausparken = True #hier das ausparken ein oder aus schalten 
 
 # Setup GPIO
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(BUTTON_PIN, GPIO.IN)
 
 #======================================================================
-#-------------------- functions /  procedures --------------------
+#-------------------- functions / procedures --------------------
 #======================================================================
 
 # Function to start the program
 def start_program():
-    
     global stop_time
     global park_stop_time
     
     G.gyro_start()
     K.init("obstacle")
     hindernis_sperre = False
+    
+    if slow1:
+        speed = speed1
+        startspeed = startspeed1
+        linien_warten = linien_warten1
+        linien_zaehlen = linien_zaehlen1
+        linien_zaehlen_LG = linien_zaehlen_LG1
+        linien_zaehlen_RG = linien_zaehlen_RG1
+        linien_zaehlen_LR = linien_zaehlen_LR1
+        linien_zaehlen_RR = linien_zaehlen_RR1
+        h_warten = h_warten1
+        L.led_R1()
+    if mid2:
+        speed = speed2
+        startspeed = startspeed2
+        linien_warten = linien_warten2
+        linien_zaehlen = linien_zaehlen2
+        linien_zaehlen_LG = linien_zaehlen_LG2
+        linien_zaehlen_RG = linien_zaehlen_RG2
+        linien_zaehlen_LR = linien_zaehlen_LR2
+        linien_zaehlen_RR = linien_zaehlen_RR2
+        h_warten = h_warten2
+        L.led_G1()
+    
     L.led_Y1()
     print("--Press button to start--")
     while not GPIO.input(BUTTON_PIN):
@@ -99,8 +154,8 @@ def start_program():
     while GPIO.input(BUTTON_PIN):
         time.sleep(0.1)
     print("Program started! regio")
-    W.write_Log("program_started Parken Test")
-    time.sleep(0.5)
+    #W.write_Log("program_started Parken Test")
+    time.sleep(0.3)
     stop_time = time.time() + 18000.0
     park_stop_time = time.time() + 18000.0
 
@@ -239,7 +294,6 @@ def linien_suchen(hsv_img):
             if blaue_linie and time.time() - linien_zeit > linien_zaehlen:
                 linien_counter = linien_counter + 1
                 L.led_B1()
-                #geradeaus = linien_counter*(-90)
                 geradeaus =  geradeaus - 90
                 blaue_linie = False
                 linie_imbild = False
@@ -260,7 +314,7 @@ def linien_suchen(hsv_img):
                         #Uturn = True
                         Uturn = False #No uturn in regio
                         Uturndetected = True
-                        L.led_R21()
+                        #L.led_R21()
                     
     elif current_direction == "r":
         if (time.time() - linien_zeit) > linien_warten:
@@ -286,7 +340,6 @@ def linien_suchen(hsv_img):
             if orange_linie and time.time() - linien_zeit > linien_zaehlen:
                 linien_counter = linien_counter + 1
                 L.led_O1()
-                #geradeaus = linien_counter*(90)
                 geradeaus = geradeaus + 90
                 orange_linie = False
                 linie_imbild = False
@@ -300,7 +353,7 @@ def linien_suchen(hsv_img):
                     elif letzte_farbe == "R":
                         #Uturn = True
                         Uturndetected = True
-                        L.led_R21()
+                        #L.led_R21()
         
     else:
         b_linie = K.finde_blau(hsv_crop)
@@ -567,10 +620,10 @@ def einparken_lg():
     F.stop()
     L.led_R21()
     L.led_R1()
-    F.Vor(0.3)
-    time.sleep(0.2)
+    time.sleep(1.0)
+    F.vor(0.3)
+    time.sleep(0.5)
     F.stop()
-    time.sleep(0.3)
     if current_direction == "l":
         F.nach_rechts()
         F.ruck(0.3)
@@ -578,10 +631,10 @@ def einparken_lg():
             time.sleep(0.1)
             winkel, gesamt = G.Winkelmessen()
         F.stop()
-        time.sleep(2.0)
+        time.sleep(1.0)
         F.gerade()
         F.ruck(0.3)
-        time.sleep(1.6)
+        time.sleep(1.6)   #///////////////////////////vlt anpassen////////////////////////////////
         
         #in Lücke wiggeln:)
         
@@ -680,8 +733,8 @@ def einparken_r():
         time.sleep(0.1)
         winkel, gesamt = G.Winkelmessen()
     F.gerade()
-    
     F.vor(0.5)
+    
     while U.distanz_V() > 8.0:
         time.sleep(0.1)
     time.sleep(0.2)
@@ -690,7 +743,6 @@ def einparken_r():
     time.sleep(1.2)
     F.stop()
     time.sleep(0.1)
-    
     F.ruck(0.3)
     
     while U.distanz_V() < 6.0:
@@ -785,7 +837,7 @@ def einparken():
     L.led_R21()
     L.led_R1()
     time.sleep(0.5)
-    if (current_direction == "r") and (gesamt > 1080):
+    if (current_direction == "r") and (gesamt > 1080):      #///////////////vlt hier noch "and if not (parken_aus)"////////////////
         while gesamt > 1080:
             F.nach_rechts()
             F.ruck(0.3)
@@ -808,6 +860,57 @@ def einparken():
                 einparken_r()
     elif parken_aus:
         Rennen_laeuft = False
+        
+def ausparken(hsv_frame):
+    global geradeaus
+    global current_direction
+    ausfahrt_L, ausfahrt_R = K.finde_ausfahrt(hsv_frame)
+    if ausfahrt_L:
+        winkel, gesamt = G.Winkelmessen()
+        geradeaus = 0
+        current_direction = "l"
+        F.parken_links()
+        F.vor(0.35)
+        while gesamt > geradeaus -70:
+            winkel, gesamt = G.Winkelmessen()
+            time.sleep(0.01)
+        F.gerade()
+        F.vor(0.35)
+        time.sleep(0.5)
+        F.stop()
+        F.parken_rechts()
+        F.vor(0.35)
+        while gesamt < geradeaus:
+            winkel, gesamt = G.Winkelmessen()
+            time.sleep(0.01)
+        F.stop()
+        F.anfahren(speed)
+        F.vor(speed)
+        
+    elif ausfahrt_R:
+        winkel, gesamt = G.Winkelmessen()
+        geradeaus = 0
+        current_direction = "r"
+        F.parken_rechts()
+        F.vor(0.35)
+        while gesamt < geradeaus +70:
+            winkel, gesamt = G.Winkelmessen()
+            time.sleep(0.01)
+        F.gerade()
+        F.vor(0.35)
+        time.sleep(0.5)
+        F.stop()
+        F.parken_links()
+        F.vor(0.35)
+        while gesamt > geradeaus +15:
+            winkel, gesamt = G.Winkelmessen()
+            time.sleep(0.01)
+        F.stop()
+        F.anfahren(speed)
+        F.vor(speed)
+
+    else:
+        print("keine Ausfahrt")
 
 #======================================================================
 #============================= mainprogram ============================
@@ -817,6 +920,7 @@ try:
     if test:
         speed = 0.0
     W.open_Log(True)
+    crash_timer_set = False
     F.gerade()
     L.leds_aus()
     L.led_obstaclerace()
@@ -826,36 +930,42 @@ try:
     time.sleep(0.3)
     L.led_Y1()
     L.led_W1()
-    time.sleep(0.5)
+    time.sleep(0.3)
     L.leds_aus()
     start_program()
 #check for obstacle color behind car for u-turn
     hsv_frame, bgr_frame = K.get_image_back()
     x, y, s, farbe = K.finde_hindernisse(hsv_frame)
-    
     if time.time() > linien_zeit + 10.0:
         linie_uebersehen()
-        
+ 
     if farbe == "R":
         W.write_Log("red_detected")
         #Uturn = True
         Uturn = False #No uturn in regio
         Uturndetected = True
-        L.led_R21()
- 
+        #L.led_R21()
     elif farbe == "G":
         W.write_Log("green_detected")
         Uturndetected = True
         Uturn = False
         #L.led_G21()
-        
     else:
         W.write_Log("nichts_erkannt")
         Uturndetected = True #No uturn in regio
         Uturn = False #No uturn in regio
+
+#-----------prüfe ob in Parkbox------------------
+    if U.distanz_V() < 30.0 and Ausparken:
+        F.stop()
+        print("Ausparken")
+        hsv_frame, bgr_frame = K.get_image()
+        start_parkbande = True
+        ausparken(hsv_frame)
         
-    F.anfahren(speed)
-    F.vor(speed)
+    else:
+        print("kein Ausparken")
+        F.vor(speed)
 
 #==================== main loop =========================
     
@@ -896,35 +1006,25 @@ try:
             L.led_R21()
             L.led_W1()
             einparken()
-            #if current_direction == "l":
-                #if (geradeaus <= -1190):
-                    #F.stop()
-                    #F.geradeaus()
-                    #F.vor(0.3)
-                    #time.sleep(0.5)
-                    #F.stop()
-                    #F.ruck(0.3)
-                    #time.sleep(0.6)
-                    #F.stop()
-                    #L.led_test_R2()
-                    #L.led_test_G2()
-                    
-                #if (geradeaus >= -1150):
-                    #F.stop()
-                    #F.geradeaus()
-                    #F.vor(0.3)
-                    #time.sleep(0.5)
-                    #F.stop()
-                    #F.ruck(0.3)
-                    #time.sleep(0.6)
-                    #F.stop()
-                    #L.led_test_R2()
-                    #L.led_test_G2()
             break #==============================Ende-nach-Parken==============================================
             
         messen()
         linien_suchen(hsv_frame)
-            
+        prev_alarm_RV = alarm_RV
+        prev_alarm_LV = alarm_LV
+        prev_alarm_V = alarm_V
+        alarm_RV, alarm_LV, alarm_V = P.prox_alarm()
+        
+        if prev_alarm_RV and not alarm_RV:
+            crash_timer_set = False
+            L.led_Y0()
+        if prev_alarm_LV and not alarm_LV:
+            crash_timer_set = False
+            L.led_Y0()
+        if prev_alarm_V and not alarm_V:
+            crash_timer_set = False
+            L.led_Y0()
+        
         if not Rennen_laeuft and not test:
             L.led_Y1()
             F.stop()
@@ -976,7 +1076,8 @@ try:
                 elif current_direction == "r":
                     park_stop_time = time.time() + 0.0
                     
-                     
+#============================Normaler-Ablauf==================================
+          
         if hellLMag > 9600 and hellRMag > 9600:
             if current_direction == "l":
                 F.nach_links()
@@ -1004,11 +1105,10 @@ try:
                 else:
                     F.nach_rechts()
                 
-                if U.distanz_V() < 7.0:     #vorher <6.0
+                if U.distanz_V() < 6.0:
                     F.stop()
                     time.sleep(0.2)
-#check ob linie verpasst
-                        
+                    
                     if gesamt >= geradeaus:
                         F.stop()
                         time.sleep(0.1)
@@ -1029,6 +1129,52 @@ try:
                         F.gerade()
                         F.anfahren(speed)
                         F.vor(speed)
+                        
+        elif alarm_RV or alarm_LV or alarm_V:
+            if alarm_RV:
+                F.nach_links()
+                if not crash_timer_set:
+                    crash_timer = time.time()
+                    crash_timer_set = True
+                    L.led_Y1()
+                elif crash_timer + 2.0 <  time.time():
+                     F.stop()
+                     crash_timer_set = False
+                     L.led_Y0()
+                     time.sleep(0.3)
+                     F.gerade()
+                     F.ruck(0.5)
+                     time.sleep(0.8)
+                     F.stop()
+                     time.sleep(0.1)
+                     F.vor(speed)
+                     
+            elif alarm_LV:
+                F.nach_rechts()
+                if not crash_timer_set:
+                    crash_timer = time.time()
+                    crash_timer_set = True
+                    L.led_Y1()
+                elif crash_timer + 2.0 < time.time():
+                     F.stop()
+                     crash_timer_set = False
+                     L.led_Y0()
+                     time.sleep(0.3)
+                     F.gerade()
+                     F.ruck(0.5)
+                     time.sleep(0.8)
+                     F.stop()
+                     time.sleep(0.1)
+                     F.vor(speed)
+                     
+                     
+            elif alarm_V:
+                F.stop()
+                F.ruck(0.4)
+                time.sleep(1.0)
+                F.stop()
+                time.sleep(0.2)
+                F.vor(speed)
          
         else:
             if farbe == "R" and not linie_imbild:
@@ -1112,10 +1258,17 @@ try:
                     #else:
                     geradeaus_lenken()
                    
-        #if (parken == False) and (hellLMag > 6000 or hellRMag > 6000):
-            #parken = True
-            #parken_aus = False
-            #L.led_G21()
+        if (parken == False) and (hellLMag > 6000 or hellRMag > 6000):
+            parken = True
+            parken_aus = False
+            L.led_G21()
+            L.led_W21()
+            
+        if alarm_RV:
+            F.nach_links()
+            print("Hindernis vorne rechts")
+            
+            
 #-----------------------END--------------------------
     stop_program()
     
@@ -1127,7 +1280,9 @@ except KeyboardInterrupt:
     W.close_Log()
     print("Program stopped by the user keyboard.")
     
-except:
+except Exception as e:
+    print("Fehlermeldung: ", e)
     L.leds_an()
     F.stop()
+    print("!exept! Fehler")
     W.close_Log()

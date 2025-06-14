@@ -487,12 +487,12 @@ def waende_Magenta(hsv_img):
     #print("maxR :",maxHistR)
     
     # Seitenkollisionen:
-    if maxHistL > 9000:    #10000
+    if maxHistL > 11000:    #10000
         kollL = True
     else:
         kollL = False
     
-    if maxHistR > 9000:    #10000
+    if maxHistR > 11000:    #10000
         kollR = True
     else:
         kollR = False

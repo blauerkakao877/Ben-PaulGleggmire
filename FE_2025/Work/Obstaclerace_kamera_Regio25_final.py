@@ -47,7 +47,7 @@ startspeed1 = 0.35         #speed fuer ersten Abschnitt
 linien_warten1 = 2.8       #vermeidet das linien mehrmals gezählt werden
 linien_zaehlen1 = 0.10     #wartezeit/Sperrzeit bis erste linie ausgewertet wird
 linien_zaehlen_LG1 = 0.15  #Links+Grun
-linien_zaehlen_RG1 = 0.06  #Rechts+Grun
+linien_zaehlen_RG1 = 0.09  #Rechts+Grun
 linien_zaehlen_LR1 = 0.15  #Links+Rot
 linien_zaehlen_RR1 = 0.06  #Rechts+Rot
 h_warten1 = 0.75 
@@ -101,10 +101,11 @@ alarm_V = False
 #==TEST==
 test = False
 #==Parken==
-parken = False    #!!unten "if" auskommentieren um Parken wirklich aus zu schalten!!
-parken_aus = True #!!unten "if" auskommentieren um Parken wirklich aus zu schalten!!
+parken = True    #!!unten "if" auskommentieren um Parken wirklich aus zu schalten!!
+parken_aus = False #!!unten "if" auskommentieren um Parken wirklich aus zu schalten!!
 start_parkbande = False
-Ausparken = True #hier das ausparken ein oder aus schalten 
+Ausparken = True #hier das ausparken ein oder aus schalten
+parken_start = False
 
 # Setup GPIO
 GPIO.setmode(GPIO.BCM)
@@ -147,10 +148,12 @@ def start_program():
         L.led_G1()
     
     L.led_Y1()
+    L.led_W21()
     print("--Press button to start--")
     while not GPIO.input(BUTTON_PIN):
         time.sleep(0.1)
     L.led_Y0()
+    L.led_W20()
     while GPIO.input(BUTTON_PIN):
         time.sleep(0.1)
     print("Program started! regio")
@@ -258,7 +261,6 @@ def linien_suchen(hsv_img):
     if  (linien_counter == 12) or ((linien_counter == 8) and (Uturn == True) and (Uturndone == False)):
         hsv_crop = hsv_img[50:round(hoehe/2), 90:230]
         
-        
     else:
         if current_direction == "l":
 #nach links verschieben, damit linie orange nicht 2 mal gezählt wird und crash auf innenecke kommt
@@ -300,11 +302,9 @@ def linien_suchen(hsv_img):
                 linie_korrigiert = False
                 L.led_B0()
                 if park_runde:
-                    park_stop_time = time.time() + 0.4
+                    park_stop_time = time.time() + 0.2
                 
-                
-                
-                
+
                 if linien_counter == 4 and Uturndetected == False:
                     if letzte_farbe == "G":
                         Uturn = False
@@ -603,12 +603,12 @@ def einparken_inter():
             time.sleep(0.4)
             eingeparkt = True
             
-#----------------------------------------------------
-    
-def einparken_lg():
+#----------------------------------------------------       
+def einparken_l():
     global current_direction
     global gesamt
     global geradeaus
+    parken_start = False
     eingeparkt = False
     linksMag = False
     rechtsMag = False
@@ -621,96 +621,92 @@ def einparken_lg():
     L.led_R21()
     L.led_R1()
     time.sleep(1.0)
+    F.vor(0.4)
+    F.gerade()
+    time.sleep(0.2)
+    F.nach_rechts()
+    winkel, gesamt = G.Winkelmessen()
+    W.write_Log(str(gesamt))
+    while gesamt < -1010:
+        time.sleep(0.1)
+        winkel, gesamt = G.Winkelmessen()
+    F.stop()
+    F.gerade()
+    F.vor(0.5)
+    time.sleep(2.0)
+    F.stop()
+    F.ruck(0.3)
+    
+    while U.distanz_V() < 6.0:
+        time.sleep(0.1)
+    F.nach_links()
+    
+    while gesamt < -900:
+        time.sleep(0.1)
+        winkel, gesamt = G.Winkelmessen()
+    F.stop()
+    
+    current_direction = "r"
+    geradeaus = gesamt
+    geradeaus_lenken()
+    L.led_test_R2()
+    
+    
+    hellRMag = 0
+    hsv_frame, bgr_frame = K.get_image_back()
+    linksMag, rechtsMag, hellLMag, hellRMag = K.waende_Magenta(hsv_frame)
+    W.write_Log(str(hellRMag))
     F.vor(0.3)
-    time.sleep(0.5)
+    while hellRMag < 5500:
+        geradeaus_lenken()
+        hsv_frame, bgr_frame = K.get_image_back()
+        linksMag, rechtsMag, hellLMag, hellRMag = K.waende_Magenta(hsv_frame)
+        W.write_Log(str(hellRMag))
     F.stop()
-    if current_direction == "l":
-        F.nach_rechts()
-        F.ruck(0.3)
-        while gesamt > geradeaus +5:
-            time.sleep(0.1)
-            winkel, gesamt = G.Winkelmessen()
-        F.stop()
-        time.sleep(1.0)
-        F.gerade()
-        F.ruck(0.3)
-        time.sleep(1.6)   #///////////////////////////vlt anpassen////////////////////////////////
-        
-        #in Lücke wiggeln:)
-        
-        while not eingeparkt:
-            hsv_frame, bgr_frame = K.get_image_back()
-            linksMag, rechtsMag, hellLMag, hellRMag = K.waende_Magenta(hsv_frame)
-            parken_hellL, parken_hellR = K.parken_waende(bgr_frame)
-            
-            #if parken_hellL > parken_hellR:
-            if hellLMag > hellRMag:
-                F.nach_links()
-            else:
-                F.nach_rechts()
-            
-            if parken_hellL > 35000 or parken_hellR > 35000:
-                F.stop()
-                F.gerade()
-                F.ruck(0.3)
-                time.sleep(0.4)
-                eingeparkt = True
-        
-        
-        #hsv_frame, bgr_frame = K.get_image_back()
-        #linksMag, rechtsMag, hellLMag, hellRMag = K.waende_Magenta(hsv_frame)
-        #while hellLMag < 4500:
-            #geradeaus_lenken()
-            #hsv_frame, bgr_frame = K.get_image_back()
-            #linksMag, rechtsMag, hellLMag, hellRMag = K.waende_Magenta(hsv_frame)
-        
-def einparken_lr():
-    global current_direction
-    global gesamt
-    global geradeaus
-    eingeparkt = False
-    linksMag = False
-    rechtsMag = False
-    hellLMag = 0
-    hellRMag = 0
-    ziel_winkel = 0.0
     
-    
+    L.leds_aus()
+    F.parken_links()
+    F.ruck(0.3)
+        
+    while gesamt < geradeaus +90:
+        time.sleep(0.1)
+        winkel, gesamt = G.Winkelmessen()
     F.stop()
-    L.led_R21()
-    L.led_R1()
-    time.sleep(1.0)
-    if current_direction == "l":
-        F.nach_rechts()
-        F.ruck(0.3)
-        while gesamt > geradeaus +5:
-            time.sleep(0.1)
-            winkel, gesamt = G.Winkelmessen()
-        F.stop()
-        time.sleep(2.0)
-        F.gerade()
-        F.ruck(0.3)
-        time.sleep(1.0)
+    F.gerade()
+    F.ruck(0.3)
+    park_stop = time.time() + 2.0
         
-        #in Lücke wiggeln:)
+    #in Lücke wiggeln:)
+    while not eingeparkt:
+        hsv_frame, bgr_frame = K.get_image_back()
+        linksMag, rechtsMag, hellLMag, hellRMag = K.waende_Magenta(hsv_frame)
+        parken_hellL, parken_hellR = K.parken_waende(bgr_frame)
         
-        while not eingeparkt:
-            hsv_frame, bgr_frame = K.get_image_back()
-            linksMag, rechtsMag, hellLMag, hellRMag = K.waende_Magenta(hsv_frame)
-            parken_hellL, parken_hellR = K.parken_waende(bgr_frame)
+        #if parken_hellL > parken_hellR:
+        if hellLMag > hellRMag:
+            F.nach_links()
+        else:
+            F.nach_rechts()
+        
+        if parken_hellL > 35000 or parken_hellR > 35000:
+            F.stop()
+            F.gerade()
+            F.ruck(0.3)
+            time.sleep(0.4)
+            eingeparkt = True
             
-            #if parken_hellL > parken_hellR:
-            if hellLMag > hellRMag:
-                F.nach_links()
-            else:
-                F.nach_rechts()
-            
-            if parken_hellL > 35000 or parken_hellR > 35000:
-                F.stop()
-                F.gerade()
-                F.ruck(0.3)
-                time.sleep(0.4)
-                eingeparkt = True
+    winkel, gesamt = G.Winkelmessen()
+    park_stop = time.time() + 1.0
+    geradeaus = geradeaus -90
+    F.vor(0.3)
+    while time.time() < park_stop:
+        geradeaus_lenken()
+        time.sleep(0.1)
+    F.stop()
+    F.gerade()
+    F.ruck(0.3)
+    time.sleep(2.0)
+    F.stop()
         
 
 def einparken_r():
@@ -847,19 +843,13 @@ def einparken():
         time.sleep(1.6)
         F.stop()
     
-    if not parken_aus:
-        if current_direction == "l":
-            if letzte_farbe == "G":
-                einparken_lg()
-            else:
-                einparken_lr()
-        elif current_direction == "r":
-            if letzte_farbe == "R":
-                einparken_r()
-            else:
-                einparken_r()
-    elif parken_aus:
-        Rennen_laeuft = False
+    #if not parken_aus:
+    if current_direction == "l":
+        einparken_l()
+    elif current_direction == "r":
+        einparken_r()
+    #elif parken_aus:
+        #Rennen_laeuft = False
         
 def ausparken(hsv_frame):
     global geradeaus
@@ -973,6 +963,13 @@ try:
         if time.time() > stop_time and not park_runde:
             F.stop()
             L.led_countdown3()
+            if parken == True:
+                park_runde = True
+                if current_direction == "r":
+                    park_stop_time = time.time()
+                #else:
+                    #park_stop_time = time.time() +1.0
+
             if (not parken) or (parken_aus):
                 Rennen_laeuft = False
             else:
@@ -980,20 +977,12 @@ try:
                     #check for obstacle too near
                     x = 160
                     messen()
-                    if current_direction == "r":
-                        park_stop_time = time.time() + 0.4
-                        #if x < 160:
-                            #F.gerade()
-                            #F.ruck(0.3)
-                            #time.sleep(1.0)
-                            #F.stop()
-                            
-                    #if current_direction == "l":
-                        #if x > 160:
-                            #F.gerade()
-                            #F.ruck(0.3)
-                            #time.sleep(1.0)
-                            #F.stop()
+                    if current_direction == "l":
+                        if x > 160:
+                            F.gerade()
+                            F.ruck(0.3)
+                            time.sleep(1.0)
+                            F.stop()
                         
                     F.anfahren(speed)
                     F.vor(speed)
@@ -1001,11 +990,13 @@ try:
 
         if park_runde and time.time() > park_stop_time:
             F.stop()
-            time.sleep(1.0)
+            L.leds_aus()
             L.led_G21()
             L.led_R21()
             L.led_W1()
+            time.sleep(1.0)
             einparken()
+            W.close_Log()
             break #==============================Ende-nach-Parken==============================================
             
         messen()
@@ -1070,11 +1061,11 @@ try:
                 if farbe == "G":
                     farbe = "R"
             
-            if hellLMag > 10000 or hellRMag > 10000:
-                if current_direction == "l":
-                    park_stop_time = time.time() + 0.0
-                elif current_direction == "r":
-                    park_stop_time = time.time() + 0.0
+            #if hellLMag > 10000 or hellRMag > 10000:
+                #if current_direction == "l":
+                    #park_stop_time = time.time() + 0.0
+                #elif current_direction == "r":
+                    #park_stop_time = time.time() + 0.0
                     
 #============================Normaler-Ablauf==================================
           
@@ -1262,12 +1253,7 @@ try:
             parken = True
             parken_aus = False
             L.led_G21()
-            L.led_W21()
-            
-        if alarm_RV:
-            F.nach_links()
-            print("Hindernis vorne rechts")
-            
+            L.led_W21()   
             
 #-----------------------END--------------------------
     stop_program()
@@ -1284,5 +1270,7 @@ except Exception as e:
     print("Fehlermeldung: ", e)
     L.leds_an()
     F.stop()
+    W.write_Log("crash")
+    W.write_Log(str(e))
     print("!exept! Fehler")
     W.close_Log()

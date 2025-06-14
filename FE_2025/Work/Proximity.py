@@ -23,7 +23,7 @@ def prox_alarm():
     alarm_V = False
     wertR = GPIO.input(GPIO_RV)
     wertL = GPIO.input(GPIO_LV)
-    wertM = GPIO.input(GPIO_V)
+    #wertM = GPIO.input(GPIO_V)
     
     if wertR == 0:
         alarm_RV = True
@@ -31,8 +31,8 @@ def prox_alarm():
     if wertL == 0:
         alarm_LV = True
         
-    if wertM == 0:
-        alarm_V = True
+    #if wertM == 0:
+        #alarm_V = True
         
     return alarm_RV, alarm_LV, alarm_V
 
