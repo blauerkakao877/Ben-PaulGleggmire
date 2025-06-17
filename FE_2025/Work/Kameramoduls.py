@@ -487,12 +487,12 @@ def waende_Magenta(hsv_img):
     #print("maxR :",maxHistR)
     
     # Seitenkollisionen:
-    if maxHistL > 11000:    #10000
+    if maxHistL > 12500:    #11000
         kollL = True
     else:
         kollL = False
     
-    if maxHistR > 11000:    #10000
+    if maxHistR > 12500:    #11000
         kollR = True
     else:
         kollR = False
@@ -649,8 +649,8 @@ if __name__ == '__main__':
             linien_zeit = time.time()
             while True:
                 
-                hsv_bild, bgr_bild = get_image() #test front camera
-                #hsv_bild, bgr_bild = get_image_back() #test back camera
+                #hsv_bild, bgr_bild = get_image() #test front camera
+                hsv_bild, bgr_bild = get_image_back() #test back camera
                 
                 b_linie = finde_blau(hsv_bild)
                 o_linie = finde_orange(hsv_bild)

@@ -696,16 +696,16 @@ def einparken_l():
             eingeparkt = True
             
     winkel, gesamt = G.Winkelmessen()
-    park_stop = time.time() + 1.0
-    geradeaus = geradeaus -90
+    park_stop = time.time() + 2.0
+    geradeaus = geradeaus +90
     F.vor(0.3)
     while time.time() < park_stop:
         geradeaus_lenken()
         time.sleep(0.1)
     F.stop()
     F.gerade()
-    F.ruck(0.3)
-    time.sleep(2.0)
+    F.ruck(0.4)
+    time.sleep(3.0)
     F.stop()
         
 
@@ -806,7 +806,7 @@ def einparken_r():
             eingeparkt = True
          
     winkel, gesamt = G.Winkelmessen()
-    park_stop = time.time() + 1.0
+    park_stop = time.time() + 1.5
     geradeaus = geradeaus -90
     F.vor(0.3)
     while time.time() < park_stop:
@@ -814,8 +814,8 @@ def einparken_r():
         time.sleep(0.1)
     F.stop()
     F.gerade()
-    F.ruck(0.3)
-    time.sleep(2.0)
+    F.ruck(0.4)
+    time.sleep(2.5)
     F.stop()
         
 def einparken():
@@ -1053,7 +1053,7 @@ try:
             
 #...berechne ab hier Lenkung...
             
-        if park_runde:
+        """if park_runde:
             if current_direction == "r":
                 if farbe == "R":
                     farbe = "G"
@@ -1066,7 +1066,7 @@ try:
                     #park_stop_time = time.time() + 0.0
                 #elif current_direction == "r":
                     #park_stop_time = time.time() + 0.0
-                    
+           """         
 #============================Normaler-Ablauf==================================
           
         if hellLMag > 9600 and hellRMag > 9600:
