@@ -101,8 +101,8 @@ alarm_V = False
 #==TEST==
 test = False
 #==Parken==
-parken = True    #!!unten "if" auskommentieren um Parken wirklich aus zu schalten!!
-parken_aus = False #!!unten "if" auskommentieren um Parken wirklich aus zu schalten!!
+parken = False    #!!unten "if" auskommentieren um Parken wirklich aus zu schalten!!
+parken_aus = True #!!unten "if" auskommentieren um Parken wirklich aus zu schalten!!
 start_parkbande = False
 Ausparken = True #hier das ausparken ein oder aus schalten
 parken_start = False
@@ -674,7 +674,7 @@ def einparken_l():
     F.stop()
     F.gerade()
     F.ruck(0.3)
-    park_stop = time.time() + 2.0
+    park_stop = time.time() + 4.0
         
     #in Lücke wiggeln:)
     while not eingeparkt:
@@ -688,7 +688,7 @@ def einparken_l():
         else:
             F.nach_rechts()
         
-        if parken_hellL > 35000 or parken_hellR > 35000:
+        if parken_hellL > 35000 or parken_hellR > 35000  or time.time() > park_stop:
             F.stop()
             F.gerade()
             F.ruck(0.3)
@@ -787,7 +787,7 @@ def einparken_r():
     F.gerade()
     F.ruck(0.3)
          
-    park_stop = time.time() + 2.0
+    park_stop = time.time() + 4.0
     while not eingeparkt:
         hsv_frame, bgr_frame = K.get_image_back()
         linksMag, rechtsMag, hellLMag, hellRMag = K.waende_Magenta(hsv_frame)
