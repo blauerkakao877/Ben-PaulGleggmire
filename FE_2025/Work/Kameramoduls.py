@@ -649,8 +649,8 @@ if __name__ == '__main__':
             linien_zeit = time.time()
             while True:
                 
-                #hsv_bild, bgr_bild = get_image() #test front camera
-                hsv_bild, bgr_bild = get_image_back() #test back camera
+                hsv_bild, bgr_bild = get_image() #test front camera
+                #hsv_bild, bgr_bild = get_image_back() #test back camera
                 
                 b_linie = finde_blau(hsv_bild)
                 o_linie = finde_orange(hsv_bild)
