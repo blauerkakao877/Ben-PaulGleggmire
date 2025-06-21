@@ -207,8 +207,8 @@ def park_suchen():
     
     print("Park suchen")
     F.nach_rechts()
-    F.vor(0.3)
-    time.sleep(0.5)
+    F.vor(0.4)
+    time.sleep(0.6)
     F.stop()
 #check ob Parkhindernis im Ruckspiegel erkennbar ist
     print("Park suchen hinten")
@@ -232,7 +232,7 @@ def park_suchen():
         L.led_W21()
 
     F.ruck(0.3)
-    time.sleep(0.5)
+    time.sleep(0.7)
     F.stop()
 
 def geradeaus_lenken():

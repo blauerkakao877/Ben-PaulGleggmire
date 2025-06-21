@@ -10,7 +10,7 @@ import cv2
 import numpy as np
 import Kameramoduls as K
 import Ultrasonic as U
-
+import Proximity as P
 
 # Initialize MotorKit and ServoKit
 Mkit = MotorKit(i2c=board.I2C())
@@ -84,6 +84,9 @@ h_zeit = 0.0
 gesamt = 0.0
 Rennen_laeuft = True
 reduced = False
+alarm_RV = False
+alarm_LV = False
+alarm_V = False
 
 #==TEST==
 test = False
@@ -244,6 +247,7 @@ def linien_suchen(hsv_img):
 try:
     if test:
         speed = 0.0
+    crash_timer_set = False
 #anfang    
     F.gerade()
     L.leds_aus()
@@ -263,12 +267,25 @@ try:
         winkel, gesamt = G.Winkelmessen()
         hsv_frame, bgr_frame = K.get_image()
         
+#proximity
+        linien_suchen(hsv_frame)
+        prev_alarm_RV = alarm_RV
+        prev_alarm_LV = alarm_LV
+        prev_alarm_V = alarm_V
+        alarm_RV, alarm_LV, alarm_V = P.prox_alarm()
+        
+        if prev_alarm_RV and not alarm_RV:
+            crash_timer_set = False
+            L.led_Y0()
+        if prev_alarm_LV and not alarm_LV:
+            crash_timer_set = False
+            L.led_Y0()
+        if prev_alarm_V and not alarm_V:
+            crash_timer_set = False
+            L.led_Y0()
         
 #--Wände finden + auswerten--
         links, rechts, hellL, hellR = K.waende(bgr_frame)
-        
-#--Hindernisse finden + auswerten--
-       # x, y, s, farbe = K.finde_hindernisse(hsv_frame)
 #--Linien suchen--
         linien_suchen(hsv_frame)
         if not Rennen_laeuft:
@@ -317,7 +334,7 @@ try:
                 else:
                     F.nach_rechts()
                     
-                if U.distanz_V() < 5.0:
+                if U.distanz_V() < 7.0:
                     F.stop()
                     if gesamt >= geradeaus:
                         F.stop()
@@ -339,6 +356,51 @@ try:
                         F.gerade()
                         F.anfahren(speed)
                         F.vor(speed)
+                    
+        elif alarm_RV or alarm_LV or alarm_V:
+            if alarm_RV:
+                F.nach_links()
+                if not crash_timer_set:
+                    crash_timer = time.time()
+                    crash_timer_set = True
+                    L.led_Y1()
+                elif crash_timer + 2.0 <  time.time():
+                     F.stop()
+                     crash_timer_set = False
+                     L.led_Y0()
+                     time.sleep(0.3)
+                     F.gerade()
+                     F.ruck(0.5)
+                     time.sleep(0.8)
+                     F.stop()
+                     time.sleep(0.1)
+                     F.vor(speed)
+                     
+            elif alarm_LV:
+                F.nach_rechts()
+                if not crash_timer_set:
+                    crash_timer = time.time()
+                    crash_timer_set = True
+                    L.led_Y1()
+                elif crash_timer + 2.0 < time.time():
+                     F.stop()
+                     crash_timer_set = False
+                     L.led_Y0()
+                     time.sleep(0.3)
+                     F.gerade()
+                     F.ruck(0.5)
+                     time.sleep(0.8)
+                     F.stop()
+                     time.sleep(0.1)
+                     F.vor(speed)
+                        
+            elif alarm_V:
+                F.stop()
+                F.ruck(0.4)
+                time.sleep(1.0)
+                F.stop()
+                time.sleep(0.2)
+                F.vor(speed)
          
         else:
             if farbe == "R":
@@ -385,6 +447,8 @@ except KeyboardInterrupt:
     L.leds_aus()
     L.led_Y1()
     print("Program stopped by the user.")
+    
+    
     
 except:
     L.leds_an()
