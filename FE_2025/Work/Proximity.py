@@ -25,11 +25,11 @@ def prox_alarm():
     wertL = GPIO.input(GPIO_LV)
     #wertM = GPIO.input(GPIO_V)
     
-    if wertR == 0:
-        alarm_RV = True
+    #if wertR == 0:
+        #alarm_RV = True
         
-    if wertL == 0:
-        alarm_LV = True
+    #if wertL == 0:
+        #alarm_LV = True
         
     #if wertM == 0:
         #alarm_V = True
@@ -47,4 +47,9 @@ if __name__ == '__main__':
     except KeyboardInterrupt:
         print("Messung vom User gestoppt")
         GPIO.cleanup()
+
+
+
+
+
 

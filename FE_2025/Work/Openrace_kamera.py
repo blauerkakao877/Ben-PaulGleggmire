@@ -37,23 +37,23 @@ linien_zaehlen1 =  0.52    #wartezeit bis linie ausgewertet wird
 linien_warten1 = 1.0       #vermeidet das linien mehrmals gezählt werden
 end_time1 = 2.0            #wartezeit bis auto nach letzter kurve anhält
 #mittel
-mid2 = False #True
+mid2 = False #True 
 speed2 = 0.55
 startspeed2 = 0.55
-linien_zaehlen_b2 =  0.33  #wartezeit bis linie ausgewertet wird
-linien_zaehlen_o2 =  0.33  #wartezeit bis linie ausgewertet wird
-linien_zaehlen2 =  0.33    #wartezeit bis linie ausgewertet wird
+linien_zaehlen_b2 =  0.36  # 0.33 wartezeit bis linie ausgewertet wird
+linien_zaehlen_o2 =  0.36  #wartezeit bis linie ausgewertet wird
+linien_zaehlen2 =  0.36    #wartezeit bis linie ausgewertet wird
 linien_warten2 = 0.70      #vermeidet das linien mehrmals gezählt werden
 end_time2 = 1.6            #wartezeit bis auto nach letzter kurve anhält
 #schnell !!!ACHTUNG UNSICHER!!!
 fast3 = True #False
-speed3 = 0.75 #0.75
-startspeed3 = 0.87 #0.85
-linien_zaehlen_b3 = 0.18 #0.28 #wartezeit bis linie ausgewertet wird
-linien_zaehlen_o3 = 0.18 #0.28 #wartezeit bis linie ausgewertet wird
-linien_zaehlen3 = 0.18 #0.28   #wartezeit bis linie ausgewertet wird
-linien_warten3 = 0.50 #0.70     #vermeidet das linien mehrmals gezählt werden
-end_time3 = 1.2 #1.3           #wartezeit bis auto nach letzter kurve anhält
+speed3 = 0.69 #0.7
+startspeed3 = 0.65 #0.68
+linien_zaehlen_b3 = 0.19 #0.18 #wartezeit bis linie ausgewertet wird
+linien_zaehlen_o3 = 0.19 #0.18 #wartezeit bis linie ausgewertet wird
+linien_zaehlen3 = 0.19 #0.18   #wartezeit bis linie ausgewertet wird
+linien_warten3 = 0.40 #0.50     #vermeidet das linien mehrmals gezählt werden
+end_time3 = 1.4 #1.3           #wartezeit bis auto nach letzter kurve anhält
 ########################
 
 steerangle = 95

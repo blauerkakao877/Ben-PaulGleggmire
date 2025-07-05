@@ -48,7 +48,7 @@ stop_time_LG2 = 2.0
 stop_time_RG2 = 3.1
 stop_time_LR2 = 3.3
 stop_time_RR2 = 2.3
-h_warten2 = 0.69 
+h_warten2 = 0.69 #0.69
 #---------speed slow--------------
 speed1 = 0.32              #speed fuer das rennen
 startspeed1 = 0.35         #speed fuer ersten Abschnitt
@@ -194,6 +194,7 @@ def start_program():
     
 def stop_program():
     F.stop()
+    W.write_Log("Regular stop")
     F.gerade()
     L.led_ende()
     L.led_R1()
@@ -207,8 +208,8 @@ def park_suchen():
     
     print("Park suchen")
     F.nach_rechts()
-    F.vor(0.4)
-    time.sleep(0.6)
+    F.vor(0.43)
+    time.sleep(0.7)
     F.stop()
 #check ob Parkhindernis im Ruckspiegel erkennbar ist
     print("Park suchen hinten")
@@ -231,7 +232,7 @@ def park_suchen():
         L.led_G21()
         L.led_W21()
 
-    F.ruck(0.3)
+    F.ruck(0.4)
     time.sleep(0.7)
     F.stop()
 
@@ -683,7 +684,7 @@ def einparken_l():
     hellRMag = 0
     ziel_winkel = 0.0
     
-    
+    W.write_Log("starte einparken_l ")
     F.stop()
     L.led_R21()
     L.led_R1()
@@ -705,7 +706,7 @@ def einparken_l():
     F.nach_rechts()
     winkel, gesamt = G.Winkelmessen()
     W.write_Log(str(gesamt))
-    while gesamt < -1010:
+    while gesamt < -1000:
         time.sleep(0.1)
         winkel, gesamt = G.Winkelmessen()
     F.stop()
@@ -713,13 +714,13 @@ def einparken_l():
     F.vor(0.4)
     time.sleep(2.0)
     F.stop()
-    F.ruck(0.3)
+    F.ruck(0.4)
     time.sleep(0.2)
     while U.distanz_V() < 6.0:
         time.sleep(0.1)
     F.nach_links()
     
-    while gesamt < -900:
+    while gesamt < -895:
         time.sleep(0.1)
         winkel, gesamt = G.Winkelmessen()
     F.stop()
@@ -798,6 +799,7 @@ def einparken_r():
     hellRMag = 0
     ziel_winkel = 0.0
     
+    W.write_Log("starte einparken_r ")
     F.stop()
     L.led_W1()
     time.sleep(0.5)
@@ -907,6 +909,7 @@ def einparken():
     hellRMag = 0
     ziel_winkel = 0.0
     
+    W.write_Log("Weise das einparken zu")
     F.stop()
     L.led_R21()
     L.led_R1()
@@ -934,20 +937,32 @@ def ausparken(hsv_frame):
         winkel, gesamt = G.Winkelmessen()
         geradeaus = 0
         current_direction = "l"
-        F.parken_links()
-        F.vor(0.35)
+        F.nach_links()
+        F.vor(0.3) 
+        while gesamt > geradeaus -20:
+            winkel, gesamt = G.Winkelmessen()
+            time.sleep(0.01)
+        F.stop()
+        F.nach_rechts()
+        time.sleep(0.1)
+        F.ruck(0.3)
+        time.sleep(0.5)
+        F.stop()
+        time.sleep(0.1)
+        F.nach_links()
+        F.vor(0.3)
         while gesamt > geradeaus -70:
             winkel, gesamt = G.Winkelmessen()
             time.sleep(0.01)
-        F.gerade()
-        F.vor(0.35)
-        time.sleep(0.5)
         F.stop()
-        F.parken_rechts()
+        time.sleep(0.1)
+        F.gerade()
+        F.vor(0.3)
+        time.sleep(0.4)
+        F.stop()
+        F.nach_rechts()
         F.vor(0.35)
-        while gesamt < geradeaus:
-            winkel, gesamt = G.Winkelmessen()
-            time.sleep(0.01)
+        time.sleep(1.0)
         F.stop()
         F.anfahren(speed)
         F.vor(speed)
@@ -956,20 +971,32 @@ def ausparken(hsv_frame):
         winkel, gesamt = G.Winkelmessen()
         geradeaus = 0
         current_direction = "r"
-        F.parken_rechts()
-        F.vor(0.35)
+        F.nach_rechts()
+        F.vor(0.3)
+        while gesamt < geradeaus +20:
+            winkel, gesamt = G.Winkelmessen()
+            time.sleep(0.01)
+        F.stop()
+        F.nach_links()
+        time.sleep(0.1)
+        F.ruck(0.3)
+        time.sleep(0.5)
+        F.stop()
+        time.sleep(0.1)
+        F.nach_rechts()
+        F.vor(0.3)
         while gesamt < geradeaus +70:
             winkel, gesamt = G.Winkelmessen()
             time.sleep(0.01)
+        F.stop()
+        time.sleep(0.1)
         F.gerade()
-        F.vor(0.35)
-        time.sleep(0.5)
+        F.vor(0.3)
+        time.sleep(0.4)
         F.stop()
         F.parken_links()
-        F.vor(0.35)
-        while gesamt > geradeaus +15:
-            winkel, gesamt = G.Winkelmessen()
-            time.sleep(0.01)
+        F.vor(0.4)
+        time.sleep(1.0)
         F.stop()
         F.anfahren(speed)
         F.vor(speed)
@@ -1042,8 +1069,13 @@ try:
         if time.time() > stop_time and not park_runde:
             F.stop()
             L.led_countdown3()
+            W.write_Log("parken: ")
+            W.write_Log(str(parken))
+            W.write_Log("parken_aus: ")
+            W.write_Log(str(parken_aus))
             if parken == True:
                 park_runde = True
+                W.write_Log("start parking")
                 if current_direction == "r":
                     park_stop_time = time.time()
                 #else:
@@ -1066,6 +1098,7 @@ try:
                     F.anfahren(speed)
                     F.vor(speed)
                     park_runde = True
+                    
 
         if park_runde and time.time() > park_stop_time:
             F.stop()
