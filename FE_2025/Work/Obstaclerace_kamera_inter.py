@@ -178,6 +178,10 @@ def start_program():
     
     L.led_Y1()
     L.led_W21()
+    time.sleep(0.3)
+    L.led_W20()
+    time.sleep(0.3)
+    L.led_W21()
     print("--Press button to start--")
     while not GPIO.input(BUTTON_PIN):
         time.sleep(0.1)
@@ -683,6 +687,7 @@ def einparken_l():
     hellLMag = 0
     hellRMag = 0
     ziel_winkel = 0.0
+    weiterfahren = 0
     
     W.write_Log("starte einparken_l ")
     F.stop()
@@ -702,7 +707,12 @@ def einparken_l():
             winkel, gesamt = G.Winkelmessen()
         time.sleep(0.5)
         F.stop()
+        time.sleep(0.1)
     F.vor(0.4)
+    geradeaus = -1080
+    weiterfahren = time.time() + 1.0
+    while time.time() > weiterfahren:
+        geradeaus_lenken()
     F.nach_rechts()
     winkel, gesamt = G.Winkelmessen()
     W.write_Log(str(gesamt))
@@ -714,13 +724,13 @@ def einparken_l():
     F.vor(0.4)
     time.sleep(2.0)
     F.stop()
-    F.ruck(0.4)
-    time.sleep(0.2)
+    F.ruck(0.3)
+    time.sleep(0.3)
     while U.distanz_V() < 6.0:
         time.sleep(0.1)
     F.nach_links()
     
-    while gesamt < -895:
+    while gesamt < -898:
         time.sleep(0.1)
         winkel, gesamt = G.Winkelmessen()
     F.stop()
@@ -786,7 +796,8 @@ def einparken_l():
     F.ruck(0.4)
     time.sleep(2.7)
     F.stop()
-#---------------------------------------------------- 
+        
+
 def einparken_r():
     global current_direction
     global gesamt
@@ -896,7 +907,7 @@ def einparken_r():
     F.ruck(0.4)
     time.sleep(2.3)
     F.stop()
-#----------------------------------------------------       
+        
 def einparken():
     global current_direction
     global gesamt
@@ -913,7 +924,7 @@ def einparken():
     L.led_R21()
     L.led_R1()
     time.sleep(0.3)
-    """if (current_direction == "r") and (gesamt > 1070):
+    """if (current_direction == "r") and (gesamt > 1070):      #///////////////vlt hier noch "and if not (parken_aus)"////////////////
         while gesamt > 1070:
             F.nach_rechts()
             F.ruck(0.3)
@@ -927,7 +938,7 @@ def einparken():
         einparken_l()
     elif current_direction == "r":
         einparken_r()
-#----------------------------------------------------     
+        
 def ausparken(hsv_frame):
     global geradeaus
     global current_direction
@@ -937,19 +948,31 @@ def ausparken(hsv_frame):
         geradeaus = 0
         current_direction = "l"
         F.nach_links()
-        F.vor(0.3) 
-        while gesamt > geradeaus -20:
+        F.vor(0.25) 
+        while gesamt > geradeaus -17:
             winkel, gesamt = G.Winkelmessen()
             time.sleep(0.01)
         F.stop()
         F.nach_rechts()
         time.sleep(0.1)
         F.ruck(0.3)
-        time.sleep(0.5)
+        time.sleep(0.7)
         F.stop()
         time.sleep(0.1)
         F.nach_links()
-        F.vor(0.3)
+        F.vor(0.25)
+        while gesamt > geradeaus -40:
+            winkel, gesamt = G.Winkelmessen()
+            time.sleep(0.01)
+        F.stop()
+        F.nach_rechts()
+        time.sleep(0.1)
+        F.ruck(0.3)
+        time.sleep(0.4)
+        F.stop()
+        time.sleep(0.1)
+        F.nach_links()
+        F.vor(0.25)
         while gesamt > geradeaus -70:
             winkel, gesamt = G.Winkelmessen()
             time.sleep(0.01)
@@ -961,9 +984,8 @@ def ausparken(hsv_frame):
         F.stop()
         F.nach_rechts()
         F.vor(0.35)
-        time.sleep(0.6)
+        time.sleep(1.0)
         F.stop()
-        time.sleep(0.1)
         F.anfahren(speed)
         F.vor(speed)
         
@@ -996,9 +1018,8 @@ def ausparken(hsv_frame):
         F.stop()
         F.parken_links()
         F.vor(0.4)
-        time.sleep(0.6)
+        time.sleep(1.0)
         F.stop()
-        time.sleep(0.1)
         F.anfahren(speed)
         F.vor(speed)
 
