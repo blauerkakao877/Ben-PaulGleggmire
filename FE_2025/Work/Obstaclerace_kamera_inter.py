@@ -107,9 +107,10 @@ park_runde = False
 park_stop_time = time.time() + 18000.0
 linie_korrigiert = False
 steeringpoint = 60
-alarm_RV = False
-alarm_LV = False
-alarm_V = False
+alarm_VR = False
+alarm_HR = False 
+alarm_VL = False
+alarm_HL = False
 #==TEST==
 test = False
 #==Parken==
@@ -948,31 +949,37 @@ def ausparken(hsv_frame):
         geradeaus = 0
         current_direction = "l"
         F.nach_links()
-        F.vor(0.25) 
+        F.vor(0.3) 
         while gesamt > geradeaus -17:
             winkel, gesamt = G.Winkelmessen()
             time.sleep(0.01)
         F.stop()
         F.nach_rechts()
         time.sleep(0.1)
-        F.ruck(0.3)
-        time.sleep(0.7)
+        F.ruck(0.45)
+        while gesamt > geradeaus -30:
+            winkel, gesamt = G.Winkelmessen()
+            time.sleep(0.01)
+        #time.sleep(0.7)
         F.stop()
         time.sleep(0.1)
         F.nach_links()
-        F.vor(0.25)
+        F.vor(0.3)
         while gesamt > geradeaus -40:
             winkel, gesamt = G.Winkelmessen()
             time.sleep(0.01)
         F.stop()
         F.nach_rechts()
         time.sleep(0.1)
-        F.ruck(0.3)
-        time.sleep(0.4)
+        F.ruck(0.45)
+        while gesamt > geradeaus -55:
+            winkel, gesamt = G.Winkelmessen()
+            time.sleep(0.01)
+        #time.sleep(0.4)
         F.stop()
         time.sleep(0.1)
         F.nach_links()
-        F.vor(0.25)
+        F.vor(0.3)
         while gesamt > geradeaus -70:
             winkel, gesamt = G.Winkelmessen()
             time.sleep(0.01)
@@ -994,19 +1001,31 @@ def ausparken(hsv_frame):
         geradeaus = 0
         current_direction = "r"
         F.nach_rechts()
-        F.vor(0.3)
-        while gesamt < geradeaus +20:
+        F.vor(0.25) 
+        while gesamt < geradeaus +17:
             winkel, gesamt = G.Winkelmessen()
             time.sleep(0.01)
         F.stop()
         F.nach_links()
         time.sleep(0.1)
         F.ruck(0.3)
-        time.sleep(0.5)
+        time.sleep(0.7)
         F.stop()
         time.sleep(0.1)
         F.nach_rechts()
-        F.vor(0.3)
+        F.vor(0.25)
+        while gesamt < geradeaus +41:
+            winkel, gesamt = G.Winkelmessen()
+            time.sleep(0.01)
+        F.stop()
+        F.nach_links()
+        time.sleep(0.1)
+        F.ruck(0.3)
+        time.sleep(0.3)
+        F.stop()
+        time.sleep(0.1)
+        F.nach_rechts()
+        F.vor(0.25)
         while gesamt < geradeaus +70:
             winkel, gesamt = G.Winkelmessen()
             time.sleep(0.01)
@@ -1016,8 +1035,8 @@ def ausparken(hsv_frame):
         F.vor(0.3)
         time.sleep(0.4)
         F.stop()
-        F.parken_links()
-        F.vor(0.4)
+        F.nach_links()
+        F.vor(0.35)
         time.sleep(1.0)
         F.stop()
         F.anfahren(speed)
@@ -1135,18 +1154,14 @@ try:
             
         messen()
         linien_suchen(hsv_frame)
-        prev_alarm_RV = alarm_RV
-        prev_alarm_LV = alarm_LV
-        prev_alarm_V = alarm_V
-        alarm_RV, alarm_LV, alarm_V = P.prox_alarm()
+        prev_alarm_VR = alarm_VR
+        prev_alarm_VL = alarm_VL
+        alarm_HL, alarm_VL, alarm_HR, alarm_VR = P.prox_alarm()
         
-        if prev_alarm_RV and not alarm_RV:
+        if prev_alarm_VR and not alarm_VR:
             crash_timer_set = False
             L.led_Y0()
-        if prev_alarm_LV and not alarm_LV:
-            crash_timer_set = False
-            L.led_Y0()
-        if prev_alarm_V and not alarm_V:
+        if prev_alarm_VL and not alarm_VL:
             crash_timer_set = False
             L.led_Y0()
         
@@ -1255,8 +1270,8 @@ try:
                         F.anfahren(speed)
                         F.vor(speed)
                         
-        elif alarm_RV or alarm_LV or alarm_V:
-            if alarm_RV:
+        elif alarm_VR or alarm_VL:
+            if alarm_VR:
                 F.nach_links()
                 if not crash_timer_set:
                     crash_timer = time.time()
@@ -1274,7 +1289,7 @@ try:
                      time.sleep(0.1)
                      F.vor(speed)
                      
-            elif alarm_LV:
+            elif alarm_VL:
                 F.nach_rechts()
                 if not crash_timer_set:
                     crash_timer = time.time()
@@ -1292,15 +1307,6 @@ try:
                      time.sleep(0.1)
                      F.vor(speed)
                      
-                     
-            elif alarm_V:
-                F.stop()
-                F.ruck(0.4)
-                time.sleep(1.0)
-                F.stop()
-                time.sleep(0.2)
-                F.vor(speed)
-         
         else:
             if farbe == "R" and not linie_imbild:
                 letzte_farbe = farbe
