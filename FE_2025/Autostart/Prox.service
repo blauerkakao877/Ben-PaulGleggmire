@@ -1,0 +1,12 @@
+[Unit]
+Description=Prox Autostart
+After=multi-user.target
+
+[Service]
+Type=idle
+User=pi
+Group=pi
+ExecStart=/home/pi/FE_2025/Autostart/autostart_prox.sh
+
+[Install]
+WantedBy=multi-user.target
