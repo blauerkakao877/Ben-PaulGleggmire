@@ -113,13 +113,14 @@ alarm_VL = False
 alarm_HL = False
 #==TEST==
 test = False
-test_3 = True
+test_L = True
+test_R = False
 #==Parken==
 start_parkbande = False
 parken = False       #!!unten "if" auskommentieren um Parken wirklich aus zu schalten!!
 parken_aus = True    #!!unten "if" auskommentieren um Parken wirklich aus zu schalten!!
 Ausparken = True     #hier das ausparken ein/ausschalten
-parken_paral = False #hier das parallele Parken ein/ausschalten
+parken_paral = True  #hier das parallele Parken ein/ausschalten
 
 
 # Setup GPIO
@@ -691,32 +692,60 @@ def einparken_parallel():
     hellRMag = 0
     ziel_winkel = 0.0
     
+    time.sleep(5.0)
+    
     if current_direction == "r":
-        F.nach_links
-        time.sleep(0.1)
-        F.ruck(0.3)
-        while gesamt < -860:
-            time.sleep(0.1)
-            winkel, gesamt = G.Winkelmessen()
-        F.stop()
         F.gerade()
-        time.sleep(0.1)
         F.ruck(0.3)
-        while alarm_HL < 0.5:
-            time.sleep(0.1)
-            alarm_HL = P.prox_alarm()
+#zurruck bis an pinke Wand
+        alarm_HL, alarm_VL, alarm_HR, alarm_VR = P.prox_alarm()
+        weiterfahren = time.time() + 1.0
+        while (time.time() < weiterfahren) and (alarm_HL == False):
+            alarm_HL, alarm_VL, alarm_HR, alarm_VR = P.prox_alarm()
+            time.sleep(0.05)
         F.stop()
-        F.nach_rechts()
         time.sleep(0.1)
-        F.ruck(0.3)
-        while (gesamt > -900) or (alarm_HL < 3.0 or alarm_HR < 3.0) :
-            time.sleep(0.1)
+#an pinker Wand
+#vorrwarts nach links lenken bis 30 Grad vor geradeaus
+        F.nach_links()
+        F.vor(0.3)
+        alarm_HL, alarm_VL, alarm_HR, alarm_VR = P.prox_alarm()
+        while (gesamt > -870) and (alarm_VL == False):
+            time.sleep(0.05)
             winkel, gesamt = G.Winkelmessen()
-            alarm_HL, alarm_HR = P.prox_alarm()
+            alarm_HL, alarm_VL, alarm_HR, alarm_VR = P.prox_alarm()
         F.stop()
-        eingeparkt = True
-        
-        
+        time.sleep(0.1)
+#fertig, nochmal zuruck
+        F.ruck(0.3)
+        alarm_HL, alarm_VL, alarm_HR, alarm_VR = P.prox_alarm()
+        weiterfahren = time.time() + 1.0
+        while (time.time() < weiterfahren) and (alarm_HL == False):
+            alarm_HL, alarm_VL, alarm_HR, alarm_VR = P.prox_alarm()
+            time.sleep(0.05)
+        F.stop()
+        time.sleep(0.1)
+#fertig nach hinten, jetzt gerade vorwarts stellen
+        F.nach_links()
+        F.vor(0.3)
+        alarm_HL, alarm_VL, alarm_HR, alarm_VR = P.prox_alarm()
+        while (gesamt > -900) and (alarm_VL == False):
+            time.sleep(0.05)
+            winkel, gesamt = G.Winkelmessen()
+            alarm_HL, alarm_VL, alarm_HR, alarm_VR = P.prox_alarm()
+        F.stop()
+        time.sleep(0.1)
+#parallel zur Aussenwand
+         
+    elif current_direction == "l":  
+        F.gerade()
+        F.ruck(0.3)
+        alarm_HL, alarm_VL, alarm_HR, alarm_VR = P.prox_alarm()
+        weiterfahren = time.time() + 1.0
+        while (time.time() < weiterfahren) and (alarm_HR == False):
+            alarm_HL, alarm_VL, alarm_HR, alarm_VR = P.prox_alarm()
+            time.sleep(0.05)
+        F.stop()
 #------------------------------------------------------------
 def einparken_l():
     global current_direction
@@ -763,8 +792,10 @@ def einparken_l():
         winkel, gesamt = G.Winkelmessen()
     F.stop()
     F.gerade()
-    F.vor(0.4)
-    time.sleep(3.0)
+    F.vor(0.5)
+    time.sleep(1.5)
+    F.vor(0.7)
+    time.sleep(1.0)
     F.stop()   #steht an der wand
     #correct gyro to -990
     geradeaus = -990.0
@@ -786,7 +817,7 @@ def einparken_l():
     F.stop()
     
     current_direction = "r"
-    geradeaus = gesamt
+    geradeaus = -900
     geradeaus_lenken()
     
     
@@ -850,98 +881,77 @@ def einparken_r():
     while gesamt > 995:
         time.sleep(0.1)
         winkel, gesamt = G.Winkelmessen()
+    F.stop()
+    time.sleep(0.1)
     F.gerade()
     F.vor(0.5)
-    
-    while U.distanz_V() > 8.0:
-        time.sleep(0.1)
+    time.sleep(1.5)
+    F.vor(0.7)
+    time.sleep(1.0)
+    F.stop()   #steht an der wand
+    #correct gyro to -990
+    geradeaus = 990.0
+    G.gesamtwinkel = -990.0 #gyro.py rechnet positiv ins negative um
+    G.letzterwinkel = 0.0
+    time.sleep(1.0)
+    F.ruck(0.3)
     time.sleep(0.2)
-    F.stop()
-    F.vor(0.5)
-    time.sleep(1.2)
+    while U.distanz_V() < 3.0:
+        time.sleep(0.05)
     F.stop()
     time.sleep(0.1)
     F.ruck(0.3)
-    time.sleep(0.2)
-    while U.distanz_V() < 6.0:
-        time.sleep(0.1)
     F.nach_rechts()
     
-    while gesamt > 895:
+    while gesamt > 900:
         time.sleep(0.1)
         winkel, gesamt = G.Winkelmessen()
     F.stop()
     
-    #W.write_Log("geradeaus Richtung vor -180: ")
-    #W.write_Log(str(geradeaus))
-    #W.write_Log("Gyro Richtung vor -180: ")
-    #W.write_Log(str(gesamt))
-     
     current_direction = "l"
-    geradeaus = gesamt
-    
-    #W.write_Log("geradeaus Richtung nach -180: ")
-    #W.write_Log(str(geradeaus))
-    #W.write_Log("Gyro Richtung nach -180: ")
-    #W.write_Log(str(gesamt))
-    #W.close_Log()
+    geradeaus = 900
     geradeaus_lenken()
-    L.led_test_R2()
     
     
+    hellRMag = 0
     hsv_frame, bgr_frame = K.get_image_back()
     linksMag, rechtsMag, hellLMag, hellRMag = K.waende_Magenta(hsv_frame)
+    #W.write_Log(str(hellRMag))
     F.vor(0.3)
     while hellLMag < 5500:
         geradeaus_lenken()
         hsv_frame, bgr_frame = K.get_image_back()
         linksMag, rechtsMag, hellLMag, hellRMag = K.waende_Magenta(hsv_frame)
-            
+        W.write_Log(str(hellLMag))
     F.stop()
+    time.sleep(0.1)
+    F.gerade()
+    F.vor(0.3)
+    time.sleep(0.5)
+    F.stop()
+    #fahre in parkbox rein
     L.leds_aus()
     F.parken_rechts()
     F.ruck(0.3)
         
-    while gesamt > geradeaus -90:
+    while gesamt > geradeaus -60:
         time.sleep(0.1)
         winkel, gesamt = G.Winkelmessen()
     F.stop()
     F.gerade()
+    time.sleep(0.2)
     F.ruck(0.3)
-         
-    park_stop = time.time() + 4.0
-    while not eingeparkt:
-        hsv_frame, bgr_frame = K.get_image_back()
-        linksMag, rechtsMag, hellLMag, hellRMag = K.waende_Magenta(hsv_frame)
-        parken_hellL, parken_hellR = K.parken_waende(bgr_frame)
-        
-        if hellLMag > hellRMag:
-            F.nach_links()
-        else:
-            F.nach_rechts()
-        
-        if parken_hellL > 35000 or parken_hellR > 35000 or time.time() > park_stop:
-            F.stop()
-            F.gerade()
-            F.ruck(0.3)
-            time.sleep(0.4)
-            eingeparkt = True
-      
-    #gerade nach vorne setzen um schoen in die luecke zu kommen new   
-    """winkel, gesamt = G.Winkelmessen()
-    park_stop = time.time() + 1.3
-    geradeaus = geradeaus -90
-    F.vor(0.3)
-    while time.time() < park_stop:
-        geradeaus_lenken()
-        time.sleep(0.1)
+    alarm_HL, alarm_VL, alarm_HR, alarm_VR = P.prox_alarm()
+    weiterfahren = time.time() + 1.0
+    while (time.time() < weiterfahren) and (alarm_HL == False):
+        alarm_HL, alarm_VL, alarm_HR, alarm_VR = P.prox_alarm()
+        time.sleep(0.05)
     F.stop()
-    F.gerade()
-    time.sleep(0.1)
-    F.ruck(0.4)
-    time.sleep(2.3)"""
-    F.stop()
-        
+    ########################
+    if parken_paral:
+        einparken_parallel()
+    ########################
+    
 def einparken():
     global current_direction
     global gesamt
@@ -1138,7 +1148,7 @@ try:
         
     else:
         print("kein Ausparken")
-        if test_3:       #setze params so, als oba uto bereits 3 runden gefahren ist
+        if test_L:       #setze params so, als oba uto bereits 3 runden gefahren ist
             F.vor(speed)
             parken_aus = False
             parken = True
@@ -1148,6 +1158,17 @@ try:
             G.gesamtwinkel = 990.0 #gyro.py rechnet positiv ins negative um
             G.letzterwinkel = 0.0
             messen()
+        if test_R:       #setze params so, als oba uto bereits 3 runden gefahren ist
+            F.vor(speed)
+            parken_aus = False
+            parken = True
+            current_direction = "r"
+            linien_counter = 11
+            geradeaus = 990.0
+            G.gesamtwinkel = -990.0 #gyro.py rechnet positiv ins negative um
+            G.letzterwinkel = 0.0
+            messen()
+
         F.vor(speed)
 
 #==================== main loop =========================
