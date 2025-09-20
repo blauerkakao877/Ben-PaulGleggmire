@@ -16,11 +16,14 @@ GPIO_HL = 23
 GPIO_VL = 24
 GPIO_HR = 20
 GPIO_VR = 21
+GPIO_HM = 12
 
 GPIO.setup(GPIO_HL, GPIO.OUT)
 GPIO.setup(GPIO_VL, GPIO.OUT)
 GPIO.setup(GPIO_HR, GPIO.OUT)
 GPIO.setup(GPIO_VR, GPIO.OUT)
+GPIO.setup(GPIO_HM, GPIO.OUT)
+
 
 park_dist = 1.0
 field_dist = 5.0
@@ -60,6 +63,14 @@ try:
     sensorHR.timing_budget = 20
 except:
     print("Error init HR")
+    
+#sensor an i2c slot 4
+try:
+    sensorHM = adafruit_vl53l4cd.VL53L4CD(tca[4])
+    sensorHM.inter_measurement = 0
+    sensorHM.timing_budget = 20
+except:
+    print("Error init HM")
 
 print("VL53L4CD Simple Test.")
 print("--------------------")
@@ -77,6 +88,7 @@ sensorVL.start_ranging()
 sensorHL.start_ranging()
 sensorVR.start_ranging()
 sensorHR.start_ranging()
+sensorHM.start_ranging()
 
 startTime = time.time()
 
@@ -84,6 +96,8 @@ GPIO.output(GPIO_VL, False)
 GPIO.output(GPIO_HL, False)
 GPIO.output(GPIO_VR, False)
 GPIO.output(GPIO_HR, False)
+GPIO.output(GPIO_HM, False)
+
 
 while True:
     try:
@@ -143,5 +157,20 @@ while True:
                 GPIO.output(GPIO_HR, False)
     except:
         print("io_error HR")
+        
+        
+    try:
+        if not sensorHM.data_ready:
+            pass
+        else:
+            sensorHM.clear_interrupt()
+            #print("Distance HM: {} cm".format(sensorHM.distance))
+            distHM = sensorHM.distance
+            if distHM < alarm_dist:
+                GPIO.output(GPIO_HM, True)
+            else:
+                GPIO.output(GPIO_HM, False)
+    except:
+        print("io_error HM")
         
     #time.sleep(1.0)
