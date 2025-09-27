@@ -6,7 +6,7 @@ import LED as L
 # GPIO Modus (BOARD / BCM)
 GPIO.setmode(GPIO.BCM)
 
-# GPIO Pins zuweisen
+#GPIO Pins zuweisen
 #Rechts vorne
 GPIO_HL = 5
 GPIO_VL = 6

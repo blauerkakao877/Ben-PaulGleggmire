@@ -113,7 +113,7 @@ alarm_VL = False
 alarm_HL = False
 #==TEST==
 test = False
-test_L = False
+test_L = True
 test_R = False
 #==Parken==
 start_parkbande = False
@@ -699,7 +699,10 @@ def einparken_parallel():
         #Startrichtung links/blau
         F.gerade()
         alarm_HL, alarm_VL, alarm_HR, alarm_VR, alarm_HM = P.prox_alarm()
-        if (alarm_HR == False) and (alarm_HL == False):
+        W.write_Log("Sensoren vor parken paral")
+        W.write_Log(str(alarm_HL)+str(alarm_VL)+str(alarm_HR)+str(alarm_VR)+str(alarm_HM))
+        
+        if (alarm_HR == False) and (alarm_HL == False) and (alarm_HM == False):
             F.ruck(0.35)
             #zurruck bis an pinke Wand
             alarm_HL, alarm_VL, alarm_HR, alarm_VR, alarm_HM = P.prox_alarm()
@@ -707,13 +710,48 @@ def einparken_parallel():
             while (time.time() < weiterfahren) and (alarm_HL == False) and (alarm_HM == False):
                 alarm_HL, alarm_VL, alarm_HR, alarm_VR, alarm_HM = P.prox_alarm()
                 time.sleep(0.05)
+                
+            W.write_Log("Sensoren an der Wand")
+            W.write_Log(str(alarm_HL)+str(alarm_VL)+str(alarm_HR)+str(alarm_VR)+str(alarm_HM))
             F.stop()
             time.sleep(0.1)
     
-#an pinker Wand
-#kurz vorwaerts und ruck mit lenken rechts
         F.stop()
         F.gerade()
+#an pinker Wand
+#kurz vorwaerts und ruck mit lenken rechts
+        hsv_frame, bgr_frame = K.get_image_back()
+        korrektur = K.detect_park_korrektur(hsv_frame)
+        
+        W.write_Log("Korrektur: "+str(korrektur))
+        if korrektur == True:
+            W.write_Log("Fahre korrekturzug r")
+            F.nach_links()
+            F.vor(0.35)
+            time.sleep(0.3)
+            F.stop()
+            time.sleep(0.1)
+            F.nach_rechts()
+            F.vor(0.35)
+            winkel, gesamt = G.Winkelmessen()
+            while gesamt < geradeaus +70:
+                time.sleep(0.1)
+                winkel, gesamt = G.Winkelmessen()
+            F.stop()
+            F.gerade()
+            time.sleep(0.1)
+    #zurruck bis an pinke Wand
+            alarm_HL, alarm_VL, alarm_HR, alarm_VR, alarm_HM = P.prox_alarm()
+            weiterfahren = time.time() + 3.0
+            while (time.time() < weiterfahren) and (alarm_HL == False) and (alarm_HM == False):
+                alarm_HL, alarm_VL, alarm_HR, alarm_VR, alarm_HM = P.prox_alarm()
+                time.sleep(0.05)
+            F.stop()
+            time.sleep(0.1)
+            W.write_Log("korrekturzug r Ende")
+    #korrektur ende
+            
+        
         time.sleep(0.1)
         F.vor(0.35)
         weiterfahren = time.time() + 0.2
@@ -735,7 +773,6 @@ def einparken_parallel():
         F.stop()
         time.sleep(0.1)
 
-        
 #vorrwarts nach links lenken bis 30 Grad vor geradeaus
         F.nach_links()
         F.vor(0.35)
@@ -796,10 +833,38 @@ def einparken_parallel():
         F.stop()
         time.sleep(0.1)
         
-#an pinker Wand
-#kurz vorwaerts
         F.stop()
         F.gerade()
+#an pinker Wand
+#kurz vorwaerts
+        hsv_frame, bgr_frame = K.get_image_back()
+        if K.detect_park_korrektur(hsv_frame):
+            W.write_Log("Fahre korrekturzug l")
+            F.nach_rechts()
+            F.vor(0.35)
+            time.sleep(0.3)
+            F.stop()
+            time.sleep(0.1)
+            F.nach_links()
+            F.vor(0.35)
+            winkel, gesamt = G.Winkelmessen()
+            while gesamt > geradeaus -70:
+                time.sleep(0.1)
+                winkel, gesamt = G.Winkelmessen()
+            F.stop()
+            F.gerade()
+            time.sleep(0.1)
+    #zurruck bis an pinke Wand
+            alarm_HL, alarm_VL, alarm_HR, alarm_VR, alarm_HM = P.prox_alarm()
+            weiterfahren = time.time() + 3.0
+            while (time.time() < weiterfahren) and (alarm_HL == False) and (alarm_HM == False):
+                alarm_HL, alarm_VL, alarm_HR, alarm_VR, alarm_HM = P.prox_alarm()
+                time.sleep(0.05)
+            F.stop()
+            time.sleep(0.1)
+            W.write_Log("korrekturzug l Ende")
+    #korrektur ende
+        
         time.sleep(0.1)
         F.vor(0.35)
         weiterfahren = time.time() + 0.4
@@ -910,15 +975,16 @@ def einparken_l():
         F.nach_links()
         time.sleep(0.7)
         F.stop()
+        F.nach_rechts()
+        time.sleep(0.1)
         F.vor(0.4)
-        geradeaus = -1100
+        winkel, gesamt = G.Winkelmessen()
         while gesamt < -1100:   #korrekturzug
-            geradeaus_lenken()
             time.sleep(0.1)
             winkel, gesamt = G.Winkelmessen()
-        time.sleep(0.5)
         F.stop()
         time.sleep(0.1)
+    F.gerade()
     F.vor(0.4)
     geradeaus = -1090
     weiterfahren = time.time() + 1.0 #fahrt in der kurve new
@@ -954,7 +1020,7 @@ def einparken_l():
     time.sleep(0.1)
     F.ruck(0.35)
     F.nach_links()
-    while gesamt < geradeaus +3:
+    while gesamt < geradeaus +10:
         time.sleep(0.1)
         winkel, gesamt = G.Winkelmessen()
     F.stop()
@@ -1034,7 +1100,8 @@ def einparken_r():
     time.sleep(1.5)
     F.vor(0.7)
     time.sleep(1.0)
-    F.stop()   #steht an der wand
+    F.stop()
+#steht an der wand
     winkel, gesamt = G.Winkelmessen()
     W.write_Log(str(winkel))
     W.write_Log(str(gesamt))
@@ -1049,7 +1116,7 @@ def einparken_r():
     F.ruck(0.35)
     F.nach_rechts()
     
-    while gesamt > geradeaus -10:
+    while gesamt > geradeaus -15:
         time.sleep(0.1)
         winkel, gesamt = G.Winkelmessen()
     F.stop()
@@ -1162,7 +1229,7 @@ def ausparken(hsv_frame):
         time.sleep(0.1)
         F.nach_links()
         F.vor(0.3)
-        while gesamt > geradeaus -50:
+        while gesamt > geradeaus -41:
             winkel, gesamt = G.Winkelmessen()
             time.sleep(0.01)
         F.stop()
@@ -1170,7 +1237,7 @@ def ausparken(hsv_frame):
         time.sleep(0.1)
         F.ruck(0.35) #vllt hier mehr speed
         alarm_HL, alarm_VL, alarm_HR, alarm_VR, alarm_HM = P.prox_alarm()
-        while (gesamt > geradeaus -60) and (alarm_HL == False) and (alarm_HR == False) and (alarm_HM == False):
+        while (gesamt > geradeaus -55) and (alarm_HL == False) and (alarm_HR == False) and (alarm_HM == False):
             winkel, gesamt = G.Winkelmessen()
             alarm_HL, alarm_VL, alarm_HR, alarm_VR, alarm_HM = P.prox_alarm()
             time.sleep(0.01)
@@ -1191,7 +1258,6 @@ def ausparken(hsv_frame):
         F.nach_rechts()
         F.vor(0.35)
         time.sleep(1.0)
-        #F.stop()
         F.anfahren(speed)
         F.vor(speed)
         
@@ -1245,7 +1311,6 @@ def ausparken(hsv_frame):
         F.nach_links()
         F.vor(0.35)
         time.sleep(1.0)
-        #F.stop()
         F.anfahren(speed)
         F.vor(speed)
 

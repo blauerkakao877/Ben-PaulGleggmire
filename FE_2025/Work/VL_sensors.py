@@ -31,46 +31,38 @@ alarm_dist = 5.0
 
 #multiplexer object
 tca = adafruit_tca9548a.TCA9548A(i2c)
-try:
-    #sensor an i2c slot 0
-    sensorVL = adafruit_vl53l4cd.VL53L4CD(tca[0])
-    sensorVL.inter_measurement = 0 # no wait between measurements
-    sensorVL.timing_budget = 20 # 20 msec ranging time
-except:
-    print("Error init VL")
+
+#sensor an i2c slot 0
+sensorVL = adafruit_vl53l4cd.VL53L4CD(tca[0])
+sensorVL.inter_measurement = 0 # no wait between measurements
+sensorVL.timing_budget = 20 # 20 msec ranging time
+print("init VL")
 
 #sensor an i2c slot 1
-try:
-    sensorHL = adafruit_vl53l4cd.VL53L4CD(tca[6])
-    sensorHL.inter_measurement = 0
-    sensorHL.timing_budget = 20
-except:
-     print("Error init HL")
+sensorHL = adafruit_vl53l4cd.VL53L4CD(tca[6])
+sensorHL.inter_measurement = 0
+sensorHL.timing_budget = 20
+print("init HL")
 
 
 #sensor an i2c slot 7
-try:
-    sensorVR = adafruit_vl53l4cd.VL53L4CD(tca[7])
-    sensorVR.inter_measurement = 0 # no wait between measurements
-    sensorVR.timing_budget = 20 # 20 msec ranging time
-except:
-    print("Error init VR")
+sensorVR = adafruit_vl53l4cd.VL53L4CD(tca[7])
+sensorVR.inter_measurement = 0 # no wait between measurements
+sensorVR.timing_budget = 20 # 20 msec ranging time
+print("init VR")
     
 #sensor an i2c slot 6
-try:
-    sensorHR = adafruit_vl53l4cd.VL53L4CD(tca[5])
-    sensorHR.inter_measurement = 0
-    sensorHR.timing_budget = 20
-except:
-    print("Error init HR")
+sensorHR = adafruit_vl53l4cd.VL53L4CD(tca[5])
+sensorHR.inter_measurement = 0
+sensorHR.timing_budget = 20
+print("init HR")
     
 #sensor an i2c slot 4
-try:
-    sensorHM = adafruit_vl53l4cd.VL53L4CD(tca[4])
-    sensorHM.inter_measurement = 0
-    sensorHM.timing_budget = 20
-except:
-    print("Error init HM")
+sensorHM = adafruit_vl53l4cd.VL53L4CD(tca[4])
+sensorHM.inter_measurement = 0
+sensorHM.timing_budget = 20
+print("init HM")
+
 
 print("VL53L4CD Simple Test.")
 print("--------------------")
@@ -98,7 +90,7 @@ GPIO.output(GPIO_VR, False)
 GPIO.output(GPIO_HR, False)
 GPIO.output(GPIO_HM, False)
 
-
+print("start loop")
 while True:
     try:
         if not sensorVL.data_ready:
