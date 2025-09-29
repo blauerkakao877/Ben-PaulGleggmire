@@ -115,6 +115,8 @@ alarm_HL = False
 test = False
 test_L = True
 test_R = False
+test_L_park = False
+test_R_park = False
 #==Parken==
 start_parkbande = False
 parken = False       #!!unten "if" auskommentieren um Parken wirklich aus zu schalten!!
@@ -1393,6 +1395,17 @@ try:
             G.gesamtwinkel = -990.0 #gyro.py rechnet positiv ins negative um
             G.letzterwinkel = 0.0
             messen()
+#-----------------------new-----------------------------
+        if test_L_park:
+            parken_aus = False
+            parken = True
+            current_direction = "r"
+            linien_counter = 11
+            geradeaus = -990.0
+            G.gesamtwinkel = 990.0 #gyro.py rechnet positiv ins negative um
+            G.letzterwinkel = 0.0
+            messen()
+            einparken_parallel()
 
         F.vor(speed)
 
