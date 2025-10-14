@@ -37,16 +37,16 @@ linien_zaehlen1 =  0.52    #wartezeit bis linie ausgewertet wird
 linien_warten1 = 1.0       #vermeidet das linien mehrmals gezählt werden
 end_time1 = 2.0            #wartezeit bis auto nach letzter kurve anhält
 #mittel
-mid2 = False #True 
+mid2 = True 
 speed2 = 0.55
 startspeed2 = 0.55
-linien_zaehlen_b2 =  0.36  # 0.33 wartezeit bis linie ausgewertet wird
-linien_zaehlen_o2 =  0.36  #wartezeit bis linie ausgewertet wird
-linien_zaehlen2 =  0.36    #wartezeit bis linie ausgewertet wird
+linien_zaehlen_b2 =  0.39  # 0.36 wartezeit bis linie ausgewertet wird
+linien_zaehlen_o2 =  0.39  #wartezeit bis linie ausgewertet wird
+linien_zaehlen2 =  0.39    #wartezeit bis linie ausgewertet wird
 linien_warten2 = 0.70      #vermeidet das linien mehrmals gezählt werden
 end_time2 = 1.6            #wartezeit bis auto nach letzter kurve anhält
 #schnell !!!ACHTUNG UNSICHER!!!
-fast3 = True #False
+fast3 = False
 speed3 = 0.69 #0.7
 startspeed3 = 0.65 #0.68
 linien_zaehlen_b3 = 0.19 #0.18 #wartezeit bis linie ausgewertet wird
